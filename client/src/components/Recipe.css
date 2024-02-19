@@ -1,0 +1,7 @@
+td.ingredient {
+    white-space: nowrap;
+}
+
+td.description {
+    white-space: pre-line;
+}
