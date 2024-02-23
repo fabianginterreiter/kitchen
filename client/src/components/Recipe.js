@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
-      id, name, preparations {
+      id, name, portions, source, preparations {
         id, step, title, amount, unit {id, name}, ingredient {id, name}, description
       }
     }
@@ -41,12 +41,29 @@ export default function Recipe() {
     if (error) return <p>Error : {error.message}</p>;
 
     return (
-        <div className="App">
-            <h1>{data.recipe.name}</h1>
+        <div>
+            <div className="container text-right">
+                <div className="dropdown">
+                    <button className="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Options
+                    </button>
+                    <ul className="dropdown-menu">
+                        <li><Link className="dropdown-item" to={`/recipes/${recipeId}/edit`}>Bearbeiten</Link></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a className="dropdown-item" href="#">Löschen</a></li>
+                    </ul>
+                </div>
+            </div>
 
-            <Link to={`/recipes/${recipeId}/edit`}>Edit</Link>
+            <h1 className="display-1">{data.recipe.name}</h1>
 
-            <table>
+            <hr />
+
+            Portions: {data.recipe.portions}
+
+            <h2>Zubereitung</h2>
+
+            <table className="table table-striped">
                 <tbody>
                     {data.recipe.preparations.map((step) => <tr key={step.id}>
                         <td className="ingredient">{getIngredient(step)}</td>
@@ -54,6 +71,8 @@ export default function Recipe() {
                     </tr>)}
                 </tbody>
             </table>
+
+            {(data.recipe.source != null && data.recipe.source.length > 0 ? <div>{data.recipe.source}</div> : "")}
         </div>
     );
 };

@@ -5,6 +5,7 @@ const GET_INGREDIENTS = gql`query GetIngredients {
     ingredients {
       id
       name
+      usages
     }
   }`;
 
@@ -15,11 +16,25 @@ export default function Ingredients() {
     if (error) return <p>Error : {error.message}</p>;
 
     return (
-        <div className="App">
-            <h1>Ingredients</h1>
-            {data.ingredients.map(ingredient =>
-                <div key={ingredient.id}><Link to={`/recipes/${ingredient.id}`}>{ingredient.name}</Link></div>
-            )}
-        </div>
+        <div>
+            <h1 className="display-1">Zutaten</h1>
+            <hr />
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Verwendungen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.ingredients.map(ingredient =>
+                        <tr key={ingredient.id}>
+                            <td><Link to={`/ingredients/${ingredient.id}`}>{ingredient.name}</Link></td>
+                            <td>{ingredient.usages}</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
+        </div >
     );
 };

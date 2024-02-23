@@ -84,20 +84,29 @@ export default function RecipeEdit() {
         <div className="App">
             <Link to={`/recipes/${recipe.id}`}>Zurück</Link>
 
-            <h1>Edit <input name="title" type="text" value={recipe.name} onChange={(e) => update({ ...recipe, name: e.target.value })} /></h1>
+            <h1>Edit <input name="title" className="form-control" type="text" value={recipe.name} onChange={(e) => update({ ...recipe, name: e.target.value })} /></h1>
 
-            Portions: <input name="portions" type="number" value={`${recipe.portions}`} onChange={(e) => update({ ...recipe, portions: parseInt(e.target.value) })} min="1" step="1" />
+            Portions: <input name="portions" className="form-control" type="number" value={`${recipe.portions}`} onChange={(e) => update({ ...recipe, portions: parseInt(e.target.value) })} min="1" step="1" />
 
-            <table>
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>Unit</th>
+                        <th>Ingredient</th>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
                 <tbody>
                     {recipe.preparations.map((step, key) => <tr key={`step_${key}`}>
-                        <td className="ingredient">
-                            <input name={`amount_${key}`} type="number" value={step.amount} min="0" onChange={(e) => update({
+                        <td>
+                            <input name={`amount_${key}`} type="number" className="form-control" value={step.amount} min="0" onChange={(e) => update({
                                 ...recipe,
                                 preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, amount: e.target.value } : p))
                             })} />
                         </td>
-                        <td className="ingredient">
+                        <td>
                             <Select options={units}
                                 defaultValue={{ label: (step.unit_id > 0 ? units.find((u) => u.value == step.unit_id).label : "") }}
                                 onChange={(e) => update({
@@ -105,7 +114,7 @@ export default function RecipeEdit() {
                                     preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, unit_id: e.value } : p))
                                 })} />
                         </td>
-                        <td className="ingredient">
+                        <td>
                             <Select options={ingredients}
                                 defaultValue={{ label: (step.ingredient_id > 0 ? ingredients.find((u) => u.value == step.ingredient_id).label : "") }}
                                 onChange={(e) => update({
@@ -113,24 +122,35 @@ export default function RecipeEdit() {
                                     preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: e.value } : p))
                                 })} />
                         </td>
-                        <td className="description">
+                        <td>
                             <textarea
                                 name={`description_${key}`}
                                 value={step.description ? step.description : ""}
+                                className="form-control"
                                 onChange={(e) => update({
                                     ...recipe,
                                     preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, description: e.target.value } : p))
                                 })} />
                         </td>
                         <td>
-                            <button name={`removeStep_${key}`} onClick={() => update({
-                                ...recipe,
-                                preparations: recipe.preparations.filter((e, id) => key != id)
-                            })}>Delete</button>
-                            <button name={`addAfter_${key}`} onClick={() => update({
-                                ...recipe,
-                                preparations: recipe.preparations.filter((f, k) => k <= key).concat([{ ingredient_id: 0, unit_id: 0, amount: 0, description: "" }]).concat(recipe.preparations.filter((f, k) => k > key))
-                            })}>Add After</button>
+                            <div className="dropdown">
+                                <button className="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Options
+                                </button>
+                                <ul className="dropdown-menu">
+                                    <li><button name={`addAfter_${key}`} onClick={() => update({
+                                        ...recipe,
+                                        preparations: recipe.preparations.filter((f, k) => k <= key).concat([{ ingredient_id: 0, unit_id: 0, amount: 0, description: "" }]).concat(recipe.preparations.filter((f, k) => k > key))
+                                    })} className="dropdown-item">Add After</button></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><button name={`removeStep_${key}`} onClick={() => update({
+                                        ...recipe,
+                                        preparations: recipe.preparations.filter((e, id) => key != id)
+                                    })} className="dropdown-item">Delete</button></li>
+
+                                    <li><a className="dropdown-item" href="#">Löschen</a></li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>)}
                 </tbody>
@@ -142,7 +162,7 @@ export default function RecipeEdit() {
                 { ingredient_id: 0, unit_id: 0, amount: 0, description: "" }]
             })}>Add</button>
 
-            <button name="saveButton" onClick={() => saveAction()} disabled={!edited}>Save</button>
+            <button name="saveButton" className="btn btn-success" onClick={() => saveAction()} disabled={!edited}>Save</button>
         </div>
     );
 };

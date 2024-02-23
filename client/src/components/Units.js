@@ -17,8 +17,9 @@ export default function Units() {
 
     return (
         <div className="App">
-            <h1>Units</h1>
-            <table>
+            <h1 className="display-1">Einheiten</h1>
+            <hr />
+            <table className="table table-striped">
                 <thead>
                     <tr><th>Name</th><th>Beschreibung</th></tr>
                 </thead>

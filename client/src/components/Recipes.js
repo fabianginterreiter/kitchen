@@ -14,8 +14,9 @@ export default function Recipes() {
     if (error) return <p>Error : {error.message}</p>;
 
     return (
-        <div className="App">
-            <h1>Recipes</h1>
+        <div>
+            <h1 className="display-1">Rezepte</h1>
+            <hr />
             {data.recipes.map(recipe =>
                 <div key={recipe.id}><Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link></div>
             )}

@@ -8,6 +8,7 @@ import Recipe from './components/Recipe';
 import RecipeEdit from './components/RecipeEdit';
 import Recipes from './components/Recipes';
 import Ingredients from './components/Ingredients';
+import Ingredient from './components/Ingredient';
 import Units from './components/Units';
 
 import {
@@ -21,7 +22,6 @@ const client = new ApolloClient({
   uri: 'http://localhost:4000/graphql',
   cache: new InMemoryCache(),
 });
-
 
 const router = createBrowserRouter([
   {
@@ -39,6 +39,9 @@ const router = createBrowserRouter([
     }, {
       path: "ingredients",
       element: <Ingredients />
+    }, {
+      path: "ingredients/:ingredientId",
+      element: <Ingredient />
     }, {
       path: "units",
       element: <Units />

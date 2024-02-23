@@ -14,12 +14,15 @@ const typeDefs = `#graphql
   type Ingredient {
     id: ID!
     name: String!
+    recipes: [Recipe]
+    usages: Int
   }
 
   type Recipe {
     id: ID!
     name: String!
     portions: Int
+    source: String
     preparations: [Preparation]
   }
 
@@ -40,6 +43,7 @@ const typeDefs = `#graphql
     recipe(id: ID!): Recipe,
 
     ingredients: [Ingredient],
+    ingredient(id: ID!): Ingredient,
     units: [Unit],
   }
 
@@ -73,7 +77,7 @@ const typeDefs = `#graphql
 const resolvers = {
     Query: {
         recipes: () => new Promise((resolve, reject) => {
-            db.all('SELECT id, name, portions FROM recipes ORDER BY name ASC', (err, rows) => {
+            db.all('SELECT id, name, portions, source FROM recipes ORDER BY name ASC', (err, rows) => {
                 if (err) {
                     reject(err)
                 } else {
@@ -83,7 +87,7 @@ const resolvers = {
         }),
 
         recipe: (parent, args, contextValue, info) => new Promise((resolve, reject) => {
-            db.get(`SELECT id, name, portions FROM recipes WHERE id = ${args.id}`, (err, row) => {
+            db.get(`SELECT id, name, portions, source FROM recipes WHERE id = ${args.id}`, (err, row) => {
                 if (err) {
                     reject(err)
                 } else {
@@ -102,12 +106,44 @@ const resolvers = {
             })
         }),
 
+        ingredient: (parent, args, contextValue, info) => new Promise((resolve, reject) => {
+            db.get(`SELECT id, name FROM ingredients WHERE id = ${args.id}`, (err, row) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(row)
+                }
+            })
+        }),
+
         units: () => new Promise((resolve, reject) => {
             db.all(`SELECT id, name, description FROM units ORDER BY name ASC`, (err, rows) => {
                 if (err) {
                     reject(err)
                 } else {
                     resolve(rows)
+                }
+            })
+        })
+    },
+
+    Ingredient: {
+        recipes: (parent, args, contextValue, info) => new Promise((resolve, reject) => {
+            db.all(`SELECT recipes.* FROM recipes JOIN preparations ON recipes.id == preparations.recipe_id WHERE preparations.ingredient_id = "${parent.id}" ORDER BY name ASC`, (err, rows) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(rows)
+                }
+            })
+        }),
+
+        usages: (parent) => new Promise((resolve, reject) => {
+            db.get(`SELECT count() AS "usages" FROM preparations WHERE ingredient_id = '${parent.id}'`, (err, res) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(res.usages)
                 }
             })
         })
