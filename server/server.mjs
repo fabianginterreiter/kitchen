@@ -1,7 +1,14 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import sqlite3 from 'sqlite3';
-const db = new sqlite3.Database('database.db')
+import Knex from 'knex';
+
+const knex = Knex({
+    client: 'sqlite3',
+    connection: {
+        filename: "./database.db"
+    }
+});
 
 // The GraphQL schema
 const typeDefs = `#graphql
@@ -76,221 +83,107 @@ const typeDefs = `#graphql
 // A map of functions which return data for the schema.
 const resolvers = {
     Query: {
-        recipes: () => new Promise((resolve, reject) => {
-            db.all('SELECT id, name, portions, source FROM recipes ORDER BY name ASC', (err, rows) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(rows)
-                }
-            })
-        }),
+        recipes: () => knex('recipes').orderBy('name'),
 
-        recipe: (parent, args, contextValue, info) => new Promise((resolve, reject) => {
-            db.get(`SELECT id, name, portions, source FROM recipes WHERE id = ${args.id}`, (err, row) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(row)
-                }
-            })
-        }),
+        recipe: (_, args) => knex('recipes').where('id', args.id).first(),
 
-        ingredients: () => new Promise((resolve, reject) => {
-            db.all(`SELECT id, name FROM ingredients ORDER BY name ASC`, (err, rows) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(rows)
-                }
-            })
-        }),
+        ingredients: () => knex('ingredients').orderBy('name'),
 
-        ingredient: (parent, args, contextValue, info) => new Promise((resolve, reject) => {
-            db.get(`SELECT id, name FROM ingredients WHERE id = ${args.id}`, (err, row) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(row)
-                }
-            })
-        }),
+        ingredient: (_, args) => knex('ingredients').where('id', args.id).first(),
 
-        units: () => new Promise((resolve, reject) => {
-            db.all(`SELECT id, name, description FROM units ORDER BY name ASC`, (err, rows) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(rows)
-                }
-            })
-        })
+        units: () => knex('units').orderBy('name')
     },
 
     Ingredient: {
-        recipes: (parent, args, contextValue, info) => new Promise((resolve, reject) => {
-            db.all(`SELECT recipes.* FROM recipes JOIN preparations ON recipes.id == preparations.recipe_id WHERE preparations.ingredient_id = "${parent.id}" ORDER BY name ASC`, (err, rows) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(rows)
-                }
-            })
-        }),
+        recipes: (parent) => knex('recipes').select('recipes.*').join('preparations', 'recipes.id', '=', 'preparations.recipe_id').where('preparations.ingredient_id', parent.id).orderBy('name'),
 
-        usages: (parent) => new Promise((resolve, reject) => {
-            db.get(`SELECT count() AS "usages" FROM preparations WHERE ingredient_id = '${parent.id}'`, (err, res) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(res.usages)
-                }
-            })
-        })
+        usages: (parent) => knex('preparations').where('ingredient_id', parent.id).count().first().then((r) => r['count(*)']),
     },
 
     Recipe: {
-        preparations: (parent) => new Promise((resolve, reject) => {
-            db.all(`SELECT id, step, title, amount, unit_id, ingredient_id, description FROM preparations WHERE recipe_id = ${parent.id} ORDER BY step ASC`, (err, rows) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(rows)
-                }
-            })
-        })
+        preparations: (parent) => knex('preparations').where('recipe_id', parent.id).orderBy('step')
     },
 
     Preparation: {
-        unit: (parent) => new Promise((resolve, reject) => {
-            db.get(`SELECT id, name, description FROM units WHERE id = ${parent.unit_id}`, (err, row) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(row)
-                }
-            })
-        }),
+        unit: (parent) => knex('units').where('id', parent.unit_id).first(),
 
-        ingredient: (parent) => new Promise((resolve, reject) => {
-            db.get(`SELECT id, name FROM ingredients WHERE id = ${parent.ingredient_id}`, (err, row) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve(row)
-                }
-            })
-        })
+        ingredient: (parent) => knex('ingredients').where('id', parent.ingredient_id).first()
     },
 
     Mutation: {
-        createIngredient: (_, args) => new Promise((resolve, reject) => {
-            db.run(`INSERT INTO ingredients(name) VALUES('${args.name}')`, function (err) {
-                if (err) {
-                    reject(err)
-                    return;
-                }
+        createIngredient: (_, args) => knex('ingredients').insert({
+            name: args.name
+        }).returning('id').then((obj) => knex('ingredients').where('id', obj[0].id).first()),
 
-                db.get(`SELECT id, name FROM ingredients WHERE id = ${this.lastID}`, (err, row) => {
-                    if (err) {
-                        reject(err)
-                    } else {
-                        resolve(row)
-                    }
-                })
-            })
+        createRecipe: (_, args) => knex('recipe').insert({
+            name: args.recipe.name,
+            portions: args.recipe.portions
+        }).returning('id').then((obj) => {
+            const recipeId = obj[0].id;
+
+            var dbProcesses = [];
+
+            args.recipe.preparations.forEach((n) => knex('preparations').insert({
+                step: n.step,
+                description: n.description,
+                amount: n.amount,
+                unit_id: n.unit_id,
+                ingredient_id: n.ingredient_id,
+                recipe_id: recipeId
+            }))
+
+            return Promise.all(dbProcesses).then(() => knex('recipes').where('id', recipeId).first());
         }),
 
-
-        createRecipe: (_, args) => new Promise((resolve, reject) => {
-            db.run(`INSERT INTO recipes(name, portions) VALUES('${args.recipe.name}', '${args.recipe.portions ? args.recipe.portions : 1}')`, function (err) {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                const recipeId = this.lastID;
-
-                var dbProcesses = [];
-
-                args.recipe.preparations.forEach((p) => dbProcesses.push(new Promise((resolve, reject) => db.run(`INSERT INTO preparations(step, description) VALUES(${p.step}, '${p.description}')`, (err, res) => resolve()))));
-
-                Promise.all(dbProcesses).then(db.get(`SELECT id, name, portions FROM recipes WHERE id = ${args.id}`, (err, row) => {
-                    if (err) {
-                        reject(err)
-                    } else {
-                        resolve(row)
-                    }
-                }))
-            })
-        }),
-
-        updateRecipe: (_, args) => new Promise((resolve, reject) => {
+        updateRecipe: (_, args) => {
             const recipe = args.recipe;
 
-            db.run(`UPDATE recipes SET name="${recipe.name}", portions="${recipe.portions}" WHERE id = ${recipe.id}`, (err) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
+            return knex('recipes').update({
+                name: recipe.name,
+                portions: recipe.portions
+            }).where('id', recipe.id).then(() => knex('preparations').where('recipe_id', recipe.id)).then((rows) => {
+                var dbProcesses = [];
 
-                db.all(`SELECT * FROM preparations WHERE recipe_id = ${recipe.id} ORDER BY step ASC`, (err, rows) => {
+                var pN = 0;
+                var pE = 0;
+                var step = 1;
 
-                    var dbProcesses = [];
+                while (pE < rows.length || pN < recipe.preparations.length) {
+                    if (pE < rows.length && pN < recipe.preparations.length) {
+                        var p = rows[pE];
+                        var n = recipe.preparations[pN];
 
-                    var pN = 0;
-                    var pE = 0;
-                    var step = 1;
+                        dbProcesses.push(knex('preparations').update({
+                            step: step,
+                            description: n.description,
+                            amount: n.amount,
+                            unit_id: n.unit_id,
+                            ingredient_id: n.ingredient_id
+                        }).where('id', p.id));
 
-                    while (pE < rows.length || pN < recipe.preparations.length) {
-                        if (pE < rows.length && pN < recipe.preparations.length) {
-                            var p = rows[pE];
-                            var n = recipe.preparations[pN];
-                            dbProcesses.push(new Promise((resolve, reject) => db.run(`UPDATE preparations SET step = "${step}", description = "${n.description}", ingredient_id = "${n.ingredient_id}", unit_id = "${n.unit_id}", amount = "${n.amount}" WHERE id = "${p.id}"`, (err, res) => {
-                                if (err) {
-                                    reject(err);
-                                    return;
-                                }
+                    } else if (pN < recipe.preparations.length && pE >= rows.length) {
+                        var n = recipe.preparations[pN];
 
-                                resolve();
-                            })));
+                        dbProcesses.push(knex('preparations').insert({
+                            step: step,
+                            description: n.description,
+                            amount: n.amount,
+                            unit_id: n.unit_id,
+                            ingredient_id: n.ingredient_id,
+                            recipe_id: recipe.id
+                        }));
+                    } else if (pN >= recipe.preparations.length && pE < rows.length) {
+                        var p = rows[pE];
 
-
-                        } else if (pN < recipe.preparations.length && pE >= rows.length) {
-                            var n = recipe.preparations[pN];
-                            dbProcesses.push(new Promise((resolve, reject) => db.run(`INSERT INTO preparations (recipe_id, step, description, ingredient_id, unit_id, amount) VALUES ("${recipe.id}", "${step}", "${n.description}", "${n.ingredient_id}", "${n.unit_id}", "${n.amount}") `, (err, res) => {
-                                if (err) {
-                                    reject(err);
-                                    return;
-                                }
-
-                                resolve();
-                            })));
-                        } else if (pN >= recipe.preparations.length && pE < rows.length) {
-                            var p = rows[pE];
-                            dbProcesses.push(new Promise((resolve, reject) => db.run(`DELETE FROM preparations WHERE id = ${p.id}`, (err) => {
-                                if (err) {
-                                    reject(err);
-                                    return;
-                                }
-
-                                resolve();
-                            })))
-                        }
-
-                        pE++; pN++; step++;
+                        dbProcesses.push(knex('preparations').where('id', p.id).del());
                     }
 
-                    Promise.all(dbProcesses).then(db.get(`SELECT id, name, portions FROM recipes WHERE id = ${recipe.id}`, (err, row) => {
-                        if (err) {
-                            reject(err)
-                        } else {
-                            resolve(row)
-                        }
-                    }));
-                })
-            })
-        })
+                    pE++; pN++; step++;
+                }
+
+                return Promise.all(dbProcesses);
+            }).then(() => knex('recipes').where('id', recipe.id).first());
+        }
     }
 };
 
