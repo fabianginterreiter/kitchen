@@ -2,7 +2,7 @@ import './Recipe.css';
 
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { Link, useParams } from 'react-router-dom';
-import React, { useState } from "react";
+import { useState } from "react";
 // https://react-select.com/
 import Select from 'react-select';
 
@@ -91,15 +91,15 @@ export default function RecipeEdit() {
             <table className="table table-striped">
                 <thead>
                     <tr>
-                        <th>Amount</th>
-                        <th>Unit</th>
-                        <th>Ingredient</th>
-                        <th>Description</th>
-                        <th></th>
+                        <th className="col-1">Amount</th>
+                        <th className="col-1">Unit</th>
+                        <th className="col-2">Ingredient</th>
+                        <th className="col-6">Description</th>
+                        <th className="col-2"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {recipe.preparations.map((step, key) => <tr key={`step_${key}`}>
+                    {recipe.preparations.map((step, key) => <tr key={`${step.id}+${step.step}+${key}`}>
                         <td>
                             <input name={`amount_${key}`} type="number" className="form-control" value={step.amount} min="0" onChange={(e) => update({
                                 ...recipe,
@@ -135,7 +135,7 @@ export default function RecipeEdit() {
                         <td>
                             <div className="dropdown">
                                 <button className="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Options
+                                <i class="bi bi-list" />
                                 </button>
                                 <ul className="dropdown-menu">
                                     <li><button name={`addAfter_${key}`} onClick={() => update({
@@ -156,7 +156,7 @@ export default function RecipeEdit() {
                 </tbody>
             </table>
 
-            <button name="addStep" onClick={() => update({
+            <button name="addStep" className="btn btn-default" onClick={() => update({
                 ...recipe,
                 preparations: [...recipe.preparations,
                 { ingredient_id: 0, unit_id: 0, amount: 0, description: "" }]

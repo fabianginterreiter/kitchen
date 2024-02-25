@@ -1,14 +1,17 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import sqlite3 from 'sqlite3';
 import Knex from 'knex';
 
-const knex = Knex({
+import knexfile from './knexfile.js';
+
+const options = {
     client: 'sqlite3',
     connection: {
         filename: "./database.db"
     }
-});
+};
+
+const knex = Knex(knexfile['development']);
 
 // The GraphQL schema
 const typeDefs = `#graphql
@@ -95,7 +98,7 @@ const resolvers = {
     },
 
     Ingredient: {
-        recipes: (parent) => knex('recipes').select('recipes.*').join('preparations', 'recipes.id', '=', 'preparations.recipe_id').where('preparations.ingredient_id', parent.id).orderBy('name'),
+        recipes: (parent) => knex('recipes').select('recipes.*').distinct().join('preparations', 'recipes.id', '=', 'preparations.recipe_id').where('preparations.ingredient_id', parent.id).orderBy('name'),
 
         usages: (parent) => knex('preparations').where('ingredient_id', parent.id).count().first().then((r) => r['count(*)']),
     },
