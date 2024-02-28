@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "nodemon server.mjs"
+    "start": "nodemon server.mjs",
+    "build": "rm -R static && client/npm run build && mv client/build static"
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",
