@@ -24,6 +24,7 @@ export default function Recipes() {
         <div>
             <h1 className="display-1">Rezepte</h1>
             <hr />
+            <Link to={'/recipes/create'} className="btn btn-primary">Erstellen</Link>
             <form>
               <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" value={filter} onChange={(e) => {
                 setFilter(e.target.value);

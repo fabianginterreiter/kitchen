@@ -40,15 +40,13 @@ export default function Recipe() {
 
     return (
         <div>
-
-
             <h1 className="display-1">{data.recipe.name}</h1>
 
             <hr />
 
             <div className="row">
                 <div className="col-10">Portionen: {data.recipe.portions}</div>
-                <div className="col-2">
+                <div className="col-2 hideForPrinting">
                     <div className="container text-right">
                         <div className="dropdown">
                             <button className="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -66,12 +64,14 @@ export default function Recipe() {
 
             <h2>Zubereitung</h2>
 
-            <table className="table table-striped">
+            <table className="table table-striped" id="preparations">
                 <tbody>
-                    {data.recipe.preparations.map((step) => <tr key={step.id}>
-                        <td className="col-2">{getIngredient(step)}</td>
-                        <td className="col-10">{step.description}</td>
-                    </tr>)}
+                    {data.recipe.preparations.map((step) => (step.title ?
+                        <tr key={step.id} className="table-info"><td colSpan="2"><strong>{step.description}</strong></td></tr>
+                        : <tr key={step.id}>
+                            <td className="col-2">{getIngredient(step)}</td>
+                            <td className="col-10">{step.description}</td>
+                        </tr>))}
                 </tbody>
             </table>
 

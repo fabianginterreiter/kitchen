@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 
 import Recipe from './components/Recipe';
 import RecipeEdit from './components/RecipeEdit';
+import RecipeCreate from './components/RecipeCreate';
 import Recipes from './components/Recipes';
 import Ingredients from './components/Ingredients';
 import Ingredient from './components/Ingredient';
@@ -29,6 +30,9 @@ const router = createBrowserRouter([
     children: [{
       path: "recipes",
       element: <Recipes />
+    }, {
+      path: "recipes/create",
+      element: <RecipeCreate />
     }, {
       path: "recipes/:recipeId",
       element: <Recipe />

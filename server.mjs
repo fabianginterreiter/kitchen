@@ -33,6 +33,9 @@ const typeDefs = `#graphql
     name: String!
     portions: Int
     source: String
+    vegan: Boolean
+    vegetarian: Boolean
+    description: String
     preparations: [Preparation]
   }
 
@@ -71,15 +74,18 @@ const typeDefs = `#graphql
     id: ID
     name: String!
     portions: Int
+    source: String
+    description: String
+    vegan: Boolean
+    vegetarian: Boolean
     preparations: [PreparationInput]
   }
 
   type Mutation {
     createIngredient(name: String!): Ingredient
 
-    createRecipe(recipe: RecipeInput): String
+    createRecipe(recipe: RecipeInput): Recipe
     updateRecipe(recipe: RecipeInput): Recipe
-
   }
 `;
 
@@ -115,35 +121,46 @@ const resolvers = {
 
     Mutation: {
         createIngredient: (_, args) => knex('ingredients').insert({
-            name: args.name
+            name: args.name,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now()
         }).returning('id').then((obj) => knex('ingredients').where('id', obj[0].id).first()),
 
-        createRecipe: (_, args) => knex('recipe').insert({
+        createRecipe: (_, args) => knex('recipes').insert({
             name: args.recipe.name,
-            portions: args.recipe.portions
+            portions: args.recipe.portions,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now()
         }).returning('id').then((obj) => {
             const recipeId = obj[0].id;
 
             var dbProcesses = [];
 
-            args.recipe.preparations.forEach((n) => knex('preparations').insert({
+            args.recipe.preparations.forEach((n) => dbProcesses.push(knex('preparations').insert({
                 step: n.step,
                 description: n.description,
                 amount: n.amount,
                 unit_id: n.unit_id,
                 ingredient_id: n.ingredient_id,
                 recipe_id: recipeId
-            }))
+            })));
 
             return Promise.all(dbProcesses).then(() => knex('recipes').where('id', recipeId).first());
         }),
 
         updateRecipe: (_, args) => {
-            const recipe = args.recipe;
+            var recipe = args.recipe;
+
+            console.log(recipe);
 
             return knex('recipes').update({
                 name: recipe.name,
-                portions: recipe.portions
+                portions: recipe.portions,
+                vegan: recipe.vegan,
+                vegetarian: recipe.vegetarian,
+                description: recipe.description,
+                source: recipe.source,
+                updated_at: knex.fn.now()
             }).where('id', recipe.id).then(() => knex('preparations').where('recipe_id', recipe.id)).then((rows) => {
                 var dbProcesses = [];
 
@@ -158,6 +175,7 @@ const resolvers = {
 
                         dbProcesses.push(knex('preparations').update({
                             step: step,
+                            title: n.title,
                             description: n.description,
                             amount: n.amount,
                             unit_id: n.unit_id,
@@ -169,6 +187,7 @@ const resolvers = {
 
                         dbProcesses.push(knex('preparations').insert({
                             step: step,
+                            title: n.title,
                             description: n.description,
                             amount: n.amount,
                             unit_id: n.unit_id,

@@ -1,0 +1,10 @@
+@media print {
+    /* All your print styles go here */
+    #header, .hideForPrinting {
+      display: none !important;
+    }
+
+    #preparations > table > tbody > tr > td, #preparations > table > thead > tr > th {
+        font-size: 10px;
+    }
+  }
