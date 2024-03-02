@@ -9,7 +9,7 @@ import bodyParser from 'body-parser';
 
 import knexfile from './knexfile.js';
 
-const knex = Knex(knexfile['development']);
+const knex = Knex(knexfile[process.env.NODE_ENV]);
 
 // The GraphQL schema
 const typeDefs = `#graphql
