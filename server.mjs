@@ -221,8 +221,6 @@ await server.start();
 
 const app = express();
 
-app.use(express.static('public'));
-
 app.use(
     '/data',
     cors(),
@@ -230,6 +228,15 @@ app.use(
     expressMiddleware(server),
 );
 
+app.use(express.static('public'));
+
+app.get('*', (req, res) => {
+    res.sendFile(`${process.cwd()}/public/index.html`, (err) => {
+        if (err) {
+            res.status(500).send(err)
+        }
+    })
+});
 
 app.listen({ port: 4000 }, () =>
     console.log(`🚀 Server ready at http://localhost:4000`)
