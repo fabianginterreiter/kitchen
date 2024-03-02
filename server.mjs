@@ -1,15 +1,13 @@
 import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import Knex from 'knex';
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 import knexfile from './knexfile.js';
-
-const options = {
-    client: 'sqlite3',
-    connection: {
-        filename: "./database.db"
-    }
-};
 
 const knex = Knex(knexfile['development']);
 
@@ -214,5 +212,22 @@ const server = new ApolloServer({
     resolvers,
 });
 
-const { url } = await startStandaloneServer(server);
-console.log(`🚀 Server ready at ${url}`);
+await server.start();
+
+// const { url } = await startStandaloneServer(server);
+// console.log(`🚀 Server ready at ${url}`);
+
+const app = express();
+
+app.use(express.static('public'));
+
+app.use(
+    cors(),
+    bodyParser.json(),
+    expressMiddleware(server),
+  );
+  
+
+app.listen({ port: 4000 }, () =>
+  console.log(`🚀 Server ready at http://localhost:4000`)
+);
