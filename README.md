@@ -21,7 +21,7 @@ sudo apt install postgresql
 
 sudo su postgres
 
-createuser fabian -P --interactive
+createuser kitchen -P --interactive
 
 
 psql

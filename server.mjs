@@ -1,6 +1,7 @@
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import { startStandaloneServer } from '@apollo/server/standalone';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+
 import Knex from 'knex';
 import express from 'express';
 import http from 'http';
@@ -9,7 +10,7 @@ import bodyParser from 'body-parser';
 
 import knexfile from './knexfile.js';
 
-const knex = Knex(knexfile[process.env.NODE_ENV]);
+const knex = Knex(knexfile[process.env.NODE_ENV != null ? process.env.NODE_ENV : 'development']);
 
 // The GraphQL schema
 const typeDefs = `#graphql
@@ -210,6 +211,7 @@ const resolvers = {
 const server = new ApolloServer({
     typeDefs,
     resolvers,
+    plugins: [ApolloServerPluginLandingPageLocalDefault()]
 });
 
 await server.start();
@@ -222,12 +224,13 @@ const app = express();
 app.use(express.static('public'));
 
 app.use(
+    '/data',
     cors(),
     bodyParser.json(),
     expressMiddleware(server),
-  );
-  
+);
+
 
 app.listen({ port: 4000 }, () =>
-  console.log(`🚀 Server ready at http://localhost:4000`)
+    console.log(`🚀 Server ready at http://localhost:4000`)
 );
