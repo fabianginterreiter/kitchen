@@ -40,7 +40,7 @@ export default function Recipe() {
 
     return (
         <div>
-            <h1 className="display-1">{data.recipe.name}</h1>
+            <h1>{data.recipe.name}</h1>
 
             <hr />
 
@@ -67,7 +67,7 @@ export default function Recipe() {
             <table className="table table-striped" id="preparations">
                 <tbody>
                     {data.recipe.preparations.map((step) => (step.title ?
-                        <tr key={step.id} className="table-info"><td colSpan="2"><strong>{step.description}</strong></td></tr>
+                        <tr key={step.id}><td colSpan="2"><strong>{step.description}</strong></td></tr>
                         : <tr key={step.id}>
                             <td className="col-2">{getIngredient(step)}</td>
                             <td className="col-10">{step.description}</td>

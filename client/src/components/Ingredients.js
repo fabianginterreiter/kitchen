@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
+import { Loading, Error } from './Utils.js';
 
 const GET_INGREDIENTS = gql`query GetIngredients {
     ingredients {
@@ -12,12 +13,12 @@ const GET_INGREDIENTS = gql`query GetIngredients {
 export default function Ingredients() {
     const { loading, error, data } = useQuery(GET_INGREDIENTS);
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error : {error.message}</p>;
+    if (loading) return <Loading />;
+    if (error) return <Error message={error.message} />;
 
     return (
         <div>
-            <h1 className="display-1">Zutaten</h1>
+            <h1>Zutaten</h1>
             <hr />
             <table className="table table-striped">
                 <thead>

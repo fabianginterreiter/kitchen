@@ -80,11 +80,21 @@ const typeDefs = `#graphql
     preparations: [PreparationInput]
   }
 
+  input UnitInput {
+    id: ID,
+    name: String!,
+    description: String
+  }
+
   type Mutation {
     createIngredient(name: String!): Ingredient
 
     createRecipe(recipe: RecipeInput): Recipe
     updateRecipe(recipe: RecipeInput): Recipe
+
+    createUnit(unit: UnitInput): Unit
+    updateUnit(unit: UnitInput): Unit
+    deleteUnit(unit: UnitInput): String
   }
 `;
 
@@ -204,7 +214,19 @@ const resolvers = {
 
                 return Promise.all(dbProcesses);
             }).then(() => knex('recipes').where('id', recipe.id).first());
-        }
+        },
+
+        createUnit: (_, args) => knex('units').insert({
+            name: args.unit.name,
+            description: args.unit.description
+        }).returning('id').then((obj) => knex('units').where('id', obj[0].id).first()),
+
+        updateUnit: (_, args) => knex('units').update({
+            name: args.unit.name,
+            description: args.unit.description
+        }).where('id', args.unit.id).then((obj) => knex('units').where('id', args.unit.id).first()),
+
+        deleteUnit: (_, args) => knex('units').del().where('id', args.unit.id).then(() => "OK")
     }
 };
 
