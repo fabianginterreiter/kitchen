@@ -4,7 +4,6 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 
 import Knex from 'knex';
 import express from 'express';
-import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
@@ -80,11 +79,21 @@ const typeDefs = `#graphql
     preparations: [PreparationInput]
   }
 
+  input UnitInput {
+    id: ID,
+    name: String!,
+    description: String
+  }
+
   type Mutation {
     createIngredient(name: String!): Ingredient
 
     createRecipe(recipe: RecipeInput): Recipe
     updateRecipe(recipe: RecipeInput): Recipe
+
+    createUnit(unit: UnitInput): Unit
+    updateUnit(unit: UnitInput): Unit
+    deleteUnit(unit: UnitInput): String
   }
 `;
 
@@ -128,6 +137,10 @@ const resolvers = {
         createRecipe: (_, args) => knex('recipes').insert({
             name: args.recipe.name,
             portions: args.recipe.portions,
+            vegan: recipe.vegan,
+            vegetarian: recipe.vegetarian,
+            description: recipe.description,
+            source: recipe.source,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => {
@@ -149,8 +162,6 @@ const resolvers = {
 
         updateRecipe: (_, args) => {
             var recipe = args.recipe;
-
-            console.log(recipe);
 
             return knex('recipes').update({
                 name: recipe.name,
@@ -204,7 +215,19 @@ const resolvers = {
 
                 return Promise.all(dbProcesses);
             }).then(() => knex('recipes').where('id', recipe.id).first());
-        }
+        },
+
+        createUnit: (_, args) => knex('units').insert({
+            name: args.unit.name,
+            description: args.unit.description
+        }).returning('id').then((obj) => knex('units').where('id', obj[0].id).first()),
+
+        updateUnit: (_, args) => knex('units').update({
+            name: args.unit.name,
+            description: args.unit.description
+        }).where('id', args.unit.id).then((obj) => knex('units').where('id', args.unit.id).first()),
+
+        deleteUnit: (_, args) => knex('units').del().where('id', args.unit.id).then(() => "OK")
     }
 };
 
@@ -215,9 +238,6 @@ const server = new ApolloServer({
 });
 
 await server.start();
-
-// const { url } = await startStandaloneServer(server);
-// console.log(`🚀 Server ready at ${url}`);
 
 const app = express();
 

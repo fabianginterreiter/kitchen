@@ -34,8 +34,6 @@ exports.up = knex => {
         table.text('description').defaultTo('');
 
         table.foreign('recipe_id').references('recipes.id');
-        table.foreign('ingredient_id').references('ingredients.id');
-        table.foreign('unit_id').references('units.id');
 
         table.unique(['recipe_id', 'step']);
     });

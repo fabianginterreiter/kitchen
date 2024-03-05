@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
+import { Loading, Error } from './Utils.js';
 
 const GET_INGREDIENT = gql`query GetIngredient($ingredientId: ID!) {
     ingredient(id: $ingredientId) {
@@ -14,22 +15,22 @@ const GET_INGREDIENT = gql`query GetIngredient($ingredientId: ID!) {
   }`;
 
 export default function Ingredients() {
-    const { ingredientId } = useParams();
+  const { ingredientId } = useParams();
 
-    const { loading, error, data } = useQuery(GET_INGREDIENT, {
-        variables: { ingredientId },
-    });
+  const { loading, error, data } = useQuery(GET_INGREDIENT, {
+    variables: { ingredientId },
+  });
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error : {error.message}</p>;
+  if (loading) return <Loading />;
+  if (error) return <Error message={error.message} />;
 
-    return (
-        <div>
-            <h1 className="display-1">{data.ingredient.name}</h1>
-            <hr />
-            {data.ingredient.recipes.map(recipe =>
-                <div key={recipe.id}><Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link></div>
-            )}
-        </div>
-    );
+  return (
+    <div>
+      <h1>{data.ingredient.name}</h1>
+      <hr />
+      {data.ingredient.recipes.map(recipe =>
+        <div key={recipe.id}><Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link></div>
+      )}
+    </div>
+  );
 };

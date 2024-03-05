@@ -4,6 +4,7 @@ import { useState, useProps } from "react";
 // https://react-select.com/
 import Select from 'react-select';
 import Creatable, { useCreatable } from 'react-select/creatable';
+import { Loading, Error } from './Utils.js';
 
 const GET_DATA = gql`query GetData {
     units { id, name, description }
@@ -64,8 +65,8 @@ export default function RecipeForm(args) {
         }
     };
 
-    if (loading || units === null || ingredients === null) return <p>Loading...</p>;
-    if (error) return <p>Error : {error.message}</p>;
+    if (loading || units === null || ingredients === null) return <Loading />;
+    if (error) return <Error message={error.message} />;
 
     return (<div>
         <div className="mb-3">

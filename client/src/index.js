@@ -10,6 +10,7 @@ import Recipes from './components/Recipes';
 import Ingredients from './components/Ingredients';
 import Ingredient from './components/Ingredient';
 import Units from './components/Units';
+import Home from './components/Home';
 
 import {
   createBrowserRouter,
@@ -28,6 +29,9 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [{
+      path: "",
+      element: <Home />
+    }, {
       path: "recipes",
       element: <Recipes />
     }, {
