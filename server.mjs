@@ -4,7 +4,6 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 
 import Knex from 'knex';
 import express from 'express';
-import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
@@ -138,6 +137,10 @@ const resolvers = {
         createRecipe: (_, args) => knex('recipes').insert({
             name: args.recipe.name,
             portions: args.recipe.portions,
+            vegan: recipe.vegan,
+            vegetarian: recipe.vegetarian,
+            description: recipe.description,
+            source: recipe.source,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => {
@@ -159,8 +162,6 @@ const resolvers = {
 
         updateRecipe: (_, args) => {
             var recipe = args.recipe;
-
-            console.log(recipe);
 
             return knex('recipes').update({
                 name: recipe.name,
@@ -237,9 +238,6 @@ const server = new ApolloServer({
 });
 
 await server.start();
-
-// const { url } = await startStandaloneServer(server);
-// console.log(`🚀 Server ready at ${url}`);
 
 const app = express();
 
