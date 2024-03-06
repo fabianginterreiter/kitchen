@@ -95,14 +95,15 @@ const typeDefs = `#graphql
   type Mutation {
     createIngredient(ingredient: IngredientInput): Ingredient
     updateIngredient(ingredient: IngredientInput): Ingredient
-    deleteIngredient(ingredient: IngredientInput): String
+    deleteIngredient(ingredient: IngredientInput): Boolean
 
     createRecipe(recipe: RecipeInput): Recipe
     updateRecipe(recipe: RecipeInput): Recipe
+    deleteRecipe(recipe: RecipeInput): Boolean
 
     createUnit(unit: UnitInput): Unit
     updateUnit(unit: UnitInput): Unit
-    deleteUnit(unit: UnitInput): String
+    deleteUnit(unit: UnitInput): Boolean
   }
 `;
 
@@ -152,7 +153,7 @@ const resolvers = {
             if (result['count(*)'] > 0) {
                 throw new GraphQLError("Ingredient is still in use!");
             }
-            return knex('ingredients').del().where('id', args.ingredient.id).then(() => "OK");
+            return knex('ingredients').del().where('id', args.ingredient.id).then(() => true);
         }),
 
         createRecipe: (_, args) => knex('recipes').insert({
@@ -238,6 +239,8 @@ const resolvers = {
             }).then(() => knex('recipes').where('id', recipe.id).first());
         },
 
+        deleteRecipe: (_, args) => knex('preparations').del().where('recipe_id', args.recipe.id).then(() => knex('recipes').del().where('id', args.recipe.id)).then(() => true),
+
         createUnit: (_, args) => knex('units').insert({
             name: args.unit.name,
             description: args.unit.description
@@ -252,7 +255,7 @@ const resolvers = {
             if (result['count(*)'] > 0) {
                 throw new GraphQLError("Unit is still in use!");
             }
-            return knex('units').del().where('id', args.unit.id).then(() => "OK");
+            return knex('units').del().where('id', args.unit.id).then(() => true);
         })
     }
 };
