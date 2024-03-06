@@ -44,22 +44,15 @@ export default function Recipe() {
 
             <hr />
 
+            <div className="row hideForPrinting">
+                <div className="col-12">
+                        <Link className="btn btn-primary" to={`/recipes/${recipeId}/edit`}>Bearbeiten</Link>
+                        <button type="button" className="btn btn-danger">Löschen</button>
+                </div>
+            </div>
+
             <div className="row">
                 <div className="col-10">Portionen: {data.recipe.portions}</div>
-                <div className="col-2 hideForPrinting">
-                    <div className="container text-right">
-                        <div className="dropdown">
-                            <button className="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Options
-                            </button>
-                            <ul className="dropdown-menu">
-                                <li><Link className="dropdown-item" to={`/recipes/${recipeId}/edit`}>Bearbeiten</Link></li>
-                                <li><hr className="dropdown-divider" /></li>
-                                <li><a className="dropdown-item" href="#">Löschen</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <h2>Zubereitung</h2>

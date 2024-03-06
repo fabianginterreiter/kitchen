@@ -49,7 +49,7 @@ export default function RecipeForm(args) {
     const changeIngredient = (key, e) => {
         if (e.__isNew__) {
             createIngredient({
-                variables: { name: e.label },
+                variables: {ingredient: { name: e.label }},
                 onCompleted: (data) => {
                     setIngredients([...ingredients, { "value": data.createIngredient.id, "label": data.createIngredient.name }].sort((a, b) => a.label < b.label ? -1 : 1))
 

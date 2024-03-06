@@ -2,6 +2,8 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 
+import { GraphQLError } from 'graphql';
+
 import Knex from 'knex';
 import express from 'express';
 import cors from 'cors';
@@ -85,8 +87,15 @@ const typeDefs = `#graphql
     description: String
   }
 
+  input IngredientInput {
+    id: ID,
+    name: String!
+  }
+
   type Mutation {
-    createIngredient(name: String!): Ingredient
+    createIngredient(ingredient: IngredientInput): Ingredient
+    updateIngredient(ingredient: IngredientInput): Ingredient
+    deleteIngredient(ingredient: IngredientInput): String
 
     createRecipe(recipe: RecipeInput): Recipe
     updateRecipe(recipe: RecipeInput): Recipe
@@ -129,10 +138,22 @@ const resolvers = {
 
     Mutation: {
         createIngredient: (_, args) => knex('ingredients').insert({
-            name: args.name,
+            name: args.ingredient.name,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => knex('ingredients').where('id', obj[0].id).first()),
+
+        updateIngredient: (_, args) => knex('ingredients').update({
+            name: args.ingredient.name,
+            updated_at: knex.fn.now()
+        }).where('id', args.ingredient.id).then((obj) => knex('ingredients').where('id', args.ingredient.id).first()),
+
+        deleteIngredient: (_, args) => knex('preparations').count().where('ingredient_id', args.ingredient.id).first().then((result) => {
+            if (result['count(*)'] > 0) {
+                throw new GraphQLError("Ingredient is still in use!");
+            }
+            return knex('ingredients').del().where('id', args.ingredient.id).then(() => "OK");
+        }),
 
         createRecipe: (_, args) => knex('recipes').insert({
             name: args.recipe.name,
@@ -188,8 +209,8 @@ const resolvers = {
                             title: n.title,
                             description: n.description,
                             amount: n.amount,
-                            unit_id: n.unit_id,
-                            ingredient_id: n.ingredient_id
+                            unit_id: (n.unit_id == 0 ? null : n.unit_id),
+                            ingredient_id: (n.ingredient_id == 0 ? null : n.ingredient_id)
                         }).where('id', p.id));
 
                     } else if (pN < recipe.preparations.length && pE >= rows.length) {
@@ -200,8 +221,8 @@ const resolvers = {
                             title: n.title,
                             description: n.description,
                             amount: n.amount,
-                            unit_id: n.unit_id,
-                            ingredient_id: n.ingredient_id,
+                            unit_id: (n.unit_id == 0 ? null : n.unit_id),
+                            ingredient_id: (n.ingredient_id == 0 ? null : n.ingredient_id),
                             recipe_id: recipe.id
                         }));
                     } else if (pN >= recipe.preparations.length && pE < rows.length) {
@@ -227,7 +248,12 @@ const resolvers = {
             description: args.unit.description
         }).where('id', args.unit.id).then((obj) => knex('units').where('id', args.unit.id).first()),
 
-        deleteUnit: (_, args) => knex('units').del().where('id', args.unit.id).then(() => "OK")
+        deleteUnit: (_, args) => knex('preparations').count().where('unit_id', args.unit.id).first().then((result) => {
+            if (result['count(*)'] > 0) {
+                throw new GraphQLError("Unit is still in use!");
+            }
+            return knex('units').del().where('id', args.unit.id).then(() => "OK");
+        })
     }
 };
 

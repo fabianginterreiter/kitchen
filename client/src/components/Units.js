@@ -111,8 +111,11 @@ export default function Units() {
                                         variables: {
                                             unit: { id: unit.id, name: unit.name, description: unit.description }
                                         }, onCompleted: (data) =>
-                                            setUnits(units.filter((u) => u.id !== unit.id))
-
+                                            setUnits(units.filter((u) => u.id !== unit.id)),
+                                            onError: (error) => {
+                                                console.log(error)
+                                                alert("In USE!");
+                                            }
                                     })}>Delete</button></td>
                         </tr>
                     )}
