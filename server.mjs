@@ -51,13 +51,23 @@ const typeDefs = `#graphql
     description: String
   }
 
+  type Category {
+    id: ID!
+    name: String!
+    position: Int!
+    sub: [Category]
+  }
+
   type Query {
     recipes: [Recipe],
     recipe(id: ID!): Recipe,
 
     ingredients: [Ingredient],
     ingredient(id: ID!): Ingredient,
+
     units: [Unit],
+
+    categories: [Category]
   }
 
   input PreparationInput {

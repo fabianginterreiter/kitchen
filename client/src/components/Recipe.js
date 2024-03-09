@@ -46,8 +46,8 @@ export default function Recipe() {
 
             <div className="row hideForPrinting">
                 <div className="col-12">
-                        <Link className="btn btn-primary" to={`/recipes/${recipeId}/edit`}>Bearbeiten</Link>
-                        <button type="button" className="btn btn-danger">Löschen</button>
+                    <Link className="btn btn-primary" to={`/recipes/${recipeId}/edit`}>Bearbeiten</Link>&nbsp;
+                    <button type="button" className="btn btn-danger">Löschen</button>
                 </div>
             </div>
 

@@ -105,7 +105,7 @@ export default function Units() {
                             <td>{unit.name}</td>
                             <td>{unit.description}</td>
                             <td>
-                                <button className="btn btn-primary" onClick={() => setUnit(unit)}>Edit</button>
+                                <button className="btn btn-primary" onClick={() => setUnit(unit)}>Edit</button>&nbsp;
                                 <button className="btn btn-danger" onClick={() =>
                                     deleteUnit({
                                         variables: {

@@ -101,7 +101,7 @@ export default function Ingredients() {
                             <td><Link to={`/ingredients/${ingredient.id}`}>{ingredient.name}</Link></td>
                             <td>{ingredient.usages}</td>
                             <td>
-                                <button className="btn btn-primary" onClick={() => setIngredient(ingredient)}>Edit</button>
+                                <button className="btn btn-primary" onClick={() => setIngredient(ingredient)}>Edit</button>&nbsp;
                                 <button className="btn btn-danger" onClick={() =>
                                     deleteIngredient({
                                         variables: {
