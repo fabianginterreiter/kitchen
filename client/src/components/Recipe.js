@@ -56,7 +56,7 @@ export default function Recipe() {
                 <div className="col-10">Portionen: {data.recipe.portions}</div>
             </div>
 
-            {data.recipe.tags.map((t) => (<span key={t.id}>#{t.name}</span>))}
+            {data.recipe.tags.map((t) => (<Link key={t.id} to={`/tags/${t.id}`}>#{t.name}</Link>))}
 
             <h2>Zubereitung</h2>
 

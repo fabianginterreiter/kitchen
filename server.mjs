@@ -31,6 +31,7 @@ const typeDefs = `#graphql
   type Tag {
     id: ID!
     name: String!
+    recipes: [Recipe]
   }
 
   type Recipe {
@@ -74,6 +75,7 @@ const typeDefs = `#graphql
     units: [Unit],
 
     tags: [Tag],
+    tag(id: ID!): Tag,
   }
 
   input TagInput {
@@ -128,6 +130,8 @@ const typeDefs = `#graphql
     deleteUnit(unit: UnitInput): Boolean
 
     createTag(tag: TagInput): Tag
+    updateTag(tag: TagInput): Tag
+    deleteTag(tag: TagInput): Boolean
   }
 `;
 
@@ -144,7 +148,9 @@ const resolvers = {
 
         units: () => knex('units').orderBy('name'),
 
-        tags: () => knex('tags').orderBy('name')
+        tags: () => knex('tags').orderBy('name'),
+
+        tag: (_, args) => knex('tags').where('id', args.id).first(),
     },
 
     Ingredient: {
@@ -163,6 +169,10 @@ const resolvers = {
         unit: (parent) => knex('units').where('id', parent.unit_id).first(),
 
         ingredient: (parent) => knex('ingredients').where('id', parent.ingredient_id).first()
+    },
+
+    Tag: {
+        recipes: (parent) => knex('recipes').select('recipes.*').join('recipe_tags', 'recipes.id', '=', 'recipe_tags.recipe_id').where('recipe_tags.tag_id', parent.id)
     },
 
     Mutation: {
@@ -227,59 +237,62 @@ const resolvers = {
                 source: recipe.source,
                 updated_at: knex.fn.now()
             }).where('id', recipe.id)
-            .then(() => knex('recipe_tags').del().where('recipe_id', recipe.id))
-            .then(() => knex('preparations').where('recipe_id', recipe.id)).then((rows) => {
-                var dbProcesses = [];
+                .then(() => knex('recipe_tags').del().where('recipe_id', recipe.id))
+                .then(() => knex('preparations').where('recipe_id', recipe.id)).then((rows) => {
+                    var dbProcesses = [];
 
-                args.recipe.tags.forEach((tag) => dbProcesses.push(knex('recipe_tags').insert({
-                    recipe_id: recipe.id,
-                    tag_id: tag.id
-                })));
+                    args.recipe.tags.forEach((tag) => dbProcesses.push(knex('recipe_tags').insert({
+                        recipe_id: recipe.id,
+                        tag_id: tag.id
+                    })));
 
-                var pN = 0;
-                var pE = 0;
-                var step = 1;
+                    var pN = 0;
+                    var pE = 0;
+                    var step = 1;
 
-                while (pE < rows.length || pN < recipe.preparations.length) {
-                    if (pE < rows.length && pN < recipe.preparations.length) {
-                        var p = rows[pE];
-                        var n = recipe.preparations[pN];
+                    while (pE < rows.length || pN < recipe.preparations.length) {
+                        if (pE < rows.length && pN < recipe.preparations.length) {
+                            var p = rows[pE];
+                            var n = recipe.preparations[pN];
 
-                        dbProcesses.push(knex('preparations').update({
-                            step: step,
-                            title: n.title,
-                            description: n.description,
-                            amount: n.amount,
-                            unit_id: (n.unit_id == 0 ? null : n.unit_id),
-                            ingredient_id: (n.ingredient_id == 0 ? null : n.ingredient_id)
-                        }).where('id', p.id));
+                            dbProcesses.push(knex('preparations').update({
+                                step: step,
+                                title: n.title,
+                                description: n.description,
+                                amount: n.amount,
+                                unit_id: (n.unit_id == 0 ? null : n.unit_id),
+                                ingredient_id: (n.ingredient_id == 0 ? null : n.ingredient_id)
+                            }).where('id', p.id));
 
-                    } else if (pN < recipe.preparations.length && pE >= rows.length) {
-                        var n = recipe.preparations[pN];
+                        } else if (pN < recipe.preparations.length && pE >= rows.length) {
+                            var n = recipe.preparations[pN];
 
-                        dbProcesses.push(knex('preparations').insert({
-                            step: step,
-                            title: n.title,
-                            description: n.description,
-                            amount: n.amount,
-                            unit_id: (n.unit_id == 0 ? null : n.unit_id),
-                            ingredient_id: (n.ingredient_id == 0 ? null : n.ingredient_id),
-                            recipe_id: recipe.id
-                        }));
-                    } else if (pN >= recipe.preparations.length && pE < rows.length) {
-                        var p = rows[pE];
+                            dbProcesses.push(knex('preparations').insert({
+                                step: step,
+                                title: n.title,
+                                description: n.description,
+                                amount: n.amount,
+                                unit_id: (n.unit_id == 0 ? null : n.unit_id),
+                                ingredient_id: (n.ingredient_id == 0 ? null : n.ingredient_id),
+                                recipe_id: recipe.id
+                            }));
+                        } else if (pN >= recipe.preparations.length && pE < rows.length) {
+                            var p = rows[pE];
 
-                        dbProcesses.push(knex('preparations').where('id', p.id).del());
+                            dbProcesses.push(knex('preparations').where('id', p.id).del());
+                        }
+
+                        pE++; pN++; step++;
                     }
 
-                    pE++; pN++; step++;
-                }
-
-                return Promise.all(dbProcesses);
-            }).then(() => knex('recipes').where('id', recipe.id).first());
+                    return Promise.all(dbProcesses);
+                }).then(() => knex('recipes').where('id', recipe.id).first());
         },
 
-        deleteRecipe: (_, args) => knex('preparations').del().where('recipe_id', args.recipe.id).then(() => knex('recipes').del().where('id', args.recipe.id)).then(() => true),
+        deleteRecipe: (_, args) => knex('recipe_tags').del().where('recipe_id', args.recipe.id)
+            .then(() => knex('preparations').del().where('recipe_id', args.recipe.id))
+            .then(() => knex('recipes').del().where('id', args.recipe.id))
+            .then(() => true),
 
         createUnit: (_, args) => knex('units').insert({
             name: args.unit.name,
@@ -302,7 +315,15 @@ const resolvers = {
             name: args.tag.name,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
-        }).returning('id').then((obj) => knex('tags').where('id', obj[0].id).first())
+        }).returning('id').then((obj) => knex('tags').where('id', obj[0].id).first()),
+
+        updateTag: (_, args) => knex('tags').update({
+            name: args.tag.name,
+        }).where('id', args.tag.id).then((obj) => knex('tags').where('id', args.tag.id).first()),
+
+        deleteTag: (_, args) => knex('recipe_tags').del().where('tag_id', args.tag.id)
+            .then(() => knex('tags').del().where('id', args.tag.id))
+            .then(() => true)
     }
 };
 
