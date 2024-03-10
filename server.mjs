@@ -28,6 +28,11 @@ const typeDefs = `#graphql
     usages: Int
   }
 
+  type Tag {
+    id: ID!
+    name: String!
+  }
+
   type Recipe {
     id: ID!
     name: String!
@@ -37,6 +42,7 @@ const typeDefs = `#graphql
     vegetarian: Boolean
     description: String
     preparations: [Preparation]
+    tags: [Tag]
   }
 
   type Preparation {
@@ -67,7 +73,12 @@ const typeDefs = `#graphql
 
     units: [Unit],
 
-    categories: [Category]
+    tags: [Tag],
+  }
+
+  input TagInput {
+    id: ID,
+    name: String!
   }
 
   input PreparationInput {
@@ -88,7 +99,8 @@ const typeDefs = `#graphql
     description: String
     vegan: Boolean
     vegetarian: Boolean
-    preparations: [PreparationInput]
+    preparations: [PreparationInput],
+    tags: [TagInput]
   }
 
   input UnitInput {
@@ -114,6 +126,8 @@ const typeDefs = `#graphql
     createUnit(unit: UnitInput): Unit
     updateUnit(unit: UnitInput): Unit
     deleteUnit(unit: UnitInput): Boolean
+
+    createTag(tag: TagInput): Tag
   }
 `;
 
@@ -128,7 +142,9 @@ const resolvers = {
 
         ingredient: (_, args) => knex('ingredients').where('id', args.id).first(),
 
-        units: () => knex('units').orderBy('name')
+        units: () => knex('units').orderBy('name'),
+
+        tags: () => knex('tags').orderBy('name')
     },
 
     Ingredient: {
@@ -138,7 +154,9 @@ const resolvers = {
     },
 
     Recipe: {
-        preparations: (parent) => knex('preparations').where('recipe_id', parent.id).orderBy('step')
+        preparations: (parent) => knex('preparations').where('recipe_id', parent.id).orderBy('step'),
+
+        tags: (parent) => knex('tags').join('recipe_tags', 'tags.id', '=', 'recipe_tags.tag_id').where('recipe_tags.recipe_id', parent.id).select('tags.*')
     },
 
     Preparation: {
@@ -169,10 +187,10 @@ const resolvers = {
         createRecipe: (_, args) => knex('recipes').insert({
             name: args.recipe.name,
             portions: args.recipe.portions,
-            vegan: recipe.vegan,
-            vegetarian: recipe.vegetarian,
-            description: recipe.description,
-            source: recipe.source,
+            vegan: args.recipe.vegan,
+            vegetarian: args.recipe.vegetarian,
+            description: args.recipe.description,
+            source: args.recipe.source,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => {
@@ -189,6 +207,11 @@ const resolvers = {
                 recipe_id: recipeId
             })));
 
+            args.recipe.tags.forEach((tag) => dbProcesses.push(knex('recipe_tags').insert({
+                recipe_id: recipeId,
+                tag_id: tag.id
+            })));
+
             return Promise.all(dbProcesses).then(() => knex('recipes').where('id', recipeId).first());
         }),
 
@@ -203,8 +226,15 @@ const resolvers = {
                 description: recipe.description,
                 source: recipe.source,
                 updated_at: knex.fn.now()
-            }).where('id', recipe.id).then(() => knex('preparations').where('recipe_id', recipe.id)).then((rows) => {
+            }).where('id', recipe.id)
+            .then(() => knex('recipe_tags').del().where('recipe_id', recipe.id))
+            .then(() => knex('preparations').where('recipe_id', recipe.id)).then((rows) => {
                 var dbProcesses = [];
+
+                args.recipe.tags.forEach((tag) => dbProcesses.push(knex('recipe_tags').insert({
+                    recipe_id: recipe.id,
+                    tag_id: tag.id
+                })));
 
                 var pN = 0;
                 var pE = 0;
@@ -266,7 +296,13 @@ const resolvers = {
                 throw new GraphQLError("Unit is still in use!");
             }
             return knex('units').del().where('id', args.unit.id).then(() => true);
-        })
+        }),
+
+        createTag: (_, args) => knex('tags').insert({
+            name: args.tag.name,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now()
+        }).returning('id').then((obj) => knex('tags').where('id', obj[0].id).first())
     }
 };
 

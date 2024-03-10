@@ -5,8 +5,9 @@ import { Link } from "react-router-dom";
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
       id, name, portions, source, preparations {
-        id, step, title, amount, unit {id, name}, ingredient {id, name}, description
+        id, step, title, amount, unit {name}, ingredient {name}, description
       }
+      tags {id, name}
     }
   }`;
 
@@ -54,6 +55,8 @@ export default function Recipe() {
             <div className="row">
                 <div className="col-10">Portionen: {data.recipe.portions}</div>
             </div>
+
+            {data.recipe.tags.map((t) => (<span key={t.id}>#{t.name}</span>))}
 
             <h2>Zubereitung</h2>
 

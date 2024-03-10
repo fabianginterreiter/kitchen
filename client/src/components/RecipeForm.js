@@ -9,10 +9,17 @@ import { Loading, Error } from './Utils.js';
 const GET_DATA = gql`query GetData {
     units { id, name, description }
     ingredients {id, name }
+    tags {id, name }
   }`;
 
 const CREATE_INGREDIENT = gql`mutation CreateIngredient($name: String!) {
     createIngredient(name: $name) {
+      id, name
+    }
+  }`;
+
+const CREATE_TAG = gql`mutation CreateTag($tag: TagInput!) {
+    createTag(tag: $tag) {
       id, name
     }
   }`;
@@ -24,23 +31,25 @@ export default function RecipeForm(args) {
 
     const [units, setUnits] = useState(null);
     const [ingredients, setIngredients] = useState(null);
+    const [tags, setTags] = useState(null);
 
     const update = (update) => {
         args.onChange({ ...recipe, ...update });
     }
 
     const [createIngredient] = useMutation(CREATE_INGREDIENT);
+    const [createTag] = useMutation(CREATE_TAG);
 
     const { loading, error } = useQuery(GET_DATA, {
         onCompleted: (data) => {
             setUnits([{ value: "0", label: "" }].concat(data.units.map((unit) => ({ "value": unit.id, "label": unit.name }))));
             setIngredients([{ value: "0", label: " " }].concat(data.ingredients.map((ingredient) => ({ "value": ingredient.id, "label": ingredient.name }))));
+            setTags(data.tags);
         }
     });
 
     const changeUnit = (key, e) => {
         update({
-            ...recipe,
             preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, unit_id: parseInt(e.value) } : p))
         });
     };
@@ -49,7 +58,7 @@ export default function RecipeForm(args) {
     const changeIngredient = (key, e) => {
         if (e.__isNew__) {
             createIngredient({
-                variables: {ingredient: { name: e.label }},
+                variables: { ingredient: { name: e.label } },
                 onCompleted: (data) => {
                     setIngredients([...ingredients, { "value": data.createIngredient.id, "label": data.createIngredient.name }].sort((a, b) => a.label < b.label ? -1 : 1))
 
@@ -65,7 +74,7 @@ export default function RecipeForm(args) {
         }
     };
 
-    if (loading || units === null || ingredients === null) return <Loading />;
+    if (loading || units === null || ingredients === null || tags === null) return <Loading />;
     if (error) return <Error message={error.message} />;
 
     return (<div>
@@ -94,6 +103,24 @@ export default function RecipeForm(args) {
             <label htmlFor="source" className="form-label">Quelle:</label>
             <input name="source" id="source" className="form-control" type="text" value={recipe.source} placeholder="Quelle"
                 onChange={(e) => update({ source: e.target.value })} />
+        </div>
+
+        <div className="mb-3">
+            <Creatable
+                options={tags.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
+                value={recipe.tags.map((t) => ({ value: t.id, label: t.name }))}
+
+                onCreateOption={(e) => {
+                    createTag({
+                        variables: { tag: { name: e } },
+                        onCompleted: (data) => {
+                            setTags([...tags, data.createTag].sort((a, b) => a.name < b.name ? -1 : 1));
+                            update({ tags: [...recipe.tags, { id: data.createTag.id, name: data.createTag.name }] });
+                        }
+                    });
+                }}
+
+                onChange={(e) => update({ tags: e.map(t => ({ id: t.value, name: t.label })) })} />
         </div>
 
         <table className="table table-striped">
@@ -155,7 +182,6 @@ export default function RecipeForm(args) {
                                 })} className="dropdown-item">Add After</button></li>
                                 <li><hr className="dropdown-divider" /></li>
                                 <li><button name={`removeStep_${key}`} onClick={() => update({
-                                    ...recipe,
                                     preparations: recipe.preparations.filter((e, id) => key != id).map((e, k) => ({ ...e, step: k + 1 }))
                                 })} className="dropdown-item">Delete</button></li>
                                 <li><a className="dropdown-item" href="#">Löschen</a></li>
