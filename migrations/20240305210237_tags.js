@@ -9,17 +9,6 @@ exports.up = function (knex) {
             table.foreign('ingredient_id').references('id').inTable('ingredients').onDelete('RESTRICT');
             table.foreign('unit_id').references('id').inTable('units').onDelete('RESTRICT');
             table.foreign('recipe_id').references('id').inTable('recipes').onDelete('CASCADE');
-        })).then(() => knex.schema.createTable('categories', table => {
-            table.increments();
-            table.string('name', 50);
-            table.integer('position').unsigned();
-            table.integer('parent_id').defaultTo(0);
-            table.timestamps();
-
-            table.foreign('parent_id').references('id').inTable('categories').onDelete('SET NULL')
-        })).then(() => knex.schema.table('recipes' , table => {
-            table.integer('category_id').unsigned();
-            table.foreign('category_id').references('id').inTable('recipes').onDelete('SET NULL');
         })).then(() => knex.schema.createTable('tags', table => {
             table.increments();
             table.string('name', 50).unique();
@@ -29,6 +18,8 @@ exports.up = function (knex) {
             table.integer('tag_id');
             table.foreign('recipe_id').references('id').inTable('recipes').onDelete('CASCADE');
             table.foreign('tag_id').references('id').inTable('tags').onDelete('CASCADE');
+
+            table.unique(['recipe_id', 'tag_id']);
         }));
 };
 
@@ -40,7 +31,5 @@ exports.down = function (knex) {
     return knex.schema.table('preparations', (table) => {
         table.dropForeign('ingredient_id');
         table.dropForeign('unit_id');
-    }).table('recipes', table => {
-        table.dropColumn('category_id');
-    }).dropTableIfExists('categories').dropTableIfExists('tags').dropTableIfExists('recipe_tag');
+    }).dropTableIfExists('tags').dropTableIfExists('recipe_tags');
 };
