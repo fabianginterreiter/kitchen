@@ -10,6 +10,8 @@ import Recipes from './components/Recipes';
 import Ingredients from './components/Ingredients';
 import Ingredient from './components/Ingredient';
 import Units from './components/Units';
+import Tags from './components/Tags';
+import Tag from './components/Tag';
 import Home from './components/Home';
 
 import {
@@ -52,6 +54,13 @@ const router = createBrowserRouter([
     }, {
       path: "units",
       element: <Units />
+    },
+    {
+      path: "tags",
+      element: <Tags />
+    }, {
+      path: "tags/:tagId",
+      element: <Tag />
     }]
   },
 ]);

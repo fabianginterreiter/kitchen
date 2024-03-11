@@ -11,18 +11,33 @@ const CREATE_RECIPE = gql`mutation Mutation($recipe: RecipeInput) {
   }`;
 
 export default function RecipeCreate() {
-    const [recipe, setRecipe] = useState({ name: "", source: "", portions: 2, preparations: [] });
+    const [recipe, setRecipe] = useState({ 
+        name: "", 
+        source: "", 
+        vegan: false, 
+        vegetarian: false, 
+        portions: 2, 
+        description: '',
+        preparations: [],
+        tags: []
+     });
 
     const [createRecipe] = useMutation(CREATE_RECIPE);
 
     const navigate = useNavigate();
 
     const saveAction = () => {
+        console.log(recipe);
         createRecipe({
             variables: {
                 recipe: {
                     name: recipe.name,
                     portions: parseInt(recipe.portions),
+                    source: recipe.source,
+                    vegan: recipe.vegan,
+                    vegetarian: recipe.vegetarian,
+                    description: recipe.description,
+                    tags: recipe.tags,
                     preparations: recipe.preparations.map((p, key) => ({
                         id: p.id,
                         step: key + 1,
@@ -39,8 +54,8 @@ export default function RecipeCreate() {
         })
     }
 
-    return (<div><RecipeForm recipe={recipe} onChange={(r) => setRecipe(r)} />
+    return (<div>
+        <RecipeForm recipe={recipe} onChange={(r) => setRecipe(r)} />
         <button name="saveButton" className="btn btn-success" onClick={() => saveAction()}>Save</button>
-
     </div>);
 }

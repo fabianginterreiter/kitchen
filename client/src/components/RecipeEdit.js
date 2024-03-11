@@ -11,7 +11,7 @@ const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
       id, name, portions, source, description, vegan, vegetarian, preparations {
         id, step, title, amount, unit_id, ingredient_id, description
-      }
+      }, tags {id, name}
     }
   }`;
 
@@ -19,7 +19,7 @@ const UPDATE_RECIPE = gql`mutation UpdateRecipe($recipe: RecipeInput) {
     updateRecipe(recipe: $recipe) {
         id, name, portions, source, description, vegan, vegetarian, preparations {
           id, step, title, amount, unit_id, ingredient_id, description
-        }
+        }, tags {id, name}
       }
   }`;
 
@@ -57,6 +57,7 @@ export default function RecipeEdit() {
                     vegetarian: recipe.vegetarian,
                     description: recipe.description,
                     source: recipe.source,
+                    tags: recipe.tags.map((t) => ({id: t.id, name: t.name})),
                     preparations: recipe.preparations.map((p, k) => ({
                         id: p.id,
                         step: k+1,

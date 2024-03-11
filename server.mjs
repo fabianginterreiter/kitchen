@@ -2,6 +2,8 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 
+import { GraphQLError } from 'graphql';
+
 import Knex from 'knex';
 import express from 'express';
 import cors from 'cors';
@@ -26,6 +28,12 @@ const typeDefs = `#graphql
     usages: Int
   }
 
+  type Tag {
+    id: ID!
+    name: String!
+    recipes: [Recipe]
+  }
+
   type Recipe {
     id: ID!
     name: String!
@@ -35,6 +43,7 @@ const typeDefs = `#graphql
     vegetarian: Boolean
     description: String
     preparations: [Preparation]
+    tags: [Tag]
   }
 
   type Preparation {
@@ -49,13 +58,29 @@ const typeDefs = `#graphql
     description: String
   }
 
+  type Category {
+    id: ID!
+    name: String!
+    position: Int!
+    sub: [Category]
+  }
+
   type Query {
     recipes: [Recipe],
     recipe(id: ID!): Recipe,
 
     ingredients: [Ingredient],
     ingredient(id: ID!): Ingredient,
+
     units: [Unit],
+
+    tags: [Tag],
+    tag(id: ID!): Tag,
+  }
+
+  input TagInput {
+    id: ID,
+    name: String!
   }
 
   input PreparationInput {
@@ -76,7 +101,8 @@ const typeDefs = `#graphql
     description: String
     vegan: Boolean
     vegetarian: Boolean
-    preparations: [PreparationInput]
+    preparations: [PreparationInput],
+    tags: [TagInput]
   }
 
   input UnitInput {
@@ -85,15 +111,27 @@ const typeDefs = `#graphql
     description: String
   }
 
+  input IngredientInput {
+    id: ID,
+    name: String!
+  }
+
   type Mutation {
-    createIngredient(name: String!): Ingredient
+    createIngredient(ingredient: IngredientInput): Ingredient
+    updateIngredient(ingredient: IngredientInput): Ingredient
+    deleteIngredient(ingredient: IngredientInput): Boolean
 
     createRecipe(recipe: RecipeInput): Recipe
     updateRecipe(recipe: RecipeInput): Recipe
+    deleteRecipe(recipe: RecipeInput): Boolean
 
     createUnit(unit: UnitInput): Unit
     updateUnit(unit: UnitInput): Unit
-    deleteUnit(unit: UnitInput): String
+    deleteUnit(unit: UnitInput): Boolean
+
+    createTag(tag: TagInput): Tag
+    updateTag(tag: TagInput): Tag
+    deleteTag(tag: TagInput): Boolean
   }
 `;
 
@@ -108,7 +146,11 @@ const resolvers = {
 
         ingredient: (_, args) => knex('ingredients').where('id', args.id).first(),
 
-        units: () => knex('units').orderBy('name')
+        units: () => knex('units').orderBy('name'),
+
+        tags: () => knex('tags').orderBy('name'),
+
+        tag: (_, args) => knex('tags').where('id', args.id).first(),
     },
 
     Ingredient: {
@@ -118,7 +160,9 @@ const resolvers = {
     },
 
     Recipe: {
-        preparations: (parent) => knex('preparations').where('recipe_id', parent.id).orderBy('step')
+        preparations: (parent) => knex('preparations').where('recipe_id', parent.id).orderBy('step'),
+
+        tags: (parent) => knex('tags').join('recipe_tags', 'tags.id', '=', 'recipe_tags.tag_id').where('recipe_tags.recipe_id', parent.id).select('tags.*')
     },
 
     Preparation: {
@@ -127,20 +171,36 @@ const resolvers = {
         ingredient: (parent) => knex('ingredients').where('id', parent.ingredient_id).first()
     },
 
+    Tag: {
+        recipes: (parent) => knex('recipes').select('recipes.*').join('recipe_tags', 'recipes.id', '=', 'recipe_tags.recipe_id').where('recipe_tags.tag_id', parent.id)
+    },
+
     Mutation: {
         createIngredient: (_, args) => knex('ingredients').insert({
-            name: args.name,
+            name: args.ingredient.name,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => knex('ingredients').where('id', obj[0].id).first()),
 
+        updateIngredient: (_, args) => knex('ingredients').update({
+            name: args.ingredient.name,
+            updated_at: knex.fn.now()
+        }).where('id', args.ingredient.id).then((obj) => knex('ingredients').where('id', args.ingredient.id).first()),
+
+        deleteIngredient: (_, args) => knex('preparations').count().where('ingredient_id', args.ingredient.id).first().then((result) => {
+            if (result['count(*)'] > 0) {
+                throw new GraphQLError("Ingredient is still in use!");
+            }
+            return knex('ingredients').del().where('id', args.ingredient.id).then(() => true);
+        }),
+
         createRecipe: (_, args) => knex('recipes').insert({
             name: args.recipe.name,
             portions: args.recipe.portions,
-            vegan: recipe.vegan,
-            vegetarian: recipe.vegetarian,
-            description: recipe.description,
-            source: recipe.source,
+            vegan: args.recipe.vegan,
+            vegetarian: args.recipe.vegetarian,
+            description: args.recipe.description,
+            source: args.recipe.source,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => {
@@ -157,6 +217,11 @@ const resolvers = {
                 recipe_id: recipeId
             })));
 
+            args.recipe.tags.forEach((tag) => dbProcesses.push(knex('recipe_tags').insert({
+                recipe_id: recipeId,
+                tag_id: tag.id
+            })));
+
             return Promise.all(dbProcesses).then(() => knex('recipes').where('id', recipeId).first());
         }),
 
@@ -171,51 +236,63 @@ const resolvers = {
                 description: recipe.description,
                 source: recipe.source,
                 updated_at: knex.fn.now()
-            }).where('id', recipe.id).then(() => knex('preparations').where('recipe_id', recipe.id)).then((rows) => {
-                var dbProcesses = [];
+            }).where('id', recipe.id)
+                .then(() => knex('recipe_tags').del().where('recipe_id', recipe.id))
+                .then(() => knex('preparations').where('recipe_id', recipe.id)).then((rows) => {
+                    var dbProcesses = [];
 
-                var pN = 0;
-                var pE = 0;
-                var step = 1;
+                    args.recipe.tags.forEach((tag) => dbProcesses.push(knex('recipe_tags').insert({
+                        recipe_id: recipe.id,
+                        tag_id: tag.id
+                    })));
 
-                while (pE < rows.length || pN < recipe.preparations.length) {
-                    if (pE < rows.length && pN < recipe.preparations.length) {
-                        var p = rows[pE];
-                        var n = recipe.preparations[pN];
+                    var pN = 0;
+                    var pE = 0;
+                    var step = 1;
 
-                        dbProcesses.push(knex('preparations').update({
-                            step: step,
-                            title: n.title,
-                            description: n.description,
-                            amount: n.amount,
-                            unit_id: n.unit_id,
-                            ingredient_id: n.ingredient_id
-                        }).where('id', p.id));
+                    while (pE < rows.length || pN < recipe.preparations.length) {
+                        if (pE < rows.length && pN < recipe.preparations.length) {
+                            var p = rows[pE];
+                            var n = recipe.preparations[pN];
 
-                    } else if (pN < recipe.preparations.length && pE >= rows.length) {
-                        var n = recipe.preparations[pN];
+                            dbProcesses.push(knex('preparations').update({
+                                step: step,
+                                title: n.title,
+                                description: n.description,
+                                amount: n.amount,
+                                unit_id: (n.unit_id == 0 ? null : n.unit_id),
+                                ingredient_id: (n.ingredient_id == 0 ? null : n.ingredient_id)
+                            }).where('id', p.id));
 
-                        dbProcesses.push(knex('preparations').insert({
-                            step: step,
-                            title: n.title,
-                            description: n.description,
-                            amount: n.amount,
-                            unit_id: n.unit_id,
-                            ingredient_id: n.ingredient_id,
-                            recipe_id: recipe.id
-                        }));
-                    } else if (pN >= recipe.preparations.length && pE < rows.length) {
-                        var p = rows[pE];
+                        } else if (pN < recipe.preparations.length && pE >= rows.length) {
+                            var n = recipe.preparations[pN];
 
-                        dbProcesses.push(knex('preparations').where('id', p.id).del());
+                            dbProcesses.push(knex('preparations').insert({
+                                step: step,
+                                title: n.title,
+                                description: n.description,
+                                amount: n.amount,
+                                unit_id: (n.unit_id == 0 ? null : n.unit_id),
+                                ingredient_id: (n.ingredient_id == 0 ? null : n.ingredient_id),
+                                recipe_id: recipe.id
+                            }));
+                        } else if (pN >= recipe.preparations.length && pE < rows.length) {
+                            var p = rows[pE];
+
+                            dbProcesses.push(knex('preparations').where('id', p.id).del());
+                        }
+
+                        pE++; pN++; step++;
                     }
 
-                    pE++; pN++; step++;
-                }
-
-                return Promise.all(dbProcesses);
-            }).then(() => knex('recipes').where('id', recipe.id).first());
+                    return Promise.all(dbProcesses);
+                }).then(() => knex('recipes').where('id', recipe.id).first());
         },
+
+        deleteRecipe: (_, args) => knex('recipe_tags').del().where('recipe_id', args.recipe.id)
+            .then(() => knex('preparations').del().where('recipe_id', args.recipe.id))
+            .then(() => knex('recipes').del().where('id', args.recipe.id))
+            .then(() => true),
 
         createUnit: (_, args) => knex('units').insert({
             name: args.unit.name,
@@ -227,7 +304,26 @@ const resolvers = {
             description: args.unit.description
         }).where('id', args.unit.id).then((obj) => knex('units').where('id', args.unit.id).first()),
 
-        deleteUnit: (_, args) => knex('units').del().where('id', args.unit.id).then(() => "OK")
+        deleteUnit: (_, args) => knex('preparations').count().where('unit_id', args.unit.id).first().then((result) => {
+            if (result['count(*)'] > 0) {
+                throw new GraphQLError("Unit is still in use!");
+            }
+            return knex('units').del().where('id', args.unit.id).then(() => true);
+        }),
+
+        createTag: (_, args) => knex('tags').insert({
+            name: args.tag.name,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now()
+        }).returning('id').then((obj) => knex('tags').where('id', obj[0].id).first()),
+
+        updateTag: (_, args) => knex('tags').update({
+            name: args.tag.name,
+        }).where('id', args.tag.id).then((obj) => knex('tags').where('id', args.tag.id).first()),
+
+        deleteTag: (_, args) => knex('recipe_tags').del().where('tag_id', args.tag.id)
+            .then(() => knex('tags').del().where('id', args.tag.id))
+            .then(() => true)
     }
 };
 

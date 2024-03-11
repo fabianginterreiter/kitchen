@@ -21,6 +21,9 @@ export default function App() {
               <li className="nav-item">
                 <NavLink to={`/units`} className={({ isActive }) => ((isActive ? "active" : "") + " nav-link")} aria-current="page">Einheiten</NavLink>
               </li>
+              <li className="nav-item">
+                <NavLink to={`/tags`} className={({ isActive }) => ((isActive ? "active" : "") + " nav-link")} aria-current="page">Tags</NavLink>
+              </li>
             </ul>
           </div>
         </div>

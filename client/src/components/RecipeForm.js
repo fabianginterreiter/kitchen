@@ -9,10 +9,17 @@ import { Loading, Error } from './Utils.js';
 const GET_DATA = gql`query GetData {
     units { id, name, description }
     ingredients {id, name }
+    tags {id, name }
   }`;
 
-const CREATE_INGREDIENT = gql`mutation CreateIngredient($name: String!) {
-    createIngredient(name: $name) {
+const CREATE_INGREDIENT = gql`mutation CreateIngredient($ingredient: IngredientInput!) {
+    createIngredient(ingredient: $ingredient) {
+      id, name
+    }
+  }`;
+
+const CREATE_TAG = gql`mutation CreateTag($tag: TagInput!) {
+    createTag(tag: $tag) {
       id, name
     }
   }`;
@@ -24,48 +31,24 @@ export default function RecipeForm(args) {
 
     const [units, setUnits] = useState(null);
     const [ingredients, setIngredients] = useState(null);
+    const [tags, setTags] = useState(null);
 
     const update = (update) => {
         args.onChange({ ...recipe, ...update });
     }
 
     const [createIngredient] = useMutation(CREATE_INGREDIENT);
+    const [createTag] = useMutation(CREATE_TAG);
 
     const { loading, error } = useQuery(GET_DATA, {
         onCompleted: (data) => {
-            setUnits([{ value: "0", label: "" }].concat(data.units.map((unit) => ({ "value": unit.id, "label": unit.name }))));
-            setIngredients([{ value: "0", label: " " }].concat(data.ingredients.map((ingredient) => ({ "value": ingredient.id, "label": ingredient.name }))));
+            setUnits(data.units.map((unit) => ({ "value": unit.id, "label": unit.name })));
+            setIngredients(data.ingredients.map((ingredient) => ({ "value": ingredient.id, "label": ingredient.name })));
+            setTags(data.tags);
         }
     });
 
-    const changeUnit = (key, e) => {
-        update({
-            ...recipe,
-            preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, unit_id: parseInt(e.value) } : p))
-        });
-    };
-
-
-    const changeIngredient = (key, e) => {
-        if (e.__isNew__) {
-            createIngredient({
-                variables: { name: e.label },
-                onCompleted: (data) => {
-                    setIngredients([...ingredients, { "value": data.createIngredient.id, "label": data.createIngredient.name }].sort((a, b) => a.label < b.label ? -1 : 1))
-
-                    update({
-                        preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: parseInt(data.createIngredient.id) } : p))
-                    });
-                }
-            });
-        } else {
-            update({
-                preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: parseInt(e.value) } : p))
-            })
-        }
-    };
-
-    if (loading || units === null || ingredients === null) return <Loading />;
+    if (loading || units === null || ingredients === null || tags === null) return <Loading />;
     if (error) return <Error message={error.message} />;
 
     return (<div>
@@ -96,6 +79,22 @@ export default function RecipeForm(args) {
                 onChange={(e) => update({ source: e.target.value })} />
         </div>
 
+        <div className="mb-3">
+            <Creatable
+                options={tags.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
+                value={recipe.tags.map((t) => ({ value: t.id, label: t.name }))}
+
+                onCreateOption={(e) => createTag({
+                        variables: { tag: { name: e } },
+                        onCompleted: (data) => {
+                            setTags([...tags, data.createTag].sort((a, b) => a.name < b.name ? -1 : 1));
+                            update({ tags: [...recipe.tags, { id: data.createTag.id, name: data.createTag.name }] });
+                        }
+                    })}
+
+                onChange={(e) => update({ tags: e === null ? [] : e.map(t => ({ id: t.value, name: t.label })) })} />
+        </div>
+
         <table className="table table-striped">
             <thead>
                 <tr>
@@ -121,15 +120,33 @@ export default function RecipeForm(args) {
                         })} />
                     </td>
                     <td>
-                        <Select options={units} isDisabled={step.title}
-                            defaultValue={{ label: (units.length > 0 && step.unit_id > 0 ? units.find((u) => u.value == step.unit_id).label : "") }}
-                            onChange={(e) => changeUnit(key, e)} />
+                        <Select options={units} isDisabled={step.title} isClearable={true}
+                            value={{ label: (units.length > 0 && step.unit_id > 0 ? units.find((u) => u.value == step.unit_id).label : "") }}
+                            onChange={(e) => update({
+                                preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, unit_id: e === null ? null : parseInt(e.value) } : p))
+                            })} />
                     </td>
                     <td>
                         <Creatable isDisabled={step.title}
                             options={ingredients}
-                            defaultValue={{ label: (step.ingredient_id > 0 ? ingredients.find((u) => u.value == step.ingredient_id).label : (step.ingredient ? step.ingredient : "")) }}
-                            onChange={(e) => changeIngredient(key, e)} />
+                            isClearable={true}
+                            value={{ label: (step.ingredient_id > 0 ? ingredients.find((u) => u.value == step.ingredient_id).label : (step.ingredient ? step.ingredient : "")) }}
+                            onCreateOption={(e) => {
+                                console.log(e);
+                                createIngredient({
+                                    variables: { ingredient: { name: e } },
+                                    onCompleted: (data) => {
+                                        setIngredients([...ingredients, { "value": data.createIngredient.id, "label": data.createIngredient.name }].sort((a, b) => a.label < b.label ? -1 : 1))
+
+                                        update({
+                                            preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: parseInt(data.createIngredient.id) } : p))
+                                        });
+                                    }
+                                })
+                            }}
+                            onChange={(e) => update({
+                                preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: e === null ? null : parseInt(e.value) } : p))
+                            })} />
                     </td>
                     <td>
                         <textarea
@@ -155,7 +172,6 @@ export default function RecipeForm(args) {
                                 })} className="dropdown-item">Add After</button></li>
                                 <li><hr className="dropdown-divider" /></li>
                                 <li><button name={`removeStep_${key}`} onClick={() => update({
-                                    ...recipe,
                                     preparations: recipe.preparations.filter((e, id) => key != id).map((e, k) => ({ ...e, step: k + 1 }))
                                 })} className="dropdown-item">Delete</button></li>
                                 <li><a className="dropdown-item" href="#">Löschen</a></li>
