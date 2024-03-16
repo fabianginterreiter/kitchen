@@ -2,9 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../Utils.js';
 import { useState } from "react";
-
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import Modal from '../Modal.js';
 
 const GET_TAGS = gql`query GetTags {
     tags {
@@ -45,47 +43,36 @@ export default function Tags() {
             <h1>Zutaten</h1>
             <hr />
 
-            {tag !== null ? <Modal show={true} onHide={() => setTag(null)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Zutat {tag.id ? "bearbeiten" : "erstellen"}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <label htmlFor="formName" className="form-label">Name</label>
-                    <input id="formName" type="text" className="form-control" placeholder="Name" value={tag.name} onChange={e => setTag({ ...tag, name: e.target.value })} />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setTag(null)}>
-                        Abbrechen
-                    </Button>
-                    <Button variant="primary" onClick={() => {
-                        if (tag.id) {
-                            updateTag({
-                                variables: { tag: { id: tag.id, name: tag.name } },
-                                onCompleted: (data) => {
-                                    setTags(tags.map((u) => (u.id === data.updateTag.id) ? data.updateTag : u));
-                                    setTag(null);
-                                }
-                            })
-                        } else {
-                            createTag({
-                                variables: {
-                                    tag
-                                },
-                                onCompleted: (data) => {
-                                    setTags([...tags, data.createTag]);
-                                    setTag(null);
-                                }
-                            })
+            {tag ? <Modal visible={tag !== null} onClose={() => setTag(null)} onSave={() => {
+                if (tag.id) {
+                    updateTag({
+                        variables: { tag: { id: tag.id, name: tag.name } },
+                        onCompleted: (data) => {
+                            setTags(tags.map((u) => (u.id === data.updateTag.id) ? data.updateTag : u));
+                            setTag(null);
                         }
+                    })
+                } else {
+                    createTag({
+                        variables: {
+                            tag
+                        },
+                        onCompleted: (data) => {
+                            setTags([...tags, data.createTag]);
+                            setTag(null);
+                        }
+                    })
+                }
 
-                        setTag(null)
-                    }}>Speichern</Button>
-                </Modal.Footer>
+                setTag(null)
+            }} title={`Zutat ${tag.id ? "bearbeiten" : "erstellen"}`}>
+                <label htmlFor="formName" className="form-label">Name</label>
+                <input id="formName" type="text" placeholder="Name" value={tag.name} onChange={e => setTag({ ...tag, name: e.target.value })} />
             </Modal> : <div />}
 
-            <button className="btn btn-primary" onClick={() => setTag({ name: "" })}>Erstellen</button>
+            <button onClick={() => setTag({ name: "" })}>Erstellen</button>
 
-            <table className="table table-striped">
+            <table className="table">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -99,8 +86,8 @@ export default function Tags() {
                             <td><Link to={`/tags/${tag.id}`}>{tag.name}</Link></td>
                             <td>{tag.usages}</td>
                             <td>
-                                <button className="btn btn-primary" onClick={() => setTag(tag)}>Edit</button>&nbsp;
-                                <button className="btn btn-danger" onClick={() =>
+                                <button onClick={() => setTag(tag)}>Edit</button>&nbsp;
+                                <button onClick={() =>
                                     deleteTag({
                                         variables: {
                                             tag: { id: tag.id, name: tag.name }

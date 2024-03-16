@@ -1,9 +1,7 @@
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../Utils.js';
 import { useState } from "react";
-
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import Modal from '../Modal.js';
 
 const GET_UNITS = gql`query GetUnits {
     units {
@@ -48,44 +46,33 @@ export default function Units() {
             <h1>Einheiten</h1>
             <hr />
 
-            {unit !== null ? <Modal show={true} onHide={() => setUnit(null)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Einheit {unit.id ? "bearbeiten" : "erstellen"}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <label htmlFor="formName" className="form-label">Name</label>
-                    <input id="formName" type="text" className="form-control" placeholder="Name" value={unit.name} onChange={e => setUnit({ ...unit, name: e.target.value })} />
-                    <label htmlFor="formDescription" className="form-label">Beschreibung</label>
-                    <input id="formDescription" type="text" className="form-control" placeholder="Beschreibung" value={unit.description} onChange={e => setUnit({ ...unit, description: e.target.value })} />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setUnit(null)}>
-                        Abbrechen
-                    </Button>
-                    <Button variant="primary" onClick={() => {
-                        if (unit.id) {
-                            updateUnit({
-                                variables: { unit: { id: unit.id, name: unit.name, description: unit.description } },
-                                onCompleted: (data) => {
-                                    setUnits(units.map((u) => (u.id === data.updateUnit.id) ? data.updateUnit : u));
-                                    setUnit(null);
-                                }
-                            })
-                        } else {
-                            createUnit({
-                                variables: {
-                                    unit
-                                },
-                                onCompleted: (data) => {
-                                    setUnits([...units, data.createUnit]);
-                                    setUnit(null);
-                                }
-                            })
+            {unit ? <Modal visible={unit !== null} onClose={() => setUnit(null)} onSave={() => {
+                if (unit.id) {
+                    updateUnit({
+                        variables: { unit: { id: unit.id, name: unit.name, description: unit.description } },
+                        onCompleted: (data) => {
+                            setUnits(units.map((u) => (u.id === data.updateUnit.id) ? data.updateUnit : u));
+                            setUnit(null);
                         }
+                    })
+                } else {
+                    createUnit({
+                        variables: {
+                            unit
+                        },
+                        onCompleted: (data) => {
+                            setUnits([...units, data.createUnit]);
+                            setUnit(null);
+                        }
+                    })
+                }
 
-                        setUnit(null)
-                    }}>Speichern</Button>
-                </Modal.Footer>
+                setUnit(null)
+            }} title={`Zutat ${unit.id ? "bearbeiten" : "erstellen"}`}>
+                <label htmlFor="formName" className="form-label">Name</label>
+                <input id="formName" type="text" className="form-control" placeholder="Name" value={unit.name} onChange={e => setUnit({ ...unit, name: e.target.value })} />
+                <label htmlFor="formDescription" className="form-label">Beschreibung</label>
+                <input id="formDescription" type="text" className="form-control" placeholder="Beschreibung" value={unit.description} onChange={e => setUnit({ ...unit, description: e.target.value })} />
             </Modal> : <div />}
 
             <button className="btn btn-primary" onClick={() => setUnit({ name: "", description: "" })}>Erstellen</button>
@@ -111,10 +98,10 @@ export default function Units() {
                                             unit: { id: unit.id, name: unit.name, description: unit.description }
                                         }, onCompleted: (data) =>
                                             setUnits(units.filter((u) => u.id !== unit.id)),
-                                            onError: (error) => {
-                                                console.log(error)
-                                                alert("In USE!");
-                                            }
+                                        onError: (error) => {
+                                            console.log(error)
+                                            alert("In USE!");
+                                        }
                                     })}>Delete</button></td>
                         </tr>
                     )}
