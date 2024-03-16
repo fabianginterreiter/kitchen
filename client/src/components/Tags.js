@@ -21,7 +21,6 @@ const UPDATE_TAG = gql`mutation Mutation($tag: TagInput) {
     updateTag(tag: $tag) { id, name }
   }`;
 
-
 const DELETE_TAG = gql`mutation Mutation($tag: TagInput) {
     deleteTag(tag: $tag)
 }`;
