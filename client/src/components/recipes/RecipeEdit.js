@@ -3,8 +3,6 @@ import './Recipe.css';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { Link, useParams } from 'react-router-dom';
 import { useState } from "react";
-// https://react-select.com/
-import Select from 'react-select';
 import RecipeForm from './RecipeForm.js';
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {

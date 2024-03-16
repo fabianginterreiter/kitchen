@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Loading, Error } from './Utils.js';
+import { Loading, Error } from '../Utils.js';
 import { useState } from "react";
 
 import Button from 'react-bootstrap/Button';
@@ -35,7 +35,7 @@ export default function Ingredients() {
     const [updateIngredient] = useMutation(UPDATE_INGREDIENT);
     const [deleteIngredient] = useMutation(DELETE_INGREDIENT);
 
-    const { loading, error, data } = useQuery(GET_INGREDIENTS, {
+    const { loading, error } = useQuery(GET_INGREDIENTS, {
         onCompleted: (data) => setIngredients(data.ingredients)
     });
 

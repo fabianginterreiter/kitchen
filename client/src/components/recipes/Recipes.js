@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
-import { Loading, Error } from './Utils.js';
+import { Loading, Error } from '../Utils.js';
 import Select from 'react-select';
 
 const GET_RECIPES = gql`query GetRecipes {
@@ -23,7 +23,7 @@ export default function Recipes() {
       return false;
     }
 
-    if (filter.tags.find(id => !recipe.tags.find(t => t.id == id))) {
+    if (filter.tags.find(id => !recipe.tags.find(t => t.id === id))) {
       return false;
     }
 

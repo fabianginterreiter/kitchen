@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
-import { Loading, Error } from './Utils.js';
+import { Loading, Error } from '../Utils.js';
 
-const GET_TAG = gql`query GetTag($tagId: ID!) {
-    tag(id: $tagId) {
+const GET_INGREDIENT = gql`query GetIngredient($ingredientId: ID!) {
+    ingredient(id: $ingredientId) {
       id
       name
       recipes {
@@ -15,10 +15,10 @@ const GET_TAG = gql`query GetTag($tagId: ID!) {
   }`;
 
 export default function Ingredients() {
-  const { tagId } = useParams();
+  const { ingredientId } = useParams();
 
-  const { loading, error, data } = useQuery(GET_TAG, {
-    variables: { tagId },
+  const { loading, error, data } = useQuery(GET_INGREDIENT, {
+    variables: { ingredientId },
   });
 
   if (loading) return <Loading />;
@@ -26,9 +26,9 @@ export default function Ingredients() {
 
   return (
     <div>
-      <h1>{data.tag.name}</h1>
+      <h1>{data.ingredient.name}</h1>
       <hr />
-      {data.tag.recipes.map(recipe =>
+      {data.ingredient.recipes.map(recipe =>
         <div key={recipe.id}><Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link></div>
       )}
     </div>

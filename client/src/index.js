@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import Recipe from './components/Recipe';
-import RecipeEdit from './components/RecipeEdit';
-import RecipeCreate from './components/RecipeCreate';
-import Recipes from './components/Recipes';
-import Ingredients from './components/Ingredients';
-import Ingredient from './components/Ingredient';
-import Units from './components/Units';
-import Tags from './components/Tags';
-import Tag from './components/Tag';
+import Recipe from './components/recipes/Recipe';
+import RecipeEdit from './components/recipes/RecipeEdit';
+import RecipeCreate from './components/recipes/RecipeCreate';
+import Recipes from './components/recipes/Recipes';
+import Ingredients from './components/ingredients/Ingredients';
+import Ingredient from './components/ingredients/Ingredient';
+import Units from './components/units/Units';
+import Tags from './components/tags/Tags';
+import Tag from './components/tags/Tag';
 import Home from './components/Home';
 
 import {
@@ -19,7 +19,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 const client = new ApolloClient({
   uri: '/data/graphql',

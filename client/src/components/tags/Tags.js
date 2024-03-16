@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Loading, Error } from './Utils.js';
+import { Loading, Error } from '../Utils.js';
 import { useState } from "react";
 
 import Button from 'react-bootstrap/Button';
@@ -33,7 +33,7 @@ export default function Tags() {
     const [updateTag] = useMutation(UPDATE_TAG);
     const [deleteTag] = useMutation(DELETE_TAG);
 
-    const { loading, error, data } = useQuery(GET_TAGS, {
+    const { loading, error } = useQuery(GET_TAGS, {
         onCompleted: (data) => setTags(data.tags)
     });
 

@@ -1,6 +1,5 @@
-import { Link } from "react-router-dom";
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Loading, Error } from './Utils.js';
+import { Loading, Error } from '../Utils.js';
 import { useState } from "react";
 
 import Button from 'react-bootstrap/Button';
@@ -35,7 +34,7 @@ export default function Units() {
     const [updateUnit] = useMutation(UPDATE_UNIT);
     const [deleteUnit] = useMutation(DELETE_UNIT);
 
-    const { loading, error, data } = useQuery(GET_UNITS, {
+    const { loading, error } = useQuery(GET_UNITS, {
         onCompleted: (data) => {
             setUnits(data.units);
         }

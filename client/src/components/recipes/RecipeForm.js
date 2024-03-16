@@ -1,10 +1,8 @@
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Link, useParams } from 'react-router-dom';
-import { useState, useProps } from "react";
-// https://react-select.com/
+import { useState } from "react";
 import Select from 'react-select';
-import Creatable, { useCreatable } from 'react-select/creatable';
-import { Loading, Error } from './Utils.js';
+import Creatable from 'react-select/creatable';
+import { Loading, Error } from '../Utils.js';
 
 const GET_DATA = gql`query GetData {
     units { id, name, description }
@@ -85,12 +83,12 @@ export default function RecipeForm(args) {
                 value={recipe.tags.map((t) => ({ value: t.id, label: t.name }))}
 
                 onCreateOption={(e) => createTag({
-                        variables: { tag: { name: e } },
-                        onCompleted: (data) => {
-                            setTags([...tags, data.createTag].sort((a, b) => a.name < b.name ? -1 : 1));
-                            update({ tags: [...recipe.tags, { id: data.createTag.id, name: data.createTag.name }] });
-                        }
-                    })}
+                    variables: { tag: { name: e } },
+                    onCompleted: (data) => {
+                        setTags([...tags, data.createTag].sort((a, b) => a.name < b.name ? -1 : 1));
+                        update({ tags: [...recipe.tags, { id: data.createTag.id, name: data.createTag.name }] });
+                    }
+                })}
 
                 onChange={(e) => update({ tags: e === null ? [] : e.map(t => ({ id: t.value, name: t.label })) })} />
         </div>
@@ -121,7 +119,7 @@ export default function RecipeForm(args) {
                     </td>
                     <td>
                         <Select options={units} isDisabled={step.title} isClearable={true}
-                            value={{ label: (units.length > 0 && step.unit_id > 0 ? units.find((u) => u.value == step.unit_id).label : "") }}
+                            value={{ label: (units.length > 0 && step.unit_id > 0 ? units.find((u) => u.value === step.unit_id).label : "") }}
                             onChange={(e) => update({
                                 preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, unit_id: e === null ? null : parseInt(e.value) } : p))
                             })} />
@@ -130,7 +128,7 @@ export default function RecipeForm(args) {
                         <Creatable isDisabled={step.title}
                             options={ingredients}
                             isClearable={true}
-                            value={{ label: (step.ingredient_id > 0 ? ingredients.find((u) => u.value == step.ingredient_id).label : (step.ingredient ? step.ingredient : "")) }}
+                            value={{ label: (step.ingredient_id > 0 ? ingredients.find((u) => u.value === step.ingredient_id).label : (step.ingredient ? step.ingredient : "")) }}
                             onCreateOption={(e) => {
                                 console.log(e);
                                 createIngredient({
@@ -172,7 +170,7 @@ export default function RecipeForm(args) {
                                 })} className="dropdown-item">Add After</button></li>
                                 <li><hr className="dropdown-divider" /></li>
                                 <li><button name={`removeStep_${key}`} onClick={() => update({
-                                    preparations: recipe.preparations.filter((e, id) => key != id).map((e, k) => ({ ...e, step: k + 1 }))
+                                    preparations: recipe.preparations.filter((e, id) => key !== id).map((e, k) => ({ ...e, step: k + 1 }))
                                 })} className="dropdown-item">Delete</button></li>
                                 <li><a className="dropdown-item" href="#">Löschen</a></li>
                             </ul>
