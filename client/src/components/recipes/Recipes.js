@@ -67,7 +67,7 @@ export default function Recipes() {
         <div className="row">
           <div className="col-12">
             <Select options={data.tags.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
-              onChange={e => setFilter({ ...filter, tags: e.map(t => parseInt(t.value)) })}
+              onChange={e => setFilter({ ...filter, tags: e.map(t => t.value) })}
               isClearable={true} />
           </div>
         </div>
