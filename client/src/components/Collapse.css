@@ -1,0 +1,12 @@
+.Collapse {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.5s;
+    transition: overflow 0.5s;
+}
+
+.Collapse.visible {
+    height: auto;
+    max-height: 2000px;
+    overflow:visible;
+}

@@ -1,6 +1,7 @@
-import { Outlet, Link, NavLink } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import { useState } from "react";
 import './App.css';
+import Navigation from './components/Navigation.js';
 
 export default function App() {
   const [menu, setMenu] = useState(false);
@@ -9,19 +10,10 @@ export default function App() {
     <>
       <header id="title">
         <Link to="/recipes">Kitchen</Link>
-        <div id="menu" onClick={() => setMenu(true)}>menu</div>
+        <div id="menu" onClick={() => setMenu(true)}>☰</div>
       </header>
 
-      <nav id="nav" className={menu ? 'visible' : ''}>
-        <button onClick={() => setMenu(false)}>Close</button>
-        <ul onClick={() => setMenu(false)}>
-          <li><NavLink to={`/ingredients`} className={({ isActive }) => ((isActive ? "active" : ""))}>Zutaten</NavLink></li>
-          <li><NavLink to={`/units`} className={({ isActive }) => ((isActive ? "active" : ""))}>Einheiten</NavLink></li>
-          <li><NavLink to={`/tags`} className={({ isActive }) => ((isActive ? "active" : ""))}>Tags</NavLink></li>
-        </ul>
-      </nav>
-
-      {(menu ? <div className="fullscreen" onClick={() => setMenu(false)}/> : <span />)}
+      <Navigation visible={menu} onClose={() => setMenu(false)} />
 
       <div id="content">
         <Outlet />

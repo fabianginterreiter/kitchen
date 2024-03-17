@@ -12,6 +12,7 @@ import Ingredient from './components/ingredients/Ingredient';
 import Units from './components/units/Units';
 import Tags from './components/tags/Tags';
 import Tag from './components/tags/Tag';
+import TagRecipe from './components/tags/TagRecipe';
 import Home from './components/Home';
 
 import {
@@ -61,6 +62,9 @@ const router = createBrowserRouter([
     }, {
       path: "tags/:tagId",
       element: <Tag />
+    }, {
+      path: "tags/:tagId/recipes/:recipeId",
+      element: <TagRecipe />
     }]
   },
 ]);

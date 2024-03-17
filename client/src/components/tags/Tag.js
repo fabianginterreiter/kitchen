@@ -26,10 +26,11 @@ export default function Ingredients() {
 
   return (
     <div>
+      <div><Link to="/tags">Tags</Link></div>
       <h1>{data.tag.name}</h1>
       <hr />
       {data.tag.recipes.map(recipe =>
-        <div key={recipe.id}><Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link></div>
+        <div key={recipe.id}><Link to={`/tags/${tagId}/recipes/${recipe.id}`}>{recipe.name}</Link></div>
       )}
     </div>
   );

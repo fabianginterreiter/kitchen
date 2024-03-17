@@ -24,6 +24,13 @@ const CREATE_TAG = gql`mutation CreateTag($tag: TagInput!) {
 
 const NEW_PREPARATION = { ingredient_id: 0, unit_id: 0, amount: 0, description: "", title: false };
 
+function AutoResizeTextarea({ value, onChange }) {
+    return (<div className="AutoResizeTextarea">
+        <div>{value}</div>
+        <textarea value={value} onChange={(e) => onChange(e)} />
+    </div>)
+}
+
 export default function RecipeForm(args) {
     const recipe = args.recipe;
 
@@ -98,10 +105,10 @@ export default function RecipeForm(args) {
                 onChange={(e) => update({ tags: e === null ? [] : e.map(t => ({ id: t.value, name: t.label })) })} />
         </div>
 
-        <table className="table table-striped">
+        <table className="table preparations">
             <thead>
                 <tr>
-                    <th className="id"></th>
+                    <th className="title">Title</th>
                     <th className="amount">Menge</th>
                     <th className="unit">Einheit</th>
                     <th className="ingredient">Zutat</th>
@@ -111,25 +118,25 @@ export default function RecipeForm(args) {
             </thead>
             <tbody>
                 {recipe.preparations.map((step, key) => <tr key={`${step.id}+${step.step}+${key}`}>
-                    <td>
+                    <td className="title">
                         <input name={`title_${key}`} type="checkbox" defaultChecked={step.title}
                             onClick={(e) => update({
                                 preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, title: e.target.checked } : p))
                             })} />
                     </td>
-                    <td>
-                        <input disabled={step.title} name={`amount_${key}`} type="number" className="form-control" value={step.amount} min="0" onChange={(e) => update({
+                    <td className="amount">
+                        <input disabled={step.title} name={`amount_${key}`} type="number" value={step.amount} min="0" onChange={(e) => update({
                             preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, amount: e.target.value } : p))
                         })} />
                     </td>
-                    <td>
+                    <td className="unit">
                         <Select options={units} isDisabled={step.title} isClearable={true}
                             value={{ label: (units.length > 0 && step.unit_id ? units.find((u) => u.value === step.unit_id).label : "") }}
                             onChange={(e) => update({
                                 preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, unit_id: e === null ? null : e.value } : p))
                             })} />
                     </td>
-                    <td>
+                    <td className="ingredient">
                         <Creatable isDisabled={step.title}
                             options={ingredients}
                             isClearable={true}
@@ -151,27 +158,26 @@ export default function RecipeForm(args) {
                                 preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: e === null ? null : e.value } : p))
                             })} />
                     </td>
-                    <td>
-                        <textarea
+                    <td className="description">
+                        <AutoResizeTextarea
                             name={`description_${key}`}
                             value={step.description ? step.description : ""}
-                            className="form-control"
                             onChange={(e) => update({
                                 preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, description: e.target.value } : p))
                             })} />
                     </td>
-                    <td>
+                    <td className="options">
                         <button name={`addAfter_${key}`} onClick={() => update({
                             preparations: recipe.preparations
                                 .filter((f, k) => k <= key)
                                 .concat([{ ...NEW_PREPARATION }])
                                 .concat(recipe.preparations.filter((f, k) => k > key))
                                 .map((e, k) => ({ ...e, step: k + 1 }))
-                        })} className="dropdown-item">Add After</button>
+                        })}>Add After</button>
 
                         <button name={`removeStep_${key}`} onClick={() => update({
                             preparations: recipe.preparations.filter((e, id) => key !== id).map((e, k) => ({ ...e, step: k + 1 }))
-                        })} className="dropdown-item">Delete</button>
+                        })}>Delete</button>
                     </td>
                 </tr>)}
             </tbody>

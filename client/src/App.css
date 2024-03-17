@@ -39,7 +39,7 @@ a:hover {
 }
 
 .table>tbody>tr>td {
-  padding: 8px 16px;
+  padding: 8px;
   margin: 0;
   border-style: solid;
   border-color: #d9d9d9;
@@ -53,9 +53,7 @@ a:hover {
 
 body {
   margin: 0;
-  padding: 60px 0 0 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-
 }
 
 header#title {
@@ -66,6 +64,9 @@ header#title {
   left: 0;
   right: 0;
   z-index: 100;
+  text-align: center;
+  height: 50px;
+  padding: 5px;
 }
 
 header#title>a {
@@ -73,8 +74,6 @@ header#title>a {
   font-size: 2.5rem;
   text-decoration: none;
   font-weight: 300;
-  display: block;
-  text-align: center;
   padding: 5px;
   height: 50px;
 }
@@ -87,9 +86,11 @@ header#title>div#menu {
   bottom: 0;
   font-weight: 300;
   width: 60px;
-  background-color: red;
-  border: 1px solid black;
+  height: 60px;
   cursor: pointer;
+  font-size: 2.5em;
+  text-align: center;
+  color: #e1faf4;
 }
 
 .fullscreen {
@@ -104,26 +105,15 @@ header#title>div#menu {
   z-index: 105;
 }
 
-nav#nav {
-  position: fixed;
-  background-color: #77e6ca;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 0;
-  z-index: 110;
-  transition: width 0.2s;
-}
-
-nav#nav.visible {
-  width: 200px;
-}
-
 #content {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
   padding: 10px 5px;
 }
 
-input[type=text],
+input[type=text],input[type=number],
 textarea {
   display: block;
   width: 100%;
@@ -153,4 +143,18 @@ button {
 
 button:hover {
   background-color: #dedede;
+}
+
+.box {
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+h1 {
+  font-weight: 300;
+  font-size: 3em;
+  margin: 0 0 10px 0;
+  padding: 5px 0;
+  border-bottom: 1px solid black;
 }

@@ -1,0 +1,33 @@
+.Options {
+    position: relative;
+}
+
+.Options > .button {
+    position: relative;
+    height: 60px;
+    width: 60px;
+    font-weight: 300;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    font-size: 2.5em;
+}
+
+
+.Options > .OptionsFullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 190;
+}
+
+.Options > .menu {
+    position: absolute;
+    top: 60p;
+    width: 200px;
+    left: -140px;
+    background-color: red;
+    z-index:  200;
+}

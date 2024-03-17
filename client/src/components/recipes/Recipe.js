@@ -1,6 +1,9 @@
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { Link } from "react-router-dom";
+import {Options, Option } from './Options.js';
+import './Recipe.css';
+import './Options.css';
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
@@ -29,6 +32,10 @@ function getIngredient(step) {
     return <>{amount}{step.ingredient.name}</>
 }
 
+function Tags({ tags }) {
+    return (<ul className="Tags">{tags.map(t => (<li><Link key={t.id} to={`/tags/${t.id}`}>#{t.name}</Link></li>))}</ul>);
+}
+
 export default function Recipe() {
     const { recipeId } = useParams();
 
@@ -43,30 +50,29 @@ export default function Recipe() {
         <div>
             <h1>{data.recipe.name}</h1>
 
-            <hr />
+            <Tags tags={data.recipe.tags} />
 
-            <div className="row hideForPrinting">
-                <div className="col-12">
-                    <Link className="btn btn-primary" to={`/recipes/${recipeId}/edit`}>Bearbeiten</Link>&nbsp;
-                    <button type="button" className="btn btn-danger">Löschen</button>
-                </div>
+            <div className="options">
+                <Options>
+                    <Option><Link className="btn btn-primary" to={`/recipes/${recipeId}/edit`}>Bearbeiten</Link></Option>
+                    <Option>Löschen</Option>
+                </Options>
             </div>
 
             <div className="row">
                 <div className="col-10">Portionen: {data.recipe.portions}</div>
             </div>
 
-            {data.recipe.tags.map((t) => (<Link key={t.id} to={`/tags/${t.id}`}>#{t.name}</Link>))}
 
             <h2>Zubereitung</h2>
 
-            <table className="table table-striped" id="preparations">
+            <table className="table" id="preparations">
                 <tbody>
                     {data.recipe.preparations.map((step) => (step.title ?
                         <tr key={step.id}><td colSpan="2"><strong>{step.description}</strong></td></tr>
                         : <tr key={step.id}>
-                            <td className="col-2">{getIngredient(step)}</td>
-                            <td className="col-10">{step.description}</td>
+                            <td className="ingredients">{getIngredient(step)}</td>
+                            <td className="description">{step.description}</td>
                         </tr>))}
                 </tbody>
             </table>

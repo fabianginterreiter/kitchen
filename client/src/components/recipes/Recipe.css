@@ -1,0 +1,100 @@
+ul.Tags {
+    height: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+ul.Tags>li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline;
+}
+
+ul.Tags>li>a {
+    text-decoration: none;
+    padding: 0 5px 0 0;
+}
+
+ul.Tags>li>a:hover {
+    text-decoration: underline;
+}
+
+.ingredients {
+    width: 10%;
+}
+
+.description {
+    width: 90%;
+}
+
+table.preparations>thead>tr>th {
+    text-align: center;
+}
+
+table.preparations>thead>tr>th.title {
+    min-width: 20px;
+}
+
+table.preparations>tbody>tr>td.title {
+    text-align: center;
+}
+
+table.preparations>thead>tr>th.amount {
+    min-width: 20px;
+}
+
+table.preparations>tbody>tr>td.amount {
+    min-width: 20px;
+}
+
+table.preparations>tbody>tr>td.amount>input {
+    width: 80px;
+}
+
+table.preparations>thead>tr>th.unit {
+    min-width: 100px;
+}
+
+table.preparations>thead>tr>th.ingredient {
+    min-width: 160px;
+}
+
+table.preparations>thead>tr>th.description {
+    width: 50%;
+}
+
+table.preparations>tbody>tr>td {
+    vertical-align: top;
+}
+
+table.preparations>tbody>tr>td>textarea {
+    min-height: 100px;
+}
+
+
+div.AutoResizeTextarea {
+    position: relative;
+}
+
+div.AutoResizeTextarea>div {
+    white-space: pre-wrap;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+div.AutoResizeTextarea>textarea {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.options {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
