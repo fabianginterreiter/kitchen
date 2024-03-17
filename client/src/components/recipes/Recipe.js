@@ -71,14 +71,7 @@ export default function Recipe() {
                 </tbody>
             </table>
 
-            {(data.recipe.source != null && data.recipe.source.length > 0 ? <figure className="text-end">
-                <blockquote className="blockquote">
-                    <p>{data.recipe.source}</p>
-                </blockquote>
-                <figcaption className="blockquote-footer">
-                    <cite title="Source Title">Quelle</cite>
-                </figcaption>
-            </figure> : "")}
+            {(data.recipe.source != null && data.recipe.source.length > 0 ? <p><b>Quelle:</b> {data.recipe.source}</p> : "")}
         </div>
     );
 };
