@@ -1,8 +1,8 @@
 import './Modal.css';
 
-export default function Modal({ onClose, onSave, visible, title, children }) {
-    return (visible ? <div className="fullscreen">
-        <div className="background" onClick={() => onClose()} />
+export default function Modal({ onClose, onSave, title, children }) {
+    return (<div className="background">
+        <div className="fullscreen" onClick={() => onClose()} />
         <div className="modal">
             <header>{title}</header>
             <div className="content">{children}</div>
@@ -11,5 +11,5 @@ export default function Modal({ onClose, onSave, visible, title, children }) {
                 <button onClick={() => onSave()}>Save</button>
             </footer>
         </div>
-    </div> : <span />);
+    </div>);
 }

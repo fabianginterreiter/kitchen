@@ -15,14 +15,13 @@ export default function App() {
       <nav id="nav" className={menu ? 'visible' : ''}>
         <button onClick={() => setMenu(false)}>Close</button>
         <ul onClick={() => setMenu(false)}>
-          <li><NavLink to={`/recipes`} className={({ isActive }) => ((isActive ? "active" : ""))}>Rezepte</NavLink></li>
           <li><NavLink to={`/ingredients`} className={({ isActive }) => ((isActive ? "active" : ""))}>Zutaten</NavLink></li>
           <li><NavLink to={`/units`} className={({ isActive }) => ((isActive ? "active" : ""))}>Einheiten</NavLink></li>
           <li><NavLink to={`/tags`} className={({ isActive }) => ((isActive ? "active" : ""))}>Tags</NavLink></li>
         </ul>
       </nav>
 
-      {(menu ? <div className="fullscreen visible" onClick={() => setMenu(false)}/> : <span />)}
+      {(menu ? <div className="fullscreen" onClick={() => setMenu(false)}/> : <span />)}
 
       <div id="content">
         <Outlet />
