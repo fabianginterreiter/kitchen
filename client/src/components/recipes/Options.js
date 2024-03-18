@@ -13,7 +13,7 @@ export function Options({ children, size }) {
 
     return (<div className="Options">
         <div className={`button ` + (size === "large" ? "large" : "medium")} onClick={() => setOpen(!open)}>☰</div>
-        {(open ? <div className="menu" onClick={() => setOpen(false)}>
+        {(open ? <div className={`menu ` + (size === "large" ? "large" : "medium")} onClick={() => setOpen(false)}>
             <ul>{children}</ul>
         </div> : <span />)}
         {(open ? <div className="OptionsFullscreen" onClick={() => setOpen(false)} /> : <span />)}

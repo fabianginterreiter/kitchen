@@ -1,6 +1,6 @@
 nav#nav {
     position: fixed;
-    background-color: #77e6ca;
+    background-color: #4dc9aa;
     top: 0;
     right: 0;
     bottom: 0;
@@ -11,21 +11,24 @@ nav#nav {
   }
   
   nav#nav > header {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #2e7563;
   }
   
   nav#nav.visible {
-    width: 200px;
+    width: 300px;
   }
   
   nav#nav > header > div#close {
     font-weight: 300;
     width: 60px;
-    height: 60px;
+    height: 54px;
     cursor: pointer;
     font-size: 2.5em;
     text-align: center;
     color: #e1faf4;
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 6px;
   }
   
   nav#nav > ul {
@@ -43,10 +46,12 @@ nav#nav {
     display: block;
     padding: 10px 20px;
     text-decoration: none;
+    color: #e1faf4;
+    font-size: 1.2em;
   }
   
   nav#nav > ul >li > a:hover {
-    background-color: #4dc9aa;
+    background-color: #228c72;
     text-decoration: none;
   }
   

@@ -1,16 +1,14 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
-import { Loading, Error } from '../Utils.js';
-import Collapse from "../Collapse.js";
+import Collapse from "../../ui/Collapse.js";
 import Select from 'react-select';
+import { Loading, Error } from '../../ui/Utils.js';
 
 const GET_RECIPES = gql`query GetRecipes {
     recipes { id, name, portions, vegan, vegetarian, tags { id } }
     tags { id, name }
   }`;
-
-
 
 export default function Recipes() {
 

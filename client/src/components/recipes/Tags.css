@@ -1,0 +1,21 @@
+ul.Tags {
+    height: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+ul.Tags>li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline;
+}
+
+ul.Tags>li>a {
+    text-decoration: none;
+    padding: 0 5px 0 0;
+}
+
+ul.Tags>li>a:hover {
+    text-decoration: underline;
+}

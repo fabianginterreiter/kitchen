@@ -1,14 +1,11 @@
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Loading, Error } from '../Utils.js';
+import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
-import Modal from '../Modal.js';
+import Modal from '../../ui/Modal.js';
 
 const GET_TAGS = gql`query GetTags {
-    tags {
-      id
-      name
-    }
+    tags { id, name }
   }`;
 
 const CREATE_TAG = gql`mutation Mutation($tag: TagInput) {
@@ -40,8 +37,7 @@ export default function Tags() {
 
     return (
         <div>
-            <h1>Zutaten</h1>
-            <hr />
+            <h1>Tags</h1>
 
             {tag ? <Modal visible={tag !== null} onClose={() => setTag(null)} onSave={() => {
                 if (tag.id) {

@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Loading, Error } from '../Utils.js';
+import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
-import Modal from '../Modal.js';
+import Modal from '../../ui/Modal.js';
 
 const GET_INGREDIENTS = gql`query GetIngredients {
     ingredients {

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
-import { Loading, Error } from '../Utils.js';
+import { Loading, Error } from '../../ui/Utils.js';
 
 import Recipe from '../recipes/Recipe.js';
 

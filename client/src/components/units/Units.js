@@ -1,14 +1,10 @@
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Loading, Error } from '../Utils.js';
+import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
-import Modal from '../Modal.js';
+import Modal from '../../ui/Modal.js';
 
 const GET_UNITS = gql`query GetUnits {
-    units {
-      id
-      name
-      description
-    }
+    units {id,name,description}
   }`;
 
 const CREATE_UNIT = gql`mutation Mutation($unit: UnitInput) {
@@ -44,7 +40,6 @@ export default function Units() {
     return (
         <div className="App">
             <h1>Einheiten</h1>
-            <hr />
 
             {unit ? <Modal visible={unit !== null} onClose={() => setUnit(null)} onSave={() => {
                 if (unit.id) {
