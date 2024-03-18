@@ -2,19 +2,27 @@
     position: relative;
 }
 
-.Options > .button {
+.Options>.button {
     position: relative;
-    height: 60px;
-    width: 60px;
+    height: 30px;
+    width: 30px;
     font-weight: 300;
+    cursor: pointer;
+}
+
+.Options>.button.medium {
+    width: 30px;
+    height: 30px;
+    font-size: 1.2em;
+}
+
+.Options>.button.large {
     width: 60px;
     height: 60px;
-    cursor: pointer;
     font-size: 2.5em;
 }
 
-
-.Options > .OptionsFullscreen {
+.Options>.OptionsFullscreen {
     position: fixed;
     top: 0;
     left: 0;
@@ -23,11 +31,33 @@
     z-index: 190;
 }
 
-.Options > .menu {
+.Options>.menu {
     position: absolute;
     top: 60p;
     width: 200px;
     left: -140px;
-    background-color: red;
-    z-index:  200;
+    background-color: #4dc9aa;
+    z-index: 200;
+}
+
+.Options>.menu>ul {
+    margin: 0;
+    padding: 0;
+}
+
+.Options>.menu>ul>li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.Options>.menu>ul>li >a {
+    display: block;
+    margin:0;
+    padding: 5px 10px;
+    text-decoration: none;
+}
+
+.Options>.menu>ul>li >a:hover {
+    background-color: aquamarine;
+    text-decoration: none;
 }

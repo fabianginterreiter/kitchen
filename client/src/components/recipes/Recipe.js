@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import {Options, Option } from './Options.js';
 import './Recipe.css';
-import './Options.css';
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
@@ -52,10 +51,10 @@ export default function Recipe() {
 
             <Tags tags={data.recipe.tags} />
 
-            <div className="options">
-                <Options>
-                    <Option><Link className="btn btn-primary" to={`/recipes/${recipeId}/edit`}>Bearbeiten</Link></Option>
-                    <Option>Löschen</Option>
+            <div className="recipeOptions">
+                <Options size="large">
+                    <Option linkTo={`/recipes/${recipeId}/edit`}>Bearbeiten</Option>
+                    <Option onClick={() => alert("delete!")}>Löschen</Option>
                 </Options>
             </div>
 
@@ -63,10 +62,9 @@ export default function Recipe() {
                 <div className="col-10">Portionen: {data.recipe.portions}</div>
             </div>
 
-
             <h2>Zubereitung</h2>
 
-            <table className="table" id="preparations">
+            <table className="table">
                 <tbody>
                     {data.recipe.preparations.map((step) => (step.title ?
                         <tr key={step.id}><td colSpan="2"><strong>{step.description}</strong></td></tr>

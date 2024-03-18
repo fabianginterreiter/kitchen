@@ -3,6 +3,7 @@ import { useState } from "react";
 import Select from 'react-select';
 import Creatable from 'react-select/creatable';
 import { Loading, Error } from '../Utils.js';
+import { Options, Option } from './Options.js';
 
 const GET_DATA = gql`query GetData {
     units { id, name, description }
@@ -22,11 +23,11 @@ const CREATE_TAG = gql`mutation CreateTag($tag: TagInput!) {
     }
   }`;
 
-const NEW_PREPARATION = { ingredient_id: 0, unit_id: 0, amount: 0, description: "", title: false };
+const NEW_PREPARATION = { ingredient_id: null, unit_id: null, amount: 0, description: "", title: false };
 
 function AutoResizeTextarea({ value, onChange }) {
     return (<div className="AutoResizeTextarea">
-        <div>{value}</div>
+        <div>{value}\n</div>
         <textarea value={value} onChange={(e) => onChange(e)} />
     </div>)
 }
@@ -167,17 +168,18 @@ export default function RecipeForm(args) {
                             })} />
                     </td>
                     <td className="options">
-                        <button name={`addAfter_${key}`} onClick={() => update({
-                            preparations: recipe.preparations
-                                .filter((f, k) => k <= key)
-                                .concat([{ ...NEW_PREPARATION }])
-                                .concat(recipe.preparations.filter((f, k) => k > key))
-                                .map((e, k) => ({ ...e, step: k + 1 }))
-                        })}>Add After</button>
-
-                        <button name={`removeStep_${key}`} onClick={() => update({
-                            preparations: recipe.preparations.filter((e, id) => key !== id).map((e, k) => ({ ...e, step: k + 1 }))
-                        })}>Delete</button>
+                        <Options>
+                            <Option onClick={() => update({
+                                preparations: recipe.preparations
+                                    .filter((f, k) => k <= key)
+                                    .concat([{ ...NEW_PREPARATION }])
+                                    .concat(recipe.preparations.filter((f, k) => k > key))
+                                    .map((e, k) => ({ ...e, step: k + 1 }))
+                            })}>Add After</Option>
+                            <Option onClick={() => update({
+                                preparations: recipe.preparations.filter((e, id) => key !== id).map((e, k) => ({ ...e, step: k + 1 }))
+                            })}>Delete</Option>
+                        </Options>
                     </td>
                 </tr>)}
             </tbody>
