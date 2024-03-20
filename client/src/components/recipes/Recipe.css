@@ -1,3 +1,7 @@
+#Recipe {
+    position: relative;
+}
+
 .ingredients {
     width: 10%;
 }
@@ -56,6 +60,6 @@ table.preparations>tbody>tr>td>textarea {
 
 .recipeOptions {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: -10px;
+    right: 0px;
 }

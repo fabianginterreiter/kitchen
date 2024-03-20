@@ -5,11 +5,7 @@ import { useState } from "react";
 import Modal from '../../ui/Modal.js';
 
 const GET_INGREDIENTS = gql`query GetIngredients {
-    ingredients {
-      id
-      name
-      usages
-    }
+    ingredients { id, name, usages }
   }`;
 
 const CREATE_INGREDIENT = gql`mutation Mutation($ingredient: IngredientInput) {
@@ -43,7 +39,6 @@ export default function Ingredients() {
     return (
         <div>
             <h1>Zutaten</h1>
-            <hr />
 
             {ingredient ? <Modal visible={ingredient !== null} onClose={() => setIngredient(null)} onSave={() => {
                 if (ingredient.id) {

@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import typeDefs from './graphql/typeDefs.mjs';
 import resolvers from './graphql/resolvers.mjs';
 import exportHandler from './handlers/exportHandler.mjs';
+import importHandler from './handlers/importHandler.mjs';
 
 const server = new ApolloServer({
     typeDefs,
@@ -28,6 +29,9 @@ app.use(
 );
 
 app.get('/api/export', exportHandler);
+
+app.use(express.json());
+app.post('/api/import', importHandler);
 
 app.use(express.static('public'));
 

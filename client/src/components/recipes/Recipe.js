@@ -43,7 +43,7 @@ export default function Recipe() {
     if (error) return <Error message={error.message} />;
 
     return (
-        <div>
+        <div id="Recipe">
             <h1>{data.recipe.name}</h1>
 
             <Tags tags={data.recipe.tags} />
