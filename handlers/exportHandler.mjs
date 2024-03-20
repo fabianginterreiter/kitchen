@@ -7,6 +7,15 @@ const exportHandler = (req, res) => {
                 knex('units').then((units) => {
                     knex('preparations').orderBy('step').then((preparations) => {
                         knex('recipes').then((recipes) => {
+
+                            var today = new Date();
+                            var dd = String(today.getDate()).padStart(2, '0');
+                            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                            var yyyy = today.getFullYear();
+
+                            res.setHeader("Content-Type", "application/json");
+                            res.setHeader("Content-Disposition", "attachment; filename=\"export-" + yyyy + "-" + mm + "-" + dd + ".json\"");
+
                             res.send(recipes.map((recipe) => ({
                                 name: recipe.name,
                                 portions: recipe.portions,

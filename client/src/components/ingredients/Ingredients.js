@@ -1,17 +1,11 @@
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Loading, Error } from '../Utils.js';
+import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
-
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import Modal from '../../ui/Modal.js';
 
 const GET_INGREDIENTS = gql`query GetIngredients {
-    ingredients {
-      id
-      name
-      usages
-    }
+    ingredients { id, name, usages }
   }`;
 
 const CREATE_INGREDIENT = gql`mutation Mutation($ingredient: IngredientInput) {
@@ -45,44 +39,32 @@ export default function Ingredients() {
     return (
         <div>
             <h1>Zutaten</h1>
-            <hr />
 
-            {ingredient !== null ? <Modal show={true} onHide={() => setIngredient(null)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Zutat {ingredient.id ? "bearbeiten" : "erstellen"}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <label htmlFor="formName" className="form-label">Name</label>
-                    <input id="formName" type="text" className="form-control" placeholder="Name" value={ingredient.name} onChange={e => setIngredient({ ...ingredient, name: e.target.value })} />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setIngredient(null)}>
-                        Abbrechen
-                    </Button>
-                    <Button variant="primary" onClick={() => {
-                        if (ingredient.id) {
-                            updateIngredient({
-                                variables: { ingredient: { id: ingredient.id, name: ingredient.name } },
-                                onCompleted: (data) => {
-                                    setIngredients(ingredients.map((u) => (u.id === data.updateIngredient.id) ? data.updateIngredient : u));
-                                    setIngredient(null);
-                                }
-                            })
-                        } else {
-                            createIngredient({
-                                variables: {
-                                    ingredient
-                                },
-                                onCompleted: (data) => {
-                                    setIngredients([...ingredients, data.createIngredient]);
-                                    setIngredient(null);
-                                }
-                            })
+            {ingredient ? <Modal visible={ingredient !== null} onClose={() => setIngredient(null)} onSave={() => {
+                if (ingredient.id) {
+                    updateIngredient({
+                        variables: { ingredient: { id: ingredient.id, name: ingredient.name } },
+                        onCompleted: (data) => {
+                            setIngredients(ingredients.map((u) => (u.id === data.updateIngredient.id) ? data.updateIngredient : u));
+                            setIngredient(null);
                         }
+                    })
+                } else {
+                    createIngredient({
+                        variables: {
+                            ingredient
+                        },
+                        onCompleted: (data) => {
+                            setIngredients([...ingredients, data.createIngredient]);
+                            setIngredient(null);
+                        }
+                    })
+                }
 
-                        setIngredient(null)
-                    }}>Speichern</Button>
-                </Modal.Footer>
+                setIngredient(null)
+            }} title={`Zutat ${ingredient.id ? "bearbeiten" : "erstellen"}`}>
+                <label htmlFor="formName" className="form-label">Name</label>
+                <input id="formName" type="text" className="form-control" placeholder="Name" value={ingredient.name} onChange={e => setIngredient({ ...ingredient, name: e.target.value })} />
             </Modal> : <div />}
 
             <button className="btn btn-primary" onClick={() => setIngredient({ name: "" })}>Erstellen</button>

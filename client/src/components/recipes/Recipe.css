@@ -1,0 +1,65 @@
+#Recipe {
+    position: relative;
+}
+
+.ingredients {
+    width: 10%;
+}
+
+.description {
+    width: 90%;
+}
+
+table.preparations>thead>tr>th {
+    text-align: center;
+}
+
+table.preparations>thead>tr>th.title {
+    min-width: 20px;
+}
+
+table.preparations>tbody>tr>td.title {
+    text-align: center;
+}
+
+table.preparations>thead>tr>th.amount {
+    min-width: 20px;
+}
+
+table.preparations>tbody>tr>td.amount {
+    min-width: 20px;
+}
+
+table.preparations>tbody>tr>td.amount>input {
+    width: 80px;
+}
+
+table.preparations>thead>tr>th.unit {
+    min-width: 130px;
+}
+
+table.preparations>thead>tr>th.ingredient {
+    min-width: 160px;
+}
+
+table.preparations>thead>tr>th.description {
+    width: 50%;
+}
+
+td.description {
+    white-space: pre-wrap;
+}
+
+table.preparations>tbody>tr>td {
+    vertical-align: top;
+}
+
+table.preparations>tbody>tr>td>textarea {
+    min-height: 100px;
+}
+
+.recipeOptions {
+    position: absolute;
+    top: -10px;
+    right: 0px;
+}

@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
-import { Loading, Error } from '../Utils.js';
+import Collapse from "../../ui/Collapse.js";
 import Select from 'react-select';
+import { Loading, Error } from '../../ui/Utils.js';
 
 const GET_RECIPES = gql`query GetRecipes {
     recipes { id, name, portions, vegan, vegetarian, tags { id } }
@@ -12,6 +13,7 @@ const GET_RECIPES = gql`query GetRecipes {
 export default function Recipes() {
 
   const [filter, setFilter] = useState({ name: "", tags: [], vegan: false, vegetarian: false });
+  const [showFilter, setShowFilter] = useState(false);
 
   const { loading, error, data } = useQuery(GET_RECIPES);
 
@@ -41,45 +43,32 @@ export default function Recipes() {
   return (<div>
     <h1>Rezepte</h1>
 
-    <hr />
+    <Link to={'/recipes/create'} className="btn btn-primary">Erstellen</Link>
 
-    <div className="row">
-      <div className="col-12">
-        <Link to={'/recipes/create'} className="btn btn-primary">Erstellen</Link>
+    <div className="box">
+      <div>
+        <label htmlFor="filterByName">Filter: </label>
+        <input id="filterByName" type="search" placeholder="Search"
+          value={filter.name}
+          onChange={(e) => setFilter({ ...filter, name: e.target.value })} />
+        <button type="button" onClick={() => setShowFilter(!showFilter)}>
+          More Filter
+        </button>
       </div>
-    </div>
 
-    <div className="card card-body">
-      <div className="row">
-        <div className="col-10">
-          <label htmlFor="filterByName" className="form-label">Filter: </label>
-          <input id="filterByName" className="form-control me-2" type="search" placeholder="Search" aria-label="Search"
-            value={filter.name}
-            onChange={(e) => setFilter({ ...filter, name: e.target.value })} />
+      <Collapse visible={showFilter}>
+        <div>
+          <Select options={data.tags.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
+            onChange={e => setFilter({ ...filter, tags: e.map(t => t.value) })}
+            isClearable={true} />
         </div>
-        <div className="col-2">
-          <button className="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            More Filter
-          </button>
+        <div>
+          <input type="checkbox" defaultChecked={filter.vegan} onClick={(e) => setFilter({ ...filter, vegan: e.target.checked })} /> Vegan
         </div>
-      </div>
-      <div className="row collapse" id="collapseExample">
-        <div className="row">
-          <div className="col-12">
-            <Select options={data.tags.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
-              onChange={e => setFilter({ ...filter, tags: e.map(t => t.value) })}
-              isClearable={true} />
-          </div>
+        <div>
+          <input type="checkbox" defaultChecked={filter.vegetarian} onClick={(e) => setFilter({ ...filter, vegetarian: e.target.checked })} /> Vegetarian
         </div>
-        <div className="row">
-          <div className="col-3">
-            <input type="checkbox" defaultChecked={filter.vegan} onClick={(e) => setFilter({ ...filter, vegan: e.target.checked })} /> Vegan
-          </div>
-          <div className="col-3">
-            <input type="checkbox" defaultChecked={filter.vegetarian} onClick={(e) => setFilter({ ...filter, vegetarian: e.target.checked })} /> Vegetarian
-          </div>
-        </div>
-      </div>
+      </Collapse>
     </div>
 
     <table className="table table-striped">

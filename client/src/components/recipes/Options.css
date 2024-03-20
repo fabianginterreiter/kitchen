@@ -1,0 +1,74 @@
+.Options {
+    position: relative;
+}
+
+.Options>.button {
+    position: relative;
+    height: 30px;
+    width: 30px;
+    font-weight: 300;
+    cursor: pointer;
+}
+
+.Options>.button.medium {
+    width: 30px;
+    height: 30px;
+    font-size: 1.2em;
+}
+
+.Options>.button.large {
+    width: 60px;
+    height: 60px;
+    font-size: 2.5em;
+}
+
+.Options>.OptionsFullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 190;
+}
+
+.Options>.menu {
+    position: absolute;
+    width: 200px;
+    background-color: #4dc9aa;
+    z-index: 200;
+    border: 1px solid #2e7563;
+    border-radius: 3px;
+}
+
+.Options>.menu.medium {
+    top: 25px;
+    left: -180px;
+}
+
+.Options>.menu.large {
+    top: 50px;
+    left: -170px;
+}
+
+.Options>.menu>ul {
+    margin: 0;
+    padding: 0;
+}
+
+.Options>.menu>ul>li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.Options>.menu>ul>li >a {
+    display: block;
+    margin:0;
+    padding: 8px 10px;
+    text-decoration: none;
+    color: #e1faf4;
+}
+
+.Options>.menu>ul>li >a:hover {
+    background-color: #2e7563;
+    text-decoration: none;
+}
