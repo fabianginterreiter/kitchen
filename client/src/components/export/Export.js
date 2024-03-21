@@ -6,13 +6,10 @@ export default function Export() {
     const upload = () => {
         console.log("Uploading file...");
 
-        const formData = new FormData();
-        formData.append("file", file);
-
         // You can write the URL of your server or any other endpoint used for file upload
         fetch("/api/import", {
             method: "POST",
-            body: formData,
+            body: file,
         }).then(response => console.log(response));
     }
 
