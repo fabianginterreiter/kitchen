@@ -165,3 +165,8 @@ h2 {
   margin: 10px 0 5px 0;
   padding: 5px 0;
 }
+
+.contentVisible {
+  margin-left: 400px;
+  transition: margin-left 0.2s;
+}

@@ -7,7 +7,7 @@ import RecipeForm from './RecipeForm.js';
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
-      id, name, portions, source, description, vegan, vegetarian, preparations {
+      id, name, portions, source, description, vegan, vegetarian, category_id, preparations {
         id, step, title, amount, unit_id, ingredient_id, description
       }, tags {id, name}
     }
@@ -15,7 +15,7 @@ const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
 
 const UPDATE_RECIPE = gql`mutation UpdateRecipe($recipe: RecipeInput) {
     updateRecipe(recipe: $recipe) {
-        id, name, portions, source, description, vegan, vegetarian, preparations {
+        id, name, portions, source, description, vegan, vegetarian, category_id, preparations {
           id, step, title, amount, unit_id, ingredient_id, description
         }, tags {id, name}
       }
@@ -55,10 +55,11 @@ export default function RecipeEdit() {
                     vegetarian: recipe.vegetarian,
                     description: recipe.description,
                     source: recipe.source,
-                    tags: recipe.tags.map((t) => ({id: t.id, name: t.name})),
+                    tags: recipe.tags.map((t) => ({ id: t.id, name: t.name })),
+                    category_id: recipe.category_id,
                     preparations: recipe.preparations.map((p, k) => ({
                         id: p.id,
-                        step: k+1,
+                        step: k + 1,
                         title: p.title,
                         ingredient_id: Number(p.ingredient_id),
                         unit_id: p.unit_id,

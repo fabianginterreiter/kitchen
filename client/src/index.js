@@ -15,6 +15,7 @@ import Tags from './components/tags/Tags';
 import Tag from './components/tags/Tag';
 import TagRecipe from './components/tags/TagRecipe';
 import Export from './components/export/Export';
+import Categories from './components/categories/Categories';
 import Home from './components/Home';
 
 
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
     }, {
       path: "units",
       element: <Units />
+    },
+    {
+      path: "categories",
+      element: <Categories />
     },
     {
       path: "tags",

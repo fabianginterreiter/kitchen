@@ -10,6 +10,7 @@ const GET_DATA = gql`query GetData {
     units { id, name, description }
     ingredients {id, name }
     tags {id, name }
+    categories {id, name}
   }`;
 
 const CREATE_INGREDIENT = gql`mutation CreateIngredient($ingredient: IngredientInput!) {
@@ -34,13 +35,14 @@ export default function RecipeForm(args) {
     const [tags, setTags] = useState(null);
 
     const update = (update) => {
+        console.log(update);
         args.onChange({ ...recipe, ...update });
     }
 
     const [createIngredient] = useMutation(CREATE_INGREDIENT);
     const [createTag] = useMutation(CREATE_TAG);
 
-    const { loading, error } = useQuery(GET_DATA, {
+    const { loading, error, data } = useQuery(GET_DATA, {
         onCompleted: (data) => {
             setUnits(data.units.map((unit) => ({ "value": unit.id, "label": unit.name })));
             setIngredients(data.ingredients.map((ingredient) => ({ "value": ingredient.id, "label": ingredient.name })));
@@ -81,6 +83,13 @@ export default function RecipeForm(args) {
             <label htmlFor="source">Quelle:</label>
             <input id="source" type="text" value={recipe.source} placeholder="Quelle"
                 onChange={(e) => update({ source: e.target.value })} />
+        </div>
+
+        <div>
+            Kategorie:
+            <Select options={data.categories.map(c => ({ value: c.id, label: c.name }))} isClearable={true}
+                value={{ label: (recipe.category_id ? data.categories.find(f => f.id === recipe.category_id).name : "") }}
+                onChange={(e) => update({ category_id: (e ? e.value : null) })} />
         </div>
 
         <div>
