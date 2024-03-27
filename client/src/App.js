@@ -6,7 +6,7 @@ import Content from "./components/Content";
 
 export default function App() {
   const [menu, setMenu] = useState(false);
-  const [content, setContent] = useState(true);
+  const [content, setContent] = useState(false);
 
   return (
     <>

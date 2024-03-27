@@ -19,6 +19,10 @@ const typeDefs = `#graphql
     recipes: [Recipe]
   }
 
+  enum RecipesOrderType {
+    NAME, UPDATED, CREATED
+  }
+
   type Recipe {
     id: ID!
     name: String!

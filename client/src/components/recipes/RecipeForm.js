@@ -59,7 +59,7 @@ export default function RecipeForm(args) {
             <input name="title" id="name" type="text" value={recipe.name} placeholder="Name" onChange={(e) => update({ name: e.target.value })} />
         </div>
 
-        <div>
+        <fieldset>
             <div>
                 <label htmlFor="portions">Portions</label> <input id="portions" type="number" value={`${recipe.portions}`} onChange={(e) => update({ ...recipe, portions: parseInt(e.target.value) })} min="1" step="1" />
             </div>
@@ -70,8 +70,7 @@ export default function RecipeForm(args) {
                 <input type="checkbox" id="vegetarian" defaultChecked={recipe.vegetarian} onClick={(e) => update({ vegetarian: e.target.checked })} />
                 <label htmlFor="vegetarian">Vegetarian</label>
             </div>
-        </div>
-
+        </fieldset>
 
         <div>
             <label htmlFor="description">Beschreibung:</label>

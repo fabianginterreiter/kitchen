@@ -20,9 +20,9 @@ const resolvers = {
         tag: (_, args) => knex('tags').where('id', args.id).first(),
 
         categories: (_, args) => {
-            return knex('categories').orderBy('position').then((rows => {
+            return knex('categories').orderBy('position').select('categories.*').then((rows => {
                 if (args.includeUncategorized) {
-                    return [...rows, { id: 0, name: "Un", position: 1000 }];
+                    return [...rows, { id: 0, name: "", position: 1000 }];
                 }
 
                 return rows;
@@ -217,14 +217,17 @@ const resolvers = {
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => knex('categories').where('id', obj[0].id).first()),
 
-        updateCategory: (_, args) => knex('tags').update({
+        updateCategory: (_, args) => knex('categories').update({
             name: args.category.name,
             position: args.category.position,
             updated_at: knex.fn.now()
         }).where('id', args.category.id).then((obj) => knex('categories').where('id', args.category.id).first()),
 
-        deleteCategory: (_, args) => knex('categories').del().where('id', args.category.id)
-            .then(() => true),
+        deleteCategory: (_, args) => knex('recipes')
+            .update({ category_id: null })
+            .where('category_id', args.category.id)
+            .then(() => knex('categories').del().where('id', args.category.id)
+                .then(() => true)),
     }
 };
 
