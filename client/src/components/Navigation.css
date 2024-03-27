@@ -35,6 +35,13 @@ nav#nav {
     padding: 0;
     margin: 0;
   }
+
+  nav#nav > ul > li.header {
+    padding: 20px 0 10px 20px;
+    font-weight: 500;
+    color: #234232;
+    font-size: 1em;
+  }
   
   nav#nav > ul > li {
     list-style: none;

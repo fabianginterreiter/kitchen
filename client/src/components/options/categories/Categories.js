@@ -1,7 +1,7 @@
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Loading, Error } from '../../ui/Utils.js';
+import { Loading, Error } from '../../../ui/Utils.js';
 import { useState } from "react";
-import Modal from '../../ui/Modal.js';
+import Modal from '../../../ui/Modal.js';
 
 const GET_CATEGORIES = gql`query GetCategories {
     categories {id,name,position}

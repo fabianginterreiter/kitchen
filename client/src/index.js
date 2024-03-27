@@ -10,12 +10,12 @@ import Recipes from './components/recipes/Recipes';
 import Ingredients from './components/ingredients/Ingredients';
 import Ingredient from './components/ingredients/Ingredient';
 import IngredientRecipe from './components/ingredients/IngredientRecipe';
-import Units from './components/units/Units';
+import Units from './components/options/units/Units';
 import Tags from './components/tags/Tags';
 import Tag from './components/tags/Tag';
 import TagRecipe from './components/tags/TagRecipe';
 import Export from './components/export/Export';
-import Categories from './components/categories/Categories';
+import Categories from './components/options/categories/Categories';
 import Home from './components/Home';
 
 
@@ -60,11 +60,11 @@ const router = createBrowserRouter([
       path: "ingredients/:ingredientId/recipes/:recipeId",
       element: <IngredientRecipe />
     }, {
-      path: "units",
+      path: "options/units",
       element: <Units />
     },
     {
-      path: "categories",
+      path: "options/categories",
       element: <Categories />
     },
     {
