@@ -11,6 +11,14 @@ const typeDefs = `#graphql
     name: String!
     recipes: [Recipe]
     usages: Int
+    category_id: ID
+    category: [Category]
+  }
+
+  type IngredientsCategory {
+    id: ID!
+    name: String!
+    ingredients: [Ingredient]
   }
 
   type Tag {
@@ -69,7 +77,9 @@ const typeDefs = `#graphql
     tags: [Tag],
     tag(id: ID!): Tag,
 
-    categories(includeUncategorized: Boolean): [Category]
+    categories(includeUncategorized: Boolean): [Category],
+
+    ingredientsCategories(includeUncategorized: Boolean): [IngredientsCategory],
   }
 
   input TagInput {
@@ -109,12 +119,18 @@ const typeDefs = `#graphql
   input IngredientInput {
     id: ID,
     name: String!
+    category_id: ID
   }
 
   input CategoryInput {
     id: ID,
     name: String!
     position: Int
+  }
+
+  input IngredientsCategoryInput {
+    id: ID,
+    name: String!
   }
 
   type Mutation {
@@ -137,6 +153,10 @@ const typeDefs = `#graphql
     createCategory(category: CategoryInput): Category
     updateCategory(category: CategoryInput): Category
     deleteCategory(category: CategoryInput): Boolean
+
+    createIngredientsCategory(category: IngredientsCategoryInput): IngredientsCategory
+    updateIngredientsCategory(category: IngredientsCategoryInput): IngredientsCategory
+    deleteIngredientsCategory(category: IngredientsCategoryInput): Boolean
   }
 `;
 

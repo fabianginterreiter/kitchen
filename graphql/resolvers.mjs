@@ -19,21 +19,29 @@ const resolvers = {
 
         tag: (_, args) => knex('tags').where('id', args.id).first(),
 
-        categories: (_, args) => {
-            return knex('categories').orderBy('position').select('categories.*').then((rows => {
-                if (args.includeUncategorized) {
-                    return [...rows, { id: 0, name: "", position: 1000 }];
-                }
+        categories: (_, args) => knex('categories').orderBy('position').select('categories.*').then((rows => {
+            if (args.includeUncategorized) {
+                return [...rows, { id: 0, name: "", position: 1000 }];
+            }
 
-                return rows;
-            }));
-        }
+            return rows;
+        })),
+
+        ingredientsCategories: (_, args) => knex('ingredients_categories').orderBy('name').then((rows => {
+            if (args.includeUncategorized) {
+                return [...rows, { id: 0, name: "", position: 1000 }];
+            }
+
+            return rows;
+        }))
     },
 
     Ingredient: {
         recipes: (parent) => knex('recipes').select('recipes.*').distinct().join('preparations', 'recipes.id', '=', 'preparations.recipe_id').where('preparations.ingredient_id', parent.id).orderBy('recipes.name'),
 
         usages: (parent) => knex('preparations').where('ingredient_id', parent.id).count().first().then((r) => r['count(*)']),
+
+        category: (parent) => knex('ingredients_categories').where('id', parent.category_id).first()
     },
 
     Recipe: {
@@ -58,15 +66,21 @@ const resolvers = {
         recipes: (parent) => knex('recipes').where('category_id', (parent.id === 0 ? null : parent.id)).orderBy('name')
     },
 
+    IngredientsCategory: {
+        ingredients: (parent) => knex('ingredients').where('category_id', (parent.id === 0 ? null : parent.id)).orderBy('name')
+    },
+
     Mutation: {
         createIngredient: (_, args) => knex('ingredients').insert({
             name: args.ingredient.name,
+            category_id: args.ingredient.category_id,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => knex('ingredients').where('id', obj[0].id).first()),
 
         updateIngredient: (_, args) => knex('ingredients').update({
             name: args.ingredient.name,
+            category_id: args.ingredient.category_id,
             updated_at: knex.fn.now()
         }).where('id', args.ingredient.id).then((obj) => knex('ingredients').where('id', args.ingredient.id).first()),
 
@@ -227,6 +241,23 @@ const resolvers = {
             .update({ category_id: null })
             .where('category_id', args.category.id)
             .then(() => knex('categories').del().where('id', args.category.id)
+                .then(() => true)),
+
+        createIngredientsCategory: (_, args) => knex('ingredients_categories').insert({
+            name: args.category.name,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now()
+        }).returning('id').then((obj) => knex('ingredients_categories').where('id', obj[0].id).first()),
+
+        updateIngredientsCategory: (_, args) => knex('ingredients_categories').update({
+            name: args.category.name,
+            updated_at: knex.fn.now()
+        }).where('id', args.category.id).then((obj) => knex('ingredients_categories').where('id', args.category.id).first()),
+
+        deleteIngredientsCategory: (_, args) => knex('ingredients')
+            .update({ category_id: null })
+            .where('category_id', args.category.id)
+            .then(() => knex('ingredients_categories').del().where('id', args.category.id)
                 .then(() => true)),
     }
 };

@@ -13,6 +13,8 @@ export default function Navigation({ visible, onClose }) {
                 <li className="header">Optionen</li>
                 <li><NavLink to={`/options/units`} className={({ isActive }) => ((isActive ? "active" : ""))}>Einheiten</NavLink></li>
                 <li><NavLink to={`/options/categories`} className={({ isActive }) => ((isActive ? "active" : ""))}>Kategorien</NavLink></li>
+                <li><NavLink to={`/options/ingredients`} className={({ isActive }) => ((isActive ? "active" : ""))}>Zutaten</NavLink></li>
+                <li><NavLink to={`/options/ingredients/categories`} className={({ isActive }) => ((isActive ? "active" : ""))}>Zutaten Kategorien</NavLink></li>
                 <li><NavLink to={`/options/export`} className={({ isActive }) => ((isActive ? "active" : ""))}>Import & Export</NavLink></li>
             </ul>
         </nav>

@@ -16,7 +16,6 @@ exports.up = function (knex) {
     })).then(() => knex.schema.createTable('ingredients_categories', table => {
         table.increments();
         table.string('name', 50).unique();
-        table.integer('position');
         table.timestamps();
     })).then(() => knex.schema.alterTable('ingredients', (table) => {
         table.integer('category_id').nullable();
@@ -29,5 +28,9 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-
+    knex.dropTableIfExists('ingredients_categories').dropTableIfExists('categories').alterTable('recipes', table => {
+        table.dropColumn('category_id');
+    }).then(() => knex.alterTable('ingredients', table => {
+        table.dropColumn('category_id');
+    }));
 };
