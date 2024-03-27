@@ -73,7 +73,10 @@ export default function Categories() {
                 <input id="formName" type="text" className="form-control" placeholder="Name" value={category.name} onChange={e => setCategory({ ...category, name: e.target.value })} />
             </Modal> : <div />}
 
-            <button className="btn btn-primary" onClick={() => setCategory({ name: "", position: categories[categories.length - 1] + 1 })}>Erstellen</button>
+            <button className="btn btn-primary" onClick={() => setCategory({
+                name: "",
+                position: (categories.length === 0 ? 1 : categories[categories.length - 1].position + 1)
+            })}>Erstellen</button>
 
             <table className="table table-striped">
                 <thead>

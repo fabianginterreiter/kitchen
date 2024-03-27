@@ -93,6 +93,23 @@ header#title>div#menu {
   color: #e1faf4;
 }
 
+header#title>div#contentOfTableButton {
+  position: fixed;
+  display: block;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  font-weight: 300;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  font-size: 2.5em;
+  text-align: center;
+  color: #e1faf4;
+}
+
+
+
 .fullscreen {
   position: fixed;
   top: 0;

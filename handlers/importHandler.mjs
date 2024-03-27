@@ -6,9 +6,16 @@ export default function importHandler(req, res) {
     const tags = new Map();
     const units = new Map();
     const ingredients = new Map();
+    const categories = new Map();
+
+    var categoryPosition = 0;
 
     req.body.forEach((recipe) => {
         recipe.tags.forEach(t => tags.set(t, 0));
+
+        if (recipe.category) {
+            categories.set(recipe.category, 0);
+        }
 
         recipe.preparations.forEach((p) => {
             if (p.unit) {
@@ -24,6 +31,12 @@ export default function importHandler(req, res) {
     knex('tags').select('id', 'name').whereIn('name', Array.from(tags.keys())).then((rows) => rows.forEach((tag) => tags.set(tag.name, tag.id)))
         .then(() => knex('units').select('id', 'name').whereIn('name', Array.from(units.keys())).then((rows) => rows.forEach((unit) => units.set(unit.name, unit.id))))
         .then(() => knex('ingredients').select('id', 'name').whereIn('name', Array.from(ingredients.keys())).then((rows) => rows.forEach((ingredient) => ingredients.set(ingredient.name, ingredient.id))))
+        .then(() => knex('categories').select('id', 'name').whereIn('name', Array.from(categories.keys())).then((rows) => rows.forEach((category) => categories.set(category.name, category.id))))
+        .then(() => knex('categories').select('position').orderBy('position', 'desc').limit(1).then((rows) => {
+            if (rows.length > 0) {
+                categoryPosition = rows[0].position;
+            }
+        }))
         .then(() => {
             const jobs = [];
 
@@ -57,6 +70,17 @@ export default function importHandler(req, res) {
                 }
             });
 
+            categories.forEach((id, name) => {
+                if (id == 0) {
+                    jobs.push(knex('categories').insert({
+                        name,
+                        position: ++categoryPosition,
+                        created_at: knex.fn.now(),
+                        updated_at: knex.fn.now()
+                    }).returning('id').then((obj) => categories.set(name, obj[0].id)));
+                }
+            });
+
             return Promise.all(jobs);
         }).then(() => {
 
@@ -70,6 +94,7 @@ export default function importHandler(req, res) {
                     vegetarian: recipe.vegetarian,
                     description: recipe.description,
                     source: recipe.source,
+                    category_id: recipe.category ? categories.get(recipe.category) : null,
                     created_at: knex.fn.now(),
                     updated_at: knex.fn.now()
                 }).returning('id').then((obj) => {
@@ -93,9 +118,6 @@ export default function importHandler(req, res) {
 
                     return Promise.all(dbProcesses);
                 }));
-
-                
-
             });
 
             return Promise.all(recipesProcesses);

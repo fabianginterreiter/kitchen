@@ -12,7 +12,8 @@ export default function App() {
     <>
       <Content visible={content} onClose={() => setContent(false)} />
       <header id="title" className={content ? 'contentVisible' : ''}>
-        <a onClick={() => setContent(!content)}>Kitchen</a>
+        <div id="contentOfTableButton" onClick={() => setContent(true)}>B</div>
+        <a href="/">Kitchen</a>
         <div id="menu" onClick={() => setMenu(true)}>☰</div>
       </header>
 
