@@ -77,7 +77,7 @@ div#Content>div.con>ul>li {
     list-style: none;
 }
 
-div#Content>div.con>ul>li>a {
+div#Content>div.con>ul>li>div {
     display: block;
     font-weight: 500;
     padding: 10px 0 10px 5px;

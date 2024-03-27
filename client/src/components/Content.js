@@ -1,5 +1,5 @@
 import './Content.css';
-import { useQuery, useMutation, gql } from '@apollo/client';
+import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../ui/Utils.js';
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
@@ -34,7 +34,7 @@ export default function Content({ visible, onClose }) {
 
     const { loading, error, data } = useQuery(GET_CATEGORIES);
 
-    const isClosed = (category) => closed.find((id) => id == category.id);
+    const isClosed = (category) => closed.find((id) => id === category.id);
 
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
@@ -56,13 +56,13 @@ export default function Content({ visible, onClose }) {
                 const number = recipes.length < category.recipes.length ? `(${recipes.length} / ${category.recipes.length})` : (!open ? `(${category.recipes.length})` : "");
 
                 return <li key={category.id}>
-                    <a onClick={() => {
+                    <div onClick={() => {
                         if (!open) {
                             setClosed(closed.filter((id) => id != category.id));
                         } else {
                             setClosed([...closed, category.id]);
                         }
-                    }}>{(open ? "" : "❯ ")}{(category.id === "0" ? "Unkategorisiert" : category.name)} {number}</a>
+                    }}>{(open ? "" : "❯ ")}{(category.id === "0" ? "Unkategorisiert" : category.name)} {number}</div>
                     {(!open ? <span /> : <ul>{recipes.map((recipe) =>
                         <li key={recipe.id}><NavLink to={`/recipes/${recipe.id}`} className={({ isActive }) => ((isActive ? "active" : ""))}><BoldedText text={recipe.name} filter={filter} /></NavLink></li>
                     )}</ul>)}
