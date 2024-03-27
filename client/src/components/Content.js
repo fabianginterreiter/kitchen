@@ -2,7 +2,7 @@ import './Content.css';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../ui/Utils.js';
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const GET_CATEGORIES = gql`query GetCategories {
     categories(includeUncategorized:true) {id,name,position, recipes {id, name}}
@@ -64,7 +64,7 @@ export default function Content({ visible, onClose }) {
                         }
                     }}>{(open ? "" : "❯ ")}{(category.id === "0" ? "Unkategorisiert" : category.name)} {number}</a>
                     {(!open ? <span /> : <ul>{recipes.map((recipe) =>
-                        <li key={recipe.id}><Link to={`/recipes/${recipe.id}`}><BoldedText text={recipe.name} filter={filter} /></Link></li>
+                        <li key={recipe.id}><NavLink to={`/recipes/${recipe.id}`} className={({ isActive }) => ((isActive ? "active" : ""))}><BoldedText text={recipe.name} filter={filter} /></NavLink></li>
                     )}</ul>)}
                 </li>;
             })}
