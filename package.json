@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "nodemon server.mjs",
+    "start": "nodemon --ignore client/ server.mjs",
     "build": "rm -R public && cd client && npm run build && cd .. && mv client/build public"
   },
   "dependencies": {

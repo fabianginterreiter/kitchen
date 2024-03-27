@@ -15,6 +15,7 @@ export default function RecipeCreate() {
         vegetarian: false, 
         portions: 2, 
         description: '',
+        category: null,
         preparations: [],
         tags: []
      });
@@ -35,6 +36,7 @@ export default function RecipeCreate() {
                     vegetarian: recipe.vegetarian,
                     description: recipe.description,
                     tags: recipe.tags,
+                    category_id: recipe.category_id,
                     preparations: recipe.preparations.map((p, key) => ({
                         id: p.id,
                         step: key + 1,

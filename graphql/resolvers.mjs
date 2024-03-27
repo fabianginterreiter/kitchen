@@ -17,13 +17,31 @@ const resolvers = {
 
         tags: () => knex('tags').orderBy('name'),
 
-        tag: (_, args) => knex('tags').where('id', args.id).first()
+        tag: (_, args) => knex('tags').where('id', args.id).first(),
+
+        categories: (_, args) => knex('categories').orderBy('position').select('categories.*').then((rows => {
+            if (args.includeUncategorized) {
+                return [...rows, { id: 0, name: "", position: 1000 }];
+            }
+
+            return rows;
+        })),
+
+        ingredientsCategories: (_, args) => knex('ingredients_categories').orderBy('name').then((rows => {
+            if (args.includeUncategorized) {
+                return [...rows, { id: 0, name: "", position: 1000 }];
+            }
+
+            return rows;
+        }))
     },
 
     Ingredient: {
-        recipes: (parent) => knex('recipes').select('recipes.*').distinct().join('preparations', 'recipes.id', '=', 'preparations.recipe_id').where('preparations.ingredient_id', parent.id).orderBy('name'),
+        recipes: (parent) => knex('recipes').select('recipes.*').distinct().join('preparations', 'recipes.id', '=', 'preparations.recipe_id').where('preparations.ingredient_id', parent.id).orderBy('recipes.name'),
 
         usages: (parent) => knex('preparations').where('ingredient_id', parent.id).count().first().then((r) => r['count(*)']),
+
+        category: (parent) => knex('ingredients_categories').where('id', parent.category_id).first()
     },
 
     Recipe: {
@@ -31,7 +49,7 @@ const resolvers = {
 
         tags: (parent) => knex('tags').join('recipe_tags', 'tags.id', '=', 'recipe_tags.tag_id').where('recipe_tags.recipe_id', parent.id).select('tags.*'),
 
-        tagIds: (parent) => knex('recipe_tags').where('recipe_id',parent.id).then((tags) => tags.map((t) => t.tag_id))
+        tagIds: (parent) => knex('recipe_tags').where('recipe_id', parent.id).then((tags) => tags.map((t) => t.tag_id))
     },
 
     Preparation: {
@@ -41,18 +59,28 @@ const resolvers = {
     },
 
     Tag: {
-        recipes: (parent) => knex('recipes').select('recipes.*').join('recipe_tags', 'recipes.id', '=', 'recipe_tags.recipe_id').where('recipe_tags.tag_id', parent.id)
+        recipes: (parent) => knex('recipes').select('recipes.*').join('recipe_tags', 'recipes.id', '=', 'recipe_tags.recipe_id').where('recipe_tags.tag_id', parent.id).orderBy('recipes.name')
+    },
+
+    Category: {
+        recipes: (parent) => knex('recipes').where('category_id', (parent.id === 0 ? null : parent.id)).orderBy('name')
+    },
+
+    IngredientsCategory: {
+        ingredients: (parent) => knex('ingredients').where('category_id', (parent.id === 0 ? null : parent.id)).orderBy('name')
     },
 
     Mutation: {
         createIngredient: (_, args) => knex('ingredients').insert({
             name: args.ingredient.name,
+            category_id: args.ingredient.category_id,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => knex('ingredients').where('id', obj[0].id).first()),
 
         updateIngredient: (_, args) => knex('ingredients').update({
             name: args.ingredient.name,
+            category_id: args.ingredient.category_id,
             updated_at: knex.fn.now()
         }).where('id', args.ingredient.id).then((obj) => knex('ingredients').where('id', args.ingredient.id).first()),
 
@@ -70,6 +98,7 @@ const resolvers = {
             vegetarian: args.recipe.vegetarian,
             description: args.recipe.description,
             source: args.recipe.source,
+            category_id: args.recipe.category_id,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => {
@@ -104,6 +133,7 @@ const resolvers = {
                 vegetarian: recipe.vegetarian,
                 description: recipe.description,
                 source: recipe.source,
+                category_id: recipe.category_id,
                 updated_at: knex.fn.now()
             }).where('id', recipe.id)
                 .then(() => knex('recipe_tags').del().where('recipe_id', recipe.id))
@@ -192,7 +222,43 @@ const resolvers = {
 
         deleteTag: (_, args) => knex('recipe_tags').del().where('tag_id', args.tag.id)
             .then(() => knex('tags').del().where('id', args.tag.id))
-            .then(() => true)
+            .then(() => true),
+
+        createCategory: (_, args) => knex('categories').insert({
+            name: args.category.name,
+            position: args.category.position,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now()
+        }).returning('id').then((obj) => knex('categories').where('id', obj[0].id).first()),
+
+        updateCategory: (_, args) => knex('categories').update({
+            name: args.category.name,
+            position: args.category.position,
+            updated_at: knex.fn.now()
+        }).where('id', args.category.id).then((obj) => knex('categories').where('id', args.category.id).first()),
+
+        deleteCategory: (_, args) => knex('recipes')
+            .update({ category_id: null })
+            .where('category_id', args.category.id)
+            .then(() => knex('categories').del().where('id', args.category.id)
+                .then(() => true)),
+
+        createIngredientsCategory: (_, args) => knex('ingredients_categories').insert({
+            name: args.category.name,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now()
+        }).returning('id').then((obj) => knex('ingredients_categories').where('id', obj[0].id).first()),
+
+        updateIngredientsCategory: (_, args) => knex('ingredients_categories').update({
+            name: args.category.name,
+            updated_at: knex.fn.now()
+        }).where('id', args.category.id).then((obj) => knex('ingredients_categories').where('id', args.category.id).first()),
+
+        deleteIngredientsCategory: (_, args) => knex('ingredients')
+            .update({ category_id: null })
+            .where('category_id', args.category.id)
+            .then(() => knex('ingredients_categories').del().where('id', args.category.id)
+                .then(() => true)),
     }
 };
 
