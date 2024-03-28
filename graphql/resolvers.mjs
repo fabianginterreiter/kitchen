@@ -5,7 +5,21 @@ import knex from '../knex.mjs';
 // A map of functions which return data for the schema.
 const resolvers = {
     Query: {
-        recipes: () => knex('recipes').orderBy('name'),
+        recipes: (_, args) => {
+            var obj = knex('recipes');
+
+            if (args.sortBy) {
+                obj.orderBy(args.sortBy.field, args.sortBy.order);
+            } else {
+                obj.orderBy('name');
+            };
+
+            if (args.limit) {
+                obj.limit(args.limit);
+            }
+
+            return obj;
+        },
 
         recipe: (_, args) => knex('recipes').where('id', args.id).first(),
 

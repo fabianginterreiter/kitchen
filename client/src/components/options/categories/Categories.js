@@ -91,7 +91,7 @@ export default function Categories() {
                         <tr key={category.id}>
                             <td>{category.name} / {category.position}</td>
                             <td>
-                                <button disabled={category.position === 1} onClick={() => {
+                                <button disabled={key === 0} onClick={() => {
                                     const c1 = categories[key - 1];
                                     const c2 = category;
 

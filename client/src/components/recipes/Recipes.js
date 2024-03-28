@@ -43,7 +43,7 @@ export default function Recipes() {
   return (<div>
     <h1>Rezepte</h1>
 
-    <Link to={'/recipes/create'} className="btn btn-primary">Erstellen</Link>
+    <Link to={'/recipes/create'} className="button">Erstellen</Link>
 
     <div className="box">
       <div>

@@ -12,7 +12,7 @@ export function Options({ children, size }) {
     const [open, setOpen] = useState(false);
 
     return (<div className="Options">
-        <div className={`button ` + (size === "large" ? "large" : "medium")} onClick={() => setOpen(!open)}>☰</div>
+        <div className={'Button ' + (size === "large" ? "large" : "medium")} onClick={() => setOpen(!open)}>☰</div>
         {(open ? <div className={`menu ` + (size === "large" ? "large" : "medium")} onClick={() => setOpen(false)}>
             <ul>{children}</ul>
         </div> : <span />)}

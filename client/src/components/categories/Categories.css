@@ -1,0 +1,42 @@
+ul.categories {
+    padding: 0;
+    margin: 0;
+}
+
+ul.categories>li {
+    padding: 0;
+    margin: 0;
+
+    list-style: none;
+}
+
+ul.categories>li>div {
+    font-weight: 500;
+    padding: 5px 3px;
+    border-bottom: 1px solid #888888;
+    margin-bottom: 5px;
+    margin-top: 12px;
+}
+
+ul.categories>li>ul {
+    margin: 0;
+    padding: 0;
+}
+
+ul.categories>li>ul>li {
+    font-weight: 300;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+ul.categories>li>ul>li>a {
+    display: block;
+    padding: 8px 0 8px 15px;
+
+    text-decoration: none;
+}
+
+ul.categories>li>ul>li>a:hover {
+    background-color: green;
+}

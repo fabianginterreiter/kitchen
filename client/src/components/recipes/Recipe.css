@@ -63,3 +63,12 @@ table.preparations>tbody>tr>td>textarea {
     top: -10px;
     right: 0px;
 }
+
+.overflow {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+input.title {
+    font-size: 1.4em !important;
+}
