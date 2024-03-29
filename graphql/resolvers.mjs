@@ -63,7 +63,9 @@ const resolvers = {
 
         tags: (parent) => knex('tags').join('recipe_tags', 'tags.id', '=', 'recipe_tags.tag_id').where('recipe_tags.recipe_id', parent.id).select('tags.*'),
 
-        tagIds: (parent) => knex('recipe_tags').where('recipe_id', parent.id).then((tags) => tags.map((t) => t.tag_id))
+        tagIds: (parent) => knex('recipe_tags').where('recipe_id', parent.id).then((tags) => tags.map((t) => t.tag_id)),
+
+        ingredients: (parent) => knex('preparations').where('recipe_id', parent.id).join('ingredients', 'ingredients.id', '=', 'preparations.ingredient_id').select('ingredients.*').distinct()
     },
 
     Preparation: {

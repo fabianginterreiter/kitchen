@@ -36,7 +36,3 @@ ul.categories>li>ul>li>a {
 
     text-decoration: none;
 }
-
-ul.categories>li>ul>li>a:hover {
-    background-color: green;
-}

@@ -6,14 +6,14 @@ import Select from 'react-select';
 import { Loading, Error } from '../../ui/Utils.js';
 
 const GET_RECIPES = gql`query GetRecipes {
-    recipes { id, name, portions, vegan, vegetarian, tags { id } }
+    recipes { id, name, portions, vegan, vegetarian, tags { id }, ingredients { id } }
     tags { id, name }
+    ingredients { id, name}
   }`;
 
 export default function Recipes() {
 
-  const [filter, setFilter] = useState({ name: "", tags: [], vegan: false, vegetarian: false });
-  const [showFilter, setShowFilter] = useState(false);
+  const [filter, setFilter] = useState({ name: "", tags: [], ingredients: [], vegan: false, vegetarian: false });
 
   const { loading, error, data } = useQuery(GET_RECIPES);
 
@@ -26,6 +26,10 @@ export default function Recipes() {
     }
 
     if (filter.tags.find(id => !recipe.tags.find(t => t.id === id))) {
+      return false;
+    }
+
+    if (filter.ingredients.find(id => !recipe.ingredients.find(i => i.id === id))) {
       return false;
     }
 
@@ -43,33 +47,41 @@ export default function Recipes() {
   return (<div>
     <h1>Rezepte</h1>
 
-    <Link to={'/recipes/create'} className="button">Erstellen</Link>
+    <fieldset>
+      <legend>Suche</legend>
 
-    <div className="box">
       <div>
-        <label htmlFor="filterByName">Filter: </label>
-        <input id="filterByName" type="search" placeholder="Search"
-          value={filter.name}
-          onChange={(e) => setFilter({ ...filter, name: e.target.value })} />
-        <button type="button" onClick={() => setShowFilter(!showFilter)}>
-          More Filter
-        </button>
-      </div>
-
-      <Collapse visible={showFilter}>
+        <label htmlFor="filterByName">Name</label>
         <div>
-          <Select options={data.tags.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
+          <input id="filterByName" type="search" placeholder="Search"
+            value={filter.name}
+            onChange={(e) => setFilter({ ...filter, name: e.target.value })} /></div>
+      </div>
+      <div className="row">
+        <div className="col-50">
+          <input type="checkbox" defaultChecked={filter.vegan} onClick={(e) => setFilter({ ...filter, vegan: e.target.checked })} /> Vegan
+        </div>
+        <div className="col-50">
+          <input type="checkbox" defaultChecked={filter.vegetarian} onClick={(e) => setFilter({ ...filter, vegetarian: e.target.checked })} /> Vegetarian
+        </div>
+      </div>
+      <div>
+        <label htmlFor="tags">Tags</label>
+        <div>
+          <Select id="tags" options={data.tags.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
             onChange={e => setFilter({ ...filter, tags: e.map(t => t.value) })}
             isClearable={true} />
         </div>
-        <div>
-          <input type="checkbox" defaultChecked={filter.vegan} onClick={(e) => setFilter({ ...filter, vegan: e.target.checked })} /> Vegan
+      </div>
+      <div>
+        <label htmlFor="ingredients">Zutat</label>
+        <div id="ingredients">
+          <Select options={data.ingredients.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
+            onChange={e => setFilter({ ...filter, ingredients: e.map(t => t.value) })}
+            isClearable={true} />
         </div>
-        <div>
-          <input type="checkbox" defaultChecked={filter.vegetarian} onClick={(e) => setFilter({ ...filter, vegetarian: e.target.checked })} /> Vegetarian
-        </div>
-      </Collapse>
-    </div>
+      </div>
+    </fieldset>
 
     <table className="table table-striped">
       <thead><tr><th>Name</th></tr></thead>
@@ -81,5 +93,5 @@ export default function Recipes() {
         )}
       </tbody>
     </table>
-  </div>);
+  </div >);
 };

@@ -6,6 +6,8 @@ export default function Navigation({ visible, onClose }) {
         <nav id="nav" className={visible ? 'visible' : ''}>
             <header><div id="close" onClick={() => onClose()}>✕</div></header>
             <ul onClick={() => onClose()}>
+                <li><NavLink to={'/recipes/create'}>Erstellen</NavLink></li>
+                <li className="header"></li>
                 <li><NavLink to={`/recipes`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Rezepte</NavLink></li>
                 <li><NavLink to={`/categories`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Kategorien</NavLink></li>
                 <li><NavLink to={`/ingredients`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Zutaten</NavLink></li>
