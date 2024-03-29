@@ -14,7 +14,7 @@ body {
     margin: 1px 2px;
     cursor: pointer;
     font-weight: 300;
-    transition: background-color 0.2s;
+    transition: background-color 0.4s;
     font-size: 1.0em;
     text-decoration: none;
 }
@@ -26,13 +26,16 @@ body {
 
 .button.button-disabled, button:disabled {
     background-color: #dedede;
-    font-style: italic;
 }
 
 .button.button-disabled:hover, button:disabled:hover {
     background-color: #dedede;
     color: #212529;
     cursor:not-allowed;
+}
+
+.button.button-success, button.button-success {
+    background-color: green;
 }
 
 input[type=text],
@@ -89,7 +92,7 @@ fieldset {
 }
 
 fieldset > div {
-    margin: 5px 0;
+    margin: 8px 0;
 }
 
 fieldset > div > label {
@@ -104,6 +107,12 @@ fieldset > div > div {
 
 div.row {
     clear:both;
+}
+
+div.row:after {
+    content: '';
+    display: block;
+    clear: both;
 }
 
 div.row > div {

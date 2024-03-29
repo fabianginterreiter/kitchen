@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { Outlet } from "react-router-dom";
 
 import Recipe from './components/recipes/Recipe';
+import Cooking from './components/recipes/cooking/Cooking';
 import RecipeEdit from './components/recipes/RecipeEdit';
 import RecipeCreate from './components/recipes/RecipeCreate';
 import Recipes from './components/recipes/Recipes';
@@ -68,7 +69,6 @@ const router = createBrowserRouter([
       }]
     }, {
       path: "recipes",
-      element: <Outlet />,
       children: [{
         index: true,
         element: <Recipes />,
@@ -77,10 +77,16 @@ const router = createBrowserRouter([
         element: <RecipeCreate />
       }, {
         path: ":recipeId",
-        element: <Recipe />
-      }, {
-        path: ":recipeId/edit",
-        element: <RecipeEdit />
+        children: [{
+          index: true,
+          element: <Recipe />,
+        }, {
+          path: "edit",
+          element: <RecipeEdit />
+        }, {
+          path: "cooking",
+          element: <Cooking />
+        }]
       }]
     }, {
       path: "ingredients",
