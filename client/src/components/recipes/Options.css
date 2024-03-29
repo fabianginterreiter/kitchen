@@ -2,7 +2,7 @@
     position: relative;
 }
 
-.Options>.button {
+.Options>.Button {
     position: relative;
     height: 30px;
     width: 30px;
@@ -10,13 +10,13 @@
     cursor: pointer;
 }
 
-.Options>.button.medium {
+.Options>.Button.medium {
     width: 30px;
     height: 30px;
     font-size: 1.2em;
 }
 
-.Options>.button.large {
+.Options>.Button.large {
     width: 60px;
     height: 60px;
     font-size: 2.5em;
@@ -38,6 +38,7 @@
     z-index: 200;
     border: 1px solid #2e7563;
     border-radius: 3px;
+    box-shadow: 0 4px 4px -2px #000000;
 }
 
 .Options>.menu.medium {

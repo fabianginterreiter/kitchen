@@ -42,7 +42,7 @@ export default function Content({ visible, onClose }) {
     return (<div id="Content" className={(visible ? 'visible' : '')}>
         <header>
             <div className="searchBar">
-                <input type="search" placeholder="Filter" value={filter} onChange={(e) => setFilter(e.target.value)} />
+                <input type="search" name="contentFilter" placeholder="Filter" value={filter} onChange={(e) => setFilter(e.target.value)} />
             </div>
             <div className="close" onClick={() => onClose()}>✕</div>
         </header>

@@ -1,16 +1,14 @@
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
-import { Options, Option } from './Options.js';
-import { Loading, Error } from '../../ui/Utils.js';
-import Tags from './Tags.js';
-import './Recipe.css';
+import { Loading, Error } from '../../../ui/Utils.js';
+import './Cooking.css';
+import { useState } from "react";
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
-      id, name, portions, source, preparations {
+      id, name, portions preparations {
         id, step, title, amount, unit {name}, ingredient {name}, description
       }
-      tags {id, name}
     }
   }`;
 
@@ -32,48 +30,42 @@ function getIngredient(step) {
     return <>{amount}{step.ingredient.name}</>
 }
 
-export default function Recipe() {
+export default function Cooking() {
     const { recipeId } = useParams();
+
+    const [done, setDone] = useState([]);
 
     const { loading, error, data } = useQuery(GET_RECIPE, {
         variables: { recipeId },
     });
 
+    const isDone = (step) => done.find((k) => k === step.id);
+
+    const changeDone = (step) => {
+        if (isDone(step)) {
+            setDone(done.filter((id) => id !== step.id));
+        } else {
+            setDone([...done, step.id]);
+        }
+    }
+
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
 
     return (
-        <div id="Recipe">
+        <div id="Cooking">
             <h1>{data.recipe.name}</h1>
-
-            <Tags tags={data.recipe.tags} />
-
-            <div className="recipeOptions">
-                <Options size="large">
-                    <Option linkTo={`/recipes/${recipeId}/edit`}>Bearbeiten</Option>
-                    <Option linkTo={`/recipes/${recipeId}/cooking`}>Koch-View</Option>
-                    <Option onClick={() => alert("delete!")}>Löschen</Option>
-                </Options>
-            </div>
-
-            <div className="row">
-                <div className="col-10">Portionen: {data.recipe.portions}</div>
-            </div>
-
-            <h2>Zubereitung</h2>
 
             <table className="table">
                 <tbody>
                     {data.recipe.preparations.map((step) => (step.title ?
-                        <tr key={step.id}><td colSpan="2"><strong>{step.description}</strong></td></tr>
-                        : <tr key={step.id}>
+                        <tr key={step.id} ><td colSpan="2"><strong>{step.description}</strong></td></tr>
+                        : <tr key={step.id} className={(isDone(step) ? 'done' : '')} onClick={() => changeDone(step)}>
                             <td className="ingredients">{getIngredient(step)}</td>
                             <td className="description">{step.description}</td>
                         </tr>))}
                 </tbody>
             </table>
-
-            {(data.recipe.source != null && data.recipe.source.length > 0 ? <p><b>Quelle:</b> {data.recipe.source}</p> : "")}
         </div>
     );
 };

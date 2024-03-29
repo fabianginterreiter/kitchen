@@ -18,9 +18,9 @@ export default function Ingredients() {
         <div>
             <h1>Zutaten</h1>
             <input type="search" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Filter" />
-            <ul>
+            <ul className="categories">
                 {data.categories.map(category => <li key={category.id}>
-                    {(category.id === "0" ? "Unkategorisiert" : category.name)}
+                    <div>{(category.id === "0" ? "Unkategorisiert" : category.name)}</div>
                     <ul> {category.ingredients.filter((i) => i.name.toLowerCase().includes(filter.toLowerCase())).map(ingredient => <li key={ingredient.id}>
                         <Link to={`/ingredients/${ingredient.id}`}>{ingredient.name}</Link>
                     </li>)}</ul>

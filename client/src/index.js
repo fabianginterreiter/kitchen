@@ -2,8 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { Outlet } from "react-router-dom";
 
 import Recipe from './components/recipes/Recipe';
+import Cooking from './components/recipes/cooking/Cooking';
 import RecipeEdit from './components/recipes/RecipeEdit';
 import RecipeCreate from './components/recipes/RecipeCreate';
 import Recipes from './components/recipes/Recipes';
@@ -20,6 +22,8 @@ import OptionsExport from './components/options/export/Export';
 import OptionsCategories from './components/options/categories/Categories';
 import OptionsIngredientsCategories from './components/options/ingredients/categories/Categories';
 import Home from './components/Home';
+
+import './global.css';
 
 import {
   createBrowserRouter,
@@ -41,55 +45,76 @@ const router = createBrowserRouter([
       path: "",
       element: <Home />
     }, {
+      path: "options",
+      element: <Outlet />,
+      children: [{
+        path: "units",
+        element: <OptionsUnits />
+      }, {
+        path: "export",
+        element: <OptionsExport />
+      }, {
+        path: "ingredients",
+        element: <Outlet />,
+        children: [{
+          index: true,
+          element: <OptionsIngredients />
+        }, {
+          path: "categories",
+          element: <OptionsIngredientsCategories />
+        }]
+      }, {
+        path: "categories",
+        element: <OptionsCategories />
+      }]
+    }, {
       path: "recipes",
-      element: <Recipes />
-    }, {
-      path: "recipes/create",
-      element: <RecipeCreate />
-    }, {
-      path: "recipes/:recipeId",
-      element: <Recipe />
-    }, {
-      path: "recipes/:recipeId/edit",
-      element: <RecipeEdit />
-    }, {
-      path: "options/ingredients",
-      element: <OptionsIngredients />
+      children: [{
+        index: true,
+        element: <Recipes />,
+      }, {
+        path: "create",
+        element: <RecipeCreate />
+      }, {
+        path: ":recipeId",
+        children: [{
+          index: true,
+          element: <Recipe />,
+        }, {
+          path: "edit",
+          element: <RecipeEdit />
+        }, {
+          path: "cooking",
+          element: <Cooking />
+        }]
+      }]
     }, {
       path: "ingredients",
-      element: <Ingredients />
+      element: <Outlet />,
+      children: [{
+        index: true,
+        element: <Ingredients />
+      }, {
+        path: ":ingredientId",
+        element: <Ingredient />
+      }, {
+        path: ":ingredientId/recipes/:recipeId",
+        element: <IngredientRecipe />
+      }]
     }, {
-      path: "ingredients/:ingredientId",
-      element: <Ingredient />
-    },{
-      path: "ingredients/:ingredientId/recipes/:recipeId",
-      element: <IngredientRecipe />
-    }, {
-      path: "options/units",
-      element: <OptionsUnits />
-    },
-    {
-      path: "options/categories",
-      element: <OptionsCategories />
-    },
-    {
       path: "tags",
-      element: <Tags />
+      element: <Outlet />,
+      children: [{
+        index: true,
+        element: <Tags />
+      }, {
+        path: ":tagId",
+        element: <Tag />
+      }, {
+        path: ":tagId/recipes/:recipeId",
+        element: <TagRecipe />
+      }]
     }, {
-      path: "tags/:tagId",
-      element: <Tag />
-    }, {
-      path: "tags/:tagId/recipes/:recipeId",
-      element: <TagRecipe />
-    }, {
-      path: "options/export",
-      element: <OptionsExport />
-    },
-    {
-      path: "options/ingredients/categories",
-      element: <OptionsIngredientsCategories />
-    },
-    {
       path: "categories",
       element: <Categories />
     }]

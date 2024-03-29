@@ -8,53 +8,38 @@ const CREATE_RECIPE = gql`mutation Mutation($recipe: RecipeInput) {
   }`;
 
 export default function RecipeCreate() {
-    const [recipe, setRecipe] = useState({ 
-        name: "", 
-        source: "", 
-        vegan: false, 
-        vegetarian: false, 
-        portions: 2, 
+    const [recipe, setRecipe] = useState({
+        name: "",
+        source: "",
+        vegan: false,
+        vegetarian: false,
+        portions: 2,
         description: '',
-        category: null,
+        category_id: null,
         preparations: [],
         tags: []
-     });
+    });
 
     const [createRecipe] = useMutation(CREATE_RECIPE);
 
     const navigate = useNavigate();
 
-    const saveAction = () => {
-        console.log(recipe);
-        createRecipe({
-            variables: {
-                recipe: {
-                    name: recipe.name,
-                    portions: parseInt(recipe.portions),
-                    source: recipe.source,
-                    vegan: recipe.vegan,
-                    vegetarian: recipe.vegetarian,
-                    description: recipe.description,
-                    tags: recipe.tags,
-                    category_id: recipe.category_id,
-                    preparations: recipe.preparations.map((p, key) => ({
-                        id: p.id,
-                        step: key + 1,
-                        ingredient_id: parseInt(p.ingredient_id),
-                        unit_id: parseInt(p.unit_id),
-                        amount: Number(p.amount),
-                        description: p.description
-                    }))
-                }
-            },
-            onCompleted: (data) => {
-                navigate(`/recipes/${data.createRecipe.id}`);
-            }
-        })
-    }
-
     return (<div>
-        <RecipeForm recipe={recipe} onChange={(r) => setRecipe(r)} />
-        <button name="saveButton" className="btn btn-success" onClick={() => saveAction()}>Save</button>
+        <RecipeForm recipe={recipe} onChange={(r) => setRecipe(r)}
+            onSave={(recipe) => createRecipe({
+                variables: {
+                    recipe
+                },
+                onCompleted: (data) =>
+                    navigate(`/recipes/${data.createRecipe.id}/edit`)
+            })}
+            onSaveAndClose={(recipe) => createRecipe({
+                variables: {
+                    recipe
+                },
+                onCompleted: (data) =>
+                    navigate(`/recipes/${data.createRecipe.id}`)
+            })}
+            onClose={() => navigate('/recipes')} />
     </div>);
 }

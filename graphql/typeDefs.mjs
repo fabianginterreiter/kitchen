@@ -31,6 +31,16 @@ const typeDefs = `#graphql
     NAME, UPDATED, CREATED
   }
 
+  enum Order {
+    ASC
+    DESC
+  }
+
+  input SortBy {
+    field: String!
+    order: Order!
+  }
+
   type Recipe {
     id: ID!
     name: String!
@@ -44,6 +54,7 @@ const typeDefs = `#graphql
     tagIds: [Int]
     category: [Category]
     category_id: ID
+    ingredients: [Ingredient]
   }
 
   type Preparation {
@@ -66,7 +77,7 @@ const typeDefs = `#graphql
   }
 
   type Query {
-    recipes: [Recipe],
+    recipes(sortBy: SortBy, limit: Int): [Recipe],
     recipe(id: ID!): Recipe,
 
     ingredients: [Ingredient],
