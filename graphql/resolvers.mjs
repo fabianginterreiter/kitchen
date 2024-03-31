@@ -47,7 +47,19 @@ const resolvers = {
             }
 
             return rows;
-        }))
+        })),
+
+        lists: () => knex('lists')
+    },
+
+    List: {
+        entries: (parent) => knex('lists_recipes').where('list_id', parent.id),
+        startDate: (parent) => parent.start_date,
+        endDate: (parent) => parent.end_date
+    },
+
+    Entry: {
+        recipe: (parent) => knex('recipes').where('id', parent.recipe_id).first()
     },
 
     Ingredient: {
@@ -275,6 +287,38 @@ const resolvers = {
             .where('category_id', args.category.id)
             .then(() => knex('ingredients_categories').del().where('id', args.category.id)
                 .then(() => true)),
+
+
+        createList: (_, args) => knex('lists').insert({
+            name: args.list.name,
+            start_date: args.list.startDate,
+            end_date: args.list.endDate,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now()
+        }).returning('id').then((obj) => knex('lists').where('id', obj[0].id).first()),
+
+        updateList: (_, args) => knex('lists').update({
+            name: args.list.name,
+            start_date: args.list.startDate,
+            end_date: args.list.endDate,
+            updated_at: knex.fn.now()
+        }).where('id', args.list.id).then(() => Promise.all(args.list.entries.map((entry) => {
+            if (entry.id) {
+                return knex('lists_recipes').update({
+                    recipe_id: entry.recipe_id,
+                    portions: entry.portions,
+                    date: (entry.date ? entry.date : null)
+                }).where('id', entry.id).returning('id').then((obj) => obj[0].id);
+            } else {
+                return knex('lists_recipes').insert({
+                    list_id: args.list.id,
+                    recipe_id: entry.recipe_id,
+                    portions: entry.portions,
+                    date: (entry.date ? entry.date : null)
+                }).returning('id').then((obj) => obj[0].id);
+            }
+        }))).then((results) => knex('lists_recipes').where('id', args.list.id).whereNotIn('id', results).del())
+            .then(() => knex('lists').where('id', args.list.id).first())
     }
 };
 
