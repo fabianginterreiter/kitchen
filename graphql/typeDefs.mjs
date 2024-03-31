@@ -90,6 +90,15 @@ const typeDefs = `#graphql
     startDate: String
     endDate: String
     entries: [Entry]
+    ingredients: [ListIngredient]
+  }
+
+  type ListIngredient {
+    amount: Float!
+    unit: Unit
+    unit_id: Int
+    ingredient: Ingredient!
+    ingredient_id: Int!
   }
 
   type Query {
@@ -109,6 +118,7 @@ const typeDefs = `#graphql
     ingredientsCategories(includeUncategorized: Boolean): [IngredientsCategory],
 
     lists: [List],
+    list(id: ID!): List,
   }
 
   input EntryInput {

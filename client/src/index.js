@@ -22,6 +22,8 @@ import OptionsExport from './components/options/export/Export';
 import OptionsCategories from './components/options/categories/Categories';
 import OptionsIngredientsCategories from './components/options/ingredients/categories/Categories';
 import Home from './components/Home';
+import Lists from './components/lists/Lists';
+import List from './components/lists/List';
 
 import './global.css';
 
@@ -117,8 +119,18 @@ const router = createBrowserRouter([
     }, {
       path: "categories",
       element: <Categories />
+    }, {
+      path: "lists",
+      element: <Outlet />,
+      children: [{
+        index: true,
+        element: <Lists />
+      }, {
+        path: ":listId",
+        element: <List />
+      },]
     }]
-  },
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
