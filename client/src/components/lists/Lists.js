@@ -12,30 +12,34 @@ query Recipes {
     name
     startDate
     endDate
-    entries {
-      id
-      portions
-      recipe {
-        name
-        id
-      }
-    }
   }
 }`;
 
 
 export default function Lists() {
-    const { loading, error, data } = useQuery(GET_LISTS);
+  const { loading, error, data } = useQuery(GET_LISTS);
 
-    if (loading) return <Loading />;
-    if (error) return <Error message={error.message} />;
+  if (loading) return <Loading />;
+  if (error) return <Error message={error.message} />;
 
-    return (
-        <div>
-            <h1>Lists</h1>
-            <ul>
-                {data.lists.map((list) => <li key={list.id}><Link to={`/lists/${list.id}`}>{list.id}</Link></li>)}
-            </ul>
-        </div >
-    );
+  return (
+    <div>
+      <h1>Lists</h1>
+
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.lists.map((list) => <tr key={list.id}>
+            <td><Link to={`/lists/${list.id}`}>{list.name}</Link></td>
+            <td>{list.startDate}</td>
+            <td>{list.endDate}</td>
+          </tr>)}
+        </tbody>
+      </table>
+    </div >
+  );
 };

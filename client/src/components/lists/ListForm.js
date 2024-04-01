@@ -84,6 +84,12 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
 
             <fieldset>
                 <legend>Eigenschaften</legend>
+                <div>
+                    <input type="date" value={list.startDate ? list.startDate : ""} onChange={(e) => update({...list, startDate: e.target.value.length > 0 ? e.target.value : null })} />
+                </div>
+                <div>
+                    <input type="date" value={list.endDate ? list.endDate : ""} onChange={(e) => update({...list, endDate: e.target.value.length > 0 ? e.target.value : null })} />
+                </div>
             </fieldset>
 
             <table className="table">
