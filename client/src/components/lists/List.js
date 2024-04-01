@@ -48,6 +48,8 @@ export default function List() {
     return (<div>
         <h1>{data.list.name}</h1>
 
+        <h2>Rezepte</h2>
+
         <div className="recipeOptions">
             <Options size="large">
                 <Option linkTo={`/lists/${listId}/edit`}>Bearbeiten</Option>
@@ -58,14 +60,14 @@ export default function List() {
         <table className="table">
             <thead>
                 <tr>
-                    <th>Rezept</th>
+                    <th>Name</th>
                     <th>Datum</th>
                     <th>Portionen</th>
                 </tr>
             </thead>
             <tbody>
                 {data.list.entries.map((entry) => <tr key={entry.id}>
-                    <td><Link to={`/recipes/${entry.recipe.id}`}>{entry.recipe.name}</Link></td>
+                    <td><Link to={`/recipes/${entry.recipe.id}?portions=${entry.portions}`}>{entry.recipe.name}</Link></td>
                     <td>{entry.date}</td>
                     <td>{entry.portions}</td>
                 </tr>)}
@@ -86,7 +88,7 @@ export default function List() {
                     <tr key={c.id}><td colSpan={2}><b>{c.id === '0' ? 'Unkategorisiert' : c.name}</b></td></tr>
                     {data.list.ingredients.filter((i) => c.id === i.ingredient.category_id || (c.id === '0' && !i.ingredient.category_id)).map((i, k) => <tr key={c.id + k}>
                         <td>{Math.round(i.amount*100)/100} {i.unit && <>{i.unit.name}</>}</td>
-                        <td>{i.ingredient.name}</td>
+                        <td><Link to={`/ingredients/${i.ingredient.id}`}>{i.ingredient.name}</Link></td>
                     </tr>)}
                 </>)}
             </tbody>

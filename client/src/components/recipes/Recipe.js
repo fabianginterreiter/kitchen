@@ -1,8 +1,9 @@
 import { useQuery, gql } from '@apollo/client';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Options, Option } from './Options.js';
 import { Loading, Error } from '../../ui/Utils.js';
 import Tags from './Tags.js';
+import { useState } from "react";
 import './Recipe.css';
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
@@ -14,30 +15,43 @@ const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     }
   }`;
 
-function getIngredient(step) {
-    if (!step.ingredient) {
-        return;
-    }
 
-    var amount = "";
-
-    if (step.amount) {
-        amount = step.amount + " ";
-
-        if (step.unit) {
-            amount += step.unit.name + " ";
-        }
-    }
-
-    return <>{amount}{step.ingredient.name}</>
-}
 
 export default function Recipe() {
     const { recipeId } = useParams();
 
+    const [searchParams] = useSearchParams();
+
+    const [portions, setPortions] = useState(0);
+
     const { loading, error, data } = useQuery(GET_RECIPE, {
         variables: { recipeId },
+        onCompleted: (data) => {
+            if (searchParams.get('portions')) {
+                setPortions(parseInt(searchParams.get('portions')));
+            } else {
+                setPortions(data.recipe.portions);
+            }
+        }
     });
+
+    const getIngredient = (step) => {
+        if (!step.ingredient) {
+            return;
+        }
+
+        var amount = "";
+
+        if (step.amount) {
+            amount = (step.amount / data.recipe.portions * portions) + " ";
+
+            if (step.unit) {
+                amount += step.unit.name + " ";
+            }
+        }
+
+        return <>{amount}{step.ingredient.name}</>
+    }
 
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
@@ -57,6 +71,7 @@ export default function Recipe() {
 
         <div className="row">
             <div>Portionen: {data.recipe.portions}</div>
+            <input type="number" min="1" step="1" value={portions} onChange={(e) => setPortions(parseInt(e.target.value))} />
         </div>
 
         <h2>Zubereitung</h2>

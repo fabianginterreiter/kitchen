@@ -47,12 +47,18 @@ export default function List() {
         };
 
         if (searchParams.get('template') === "week") {
-            
-            const startDate = new Date(searchParams.get('startDate'));
+            let startDate = null;
+            if (searchParams.get('startDate')) {
+                startDate = new Date(searchParams.get('startDate'));
+            } else {
+                let today = new Date();
+                today.setDate(today.getDate() + 7 - today.getDay() + 1);
+                startDate = today;
+            }
 
             result.name = "Wochenplan " + startDate.getFullYear() + " KW " + getDateWeek(startDate);
 
-            const endDate = new Date(startDate);
+            let endDate = new Date(startDate);
             endDate.setDate(endDate.getDate() + 7);
 
             result.startDate = parseDate(startDate);

@@ -35,7 +35,7 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
             name: list.name,
             startDate: list.startDate,
             endDate: list.endDate,
-            entries: list.entries.map((entry) => ({
+            entries: list.entries.filter((entry) => entry.recipe_id).map((entry) => ({
                 id: entry.id,
                 recipe_id: entry.recipe_id,
                 portions: entry.portions,
@@ -85,18 +85,18 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
             <fieldset>
                 <legend>Eigenschaften</legend>
                 <div>
-                    <input type="date" value={list.startDate ? list.startDate : ""} onChange={(e) => update({...list, startDate: e.target.value.length > 0 ? e.target.value : null })} />
+                    <input type="date" value={list.startDate ? list.startDate : ""} onChange={(e) => update({ ...list, startDate: e.target.value.length > 0 ? e.target.value : null })} />
                 </div>
                 <div>
-                    <input type="date" value={list.endDate ? list.endDate : ""} onChange={(e) => update({...list, endDate: e.target.value.length > 0 ? e.target.value : null })} />
+                    <input type="date" value={list.endDate ? list.endDate : ""} onChange={(e) => update({ ...list, endDate: e.target.value.length > 0 ? e.target.value : null })} />
                 </div>
             </fieldset>
 
             <table className="table">
                 <thead>
                     <tr>
-                        <th>Rezept</th>
                         <th>Datum</th>
+                        <th>Rezept</th>
                         <th>Portionen</th>
                     </tr>
                 </thead>

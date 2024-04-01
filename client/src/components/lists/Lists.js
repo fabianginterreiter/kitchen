@@ -3,6 +3,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
 import Modal from '../../ui/Modal.js';
+import { Options, Option } from '../recipes/Options.js';
 
 const GET_LISTS = gql`
 query Recipes {
@@ -25,6 +26,13 @@ export default function Lists() {
   return (
     <div>
       <h1>Lists</h1>
+
+      <div className="recipeOptions">
+        <Options size="large">
+          <Option linkTo={`/lists/create`}>Neue Liste</Option>
+          <Option linkTo={`/lists/create?template=week`}>Neuer Wochenplan</Option>
+        </Options>
+      </div>
 
       <table className="table">
         <thead>
