@@ -7,7 +7,7 @@ import { Options, Option } from '../recipes/Options.js';
 
 const GET_LIST = gql`
 query getData {
-  recipes { id, name }
+  recipes { id, name, portions }
 }`;
 
 
@@ -18,7 +18,7 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
 
     const { loading, error } = useQuery(GET_LIST, {
         onCompleted: (data) => {
-            setRecipes(data.recipes.map((recipe) => ({ value: recipe.id, label: recipe.name })));
+            setRecipes(data.recipes.map((recipe) => ({ value: recipe.id, label: recipe.name, portions: recipe.portions })));
         }
     });
 
@@ -42,6 +42,28 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
                 date: entry.date
             }))
         });
+    }
+
+    const getDayName = (day) => {
+        switch (day) {
+            case 0: return 'Sonntag';
+            case 1: return 'Montag';
+            case 2: return 'Dienstag';
+            case 3: return 'Mittwoch';
+            case 4: return 'Donnerstag';
+            case 5: return 'Freitag';
+            case 6: return 'Samstag';
+            default: return '???';
+        }
+    }
+
+    const getWorkday = (date) => {
+        if (!date) {
+            return <span />
+        }
+        const day = new Date(date).getDay();
+
+        return <span>{getDayName(day)}</span>;
     }
 
     return (
@@ -74,12 +96,14 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
                 </thead>
                 <tbody>
                     {list.entries.map((entry, key) => <tr key={key}>
-                        <td><input type="date" value={entry.date ? entry.date : ""} onChange={(e) => update({
-                            entries: list.entries.map((en, k) => (k === key ? {
-                                ...en,
-                                date: e.target.value.length > 0 ? e.target.value : null
-                            } : en))
-                        })} /></td>
+                        <td>
+                            {getWorkday(entry.date)}
+                            <input type="date" value={entry.date ? entry.date : ""} onChange={(e) => update({
+                                entries: list.entries.map((en, k) => (k === key ? {
+                                    ...en,
+                                    date: e.target.value.length > 0 ? e.target.value : null
+                                } : en))
+                            })} /></td>
                         <td>
                             <Select
                                 value={entry.recipe_id ? recipes.find((r) => r.value === entry.recipe_id) : null}
@@ -87,7 +111,8 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
                                 onChange={(e) => update({
                                     entries: list.entries.map((en, k) => (k === key ? {
                                         ...en,
-                                        recipe_id: e.value
+                                        recipe_id: e.value,
+                                        portions: e.portions
                                     } : en))
                                 })} />
                         </td>
