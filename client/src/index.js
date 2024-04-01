@@ -24,6 +24,8 @@ import OptionsIngredientsCategories from './components/options/ingredients/categ
 import Home from './components/Home';
 import Lists from './components/lists/Lists';
 import List from './components/lists/List';
+import ListCreate from './components/lists/ListCreate';
+import ListEdit from './components/lists/ListEdit';
 
 import './global.css';
 
@@ -125,9 +127,15 @@ const router = createBrowserRouter([
       children: [{
         index: true,
         element: <Lists />
-      }, {
+      },
+      {path: "create", element: <ListCreate />},
+      
+      {
         path: ":listId",
-        element: <List />
+        children: [
+          { index: true, element: <List /> },
+          { path: "edit", element: <ListEdit /> }
+        ]
       },]
     }]
   }

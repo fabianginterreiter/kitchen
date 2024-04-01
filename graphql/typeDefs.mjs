@@ -12,7 +12,7 @@ const typeDefs = `#graphql
     recipes: [Recipe]
     usages: Int
     category_id: ID
-    category: [Category]
+    category: Category
   }
 
   type IngredientsCategory {

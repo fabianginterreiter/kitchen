@@ -61,6 +61,8 @@ const resolvers = {
 
         ingredients: (parent) => knex(knex('lists_recipes')
             .join('preparations', 'lists_recipes.recipe_id', '=', 'preparations.recipe_id')
+            .where('lists_recipes.list_id', parent.id)
+            .where('preparations.amount', '>', 0)
             .join('recipes', 'lists_recipes.recipe_id', '=', 'recipes.id')
             .select(knex.raw('preparations.amount / recipes.portions * lists_recipes.portions as amount'), 'preparations.unit_id', 'preparations.ingredient_id'))
             .groupBy('unit_id', 'ingredient_id')
@@ -310,7 +312,12 @@ const resolvers = {
             end_date: args.list.endDate,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
-        }).returning('id').then((obj) => knex('lists').where('id', obj[0].id).first()),
+        }).returning('id').then((obj) => Promise.all(args.list.entries.map((entry) => knex('lists_recipes').insert({
+            list_id: obj[0].id,
+            recipe_id: entry.recipe_id,
+            portions: entry.portions,
+            date: (entry.date ? entry.date : null)
+        }))).then(() => knex('lists').where('id', obj[0].id).first())),
 
         updateList: (_, args) => knex('lists').update({
             name: args.list.name,
@@ -332,7 +339,8 @@ const resolvers = {
                     date: (entry.date ? entry.date : null)
                 }).returning('id').then((obj) => obj[0].id);
             }
-        }))).then((results) => knex('lists_recipes').where('id', args.list.id).whereNotIn('id', results).del())
+        })))
+            .then((results) => knex('lists_recipes').where('list_id', args.list.id).whereNotIn('id', results).del())
             .then(() => knex('lists').where('id', args.list.id).first()),
 
         deleteList: (_, args) => knex('lists_recipes').where('list_id', args.list.id).del()
