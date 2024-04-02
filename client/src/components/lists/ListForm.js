@@ -11,7 +11,7 @@ query getData {
 }`;
 
 
-export default function List({ list, onChange, onClose, onSaveAndClose }) {
+export default function List({ list, onChange, onClose, onSave, onSaveAndClose }) {
 
     const [recipes, setRecipes] = useState(null);
     const [title] = useState(list.id ? list.name : "Neue Liste");
@@ -35,6 +35,7 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
             name: list.name,
             startDate: list.startDate,
             endDate: list.endDate,
+            closed: list.closed,
             entries: list.entries.filter((entry) => entry.recipe_id).map((entry) => ({
                 id: entry.id,
                 recipe_id: entry.recipe_id,
@@ -73,6 +74,9 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
 
                 <button onClick={() => onClose()}>Abbrechen</button>
                 <button onClick={() => {
+                    onSave(getListObject())
+                }}>Speichern</button>
+                <button onClick={() => {
                     onSaveAndClose(getListObject())
                 }}>Speichern & Schließen</button>
             </header>
@@ -84,6 +88,11 @@ export default function List({ list, onChange, onClose, onSaveAndClose }) {
 
             <fieldset>
                 <legend>Eigenschaften</legend>
+                <div>
+                    <input type="checkbox" value={list.closed}
+                        id="closed" onChange={(e) => update({ closed: e.target.checked })} />
+                    <label htmlFor="closed">Closed</label>
+                </div>
                 <div>
                     <input type="date" value={list.startDate ? list.startDate : ""} onChange={(e) => update({ ...list, startDate: e.target.value.length > 0 ? e.target.value : null })} />
                 </div>

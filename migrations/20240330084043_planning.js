@@ -9,6 +9,7 @@ exports.up = function (knex) {
         table.string('name', 50).unique();
         table.date('start_date').defaultTo(null);
         table.date('end_date').defaultTo(null);
+        table.boolean('closed').defaultTo(false);
         table.timestamps();
     }).createTable('lists_recipes', table => {
         table.increments();

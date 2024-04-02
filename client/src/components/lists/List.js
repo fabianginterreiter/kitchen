@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { Options, Option } from '../recipes/Options.js';
 
 const GET_LIST = gql`
@@ -42,9 +42,6 @@ export default function List() {
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
 
-    const shopping = (ingredients) => {
-    };
-
     return (<div>
         <h1>{data.list.name}</h1>
 
@@ -84,13 +81,13 @@ export default function List() {
                 </tr>
             </thead>
             <tbody>
-                {data.categories.filter((c) => c.id === '0' || data.list.ingredients.find((i) => c.id === i.ingredient.category_id)).map((c) => <>
+                {data.categories.filter((c) => c.id === '0' || data.list.ingredients.find((i) => c.id === i.ingredient.category_id)).map((c) => <Fragment key={c.id}>
                     <tr key={c.id}><td colSpan={2}><b>{c.id === '0' ? 'Unkategorisiert' : c.name}</b></td></tr>
                     {data.list.ingredients.filter((i) => c.id === i.ingredient.category_id || (c.id === '0' && !i.ingredient.category_id)).map((i, k) => <tr key={c.id + k}>
-                        <td>{Math.round(i.amount*100)/100} {i.unit && <>{i.unit.name}</>}</td>
+                        <td>{Math.round(i.amount * 100) / 100} {i.unit && <>{i.unit.name}</>}</td>
                         <td><Link to={`/ingredients/${i.ingredient.id}`}>{i.ingredient.name}</Link></td>
                     </tr>)}
-                </>)}
+                </Fragment>)}
             </tbody>
         </table>
     </div >);

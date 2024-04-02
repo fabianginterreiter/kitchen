@@ -5,33 +5,33 @@ import knex from '../knex.mjs';
 // A map of functions which return data for the schema.
 const resolvers = {
     Query: {
-        recipes: (_, args) => {
+        recipes: (_, {sortBy, limit}) => {
             var obj = knex('recipes');
 
-            if (args.sortBy) {
-                obj.orderBy(args.sortBy.field, args.sortBy.order);
+            if (sortBy) {
+                obj.orderBy(sortBy.field, sortBy.order);
             } else {
                 obj.orderBy('name');
             };
 
-            if (args.limit) {
-                obj.limit(args.limit);
+            if (limit) {
+                obj.limit(limit);
             }
 
             return obj;
         },
 
-        recipe: (_, args) => knex('recipes').where('id', args.id).first(),
+        recipe: (_, { id }) => knex('recipes').where('id', id).first(),
 
         ingredients: () => knex('ingredients').orderBy('name'),
 
-        ingredient: (_, args) => knex('ingredients').where('id', args.id).first(),
+        ingredient: (_, { id }) => knex('ingredients').where('id', id).first(),
 
         units: () => knex('units').orderBy('name'),
 
         tags: () => knex('tags').orderBy('name'),
 
-        tag: (_, args) => knex('tags').where('id', args.id).first(),
+        tag: (_, { id }) => knex('tags').where('id', id).first(),
 
         categories: (_, args) => knex('categories').orderBy('position').select('categories.*').then((rows => {
             if (args.includeUncategorized) {
@@ -55,7 +55,7 @@ const resolvers = {
     },
 
     List: {
-        entries: (parent) => knex('lists_recipes').where('list_id', parent.id),
+        entries: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date'),
         startDate: (parent) => parent.start_date,
         endDate: (parent) => parent.end_date,
 
@@ -310,6 +310,7 @@ const resolvers = {
             name: list.name,
             start_date: list.startDate,
             end_date: list.endDate,
+            closed: list.closed,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => Promise.all(list.entries.map((entry) => knex('lists_recipes').insert({
@@ -323,6 +324,7 @@ const resolvers = {
             name: list.name,
             start_date: list.startDate,
             end_date: list.endDate,
+            closed: list.closed,
             updated_at: knex.fn.now()
         }).where('id', list.id).then(() => Promise.all(list.entries.map((entry) => {
             if (entry.id) {

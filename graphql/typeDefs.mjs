@@ -89,6 +89,7 @@ const typeDefs = `#graphql
     name: String!
     startDate: String
     endDate: String
+    closed: Boolean
     entries: [Entry]
     ingredients: [ListIngredient]
   }
@@ -133,6 +134,7 @@ const typeDefs = `#graphql
     name: String
     startDate: String
     endDate: String
+    closed: Boolean
     entries: [EntryInput]
   }
 

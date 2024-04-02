@@ -6,7 +6,7 @@ import ListForm from './ListForm.js';
 
 const CREATE_LIST = gql`mutation Mutation($list: ListInput) {
     createList(list: $list) {
-        id, name, startDate, endDate, entries { id, portions, date, recipe_id }
+        id
     }
   }`;
 
@@ -43,6 +43,7 @@ export default function List() {
             portions: 2,
             startDate: null,
             endDate: null,
+            closed: false,
             entries: []
         };
 
