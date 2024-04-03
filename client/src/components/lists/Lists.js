@@ -7,7 +7,8 @@ import { Options, Option } from '../recipes/Options.js';
 
 const GET_LISTS = gql`
 query Recipes {
-  lists {id,name,startDate, endDate, closed }
+  lists(closed: false) {id,name,startDate, endDate, closed }
+  closed: lists(closed: true) {id,name,startDate, endDate, closed }
 }`;
 
 
@@ -43,11 +44,13 @@ export default function Lists() {
       <thead>
         <tr>
           <th>Name</th>
+          <th>Start</th>
+          <th>End</th>
         </tr>
       </thead>
       <tbody>
         {data.lists
-          .filter(list => (list.name.toLowerCase().includes(filters.name.toLowerCase()) && (!list.closed)))
+          .filter(list => (list.name.toLowerCase().includes(filters.name.toLowerCase())))
           .map(list => <tr key={list.id}>
             <td><Link to={`/lists/${list.id}`}>{list.name}</Link></td>
             <td>{list.startDate}</td>
@@ -57,16 +60,18 @@ export default function Lists() {
     </table>
 
     {filters.closed && <div>
-      <h2>Geschlossene Listen</h2>
+      <h2>Abgeschlossen</h2>
       <table className="table">
       <thead>
         <tr>
           <th>Name</th>
+          <th>Start</th>
+          <th>End</th>
         </tr>
       </thead>
       <tbody>
-        {data.lists
-          .filter(list => (list.name.toLowerCase().includes(filters.name.toLowerCase()) && (list.closed)))
+        {data.closed
+          .filter(list => (list.name.toLowerCase().includes(filters.name.toLowerCase())))
           .map(list => <tr key={list.id}>
             <td><Link to={`/lists/${list.id}`}>{list.name}</Link></td>
             <td>{list.startDate}</td>

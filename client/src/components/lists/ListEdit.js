@@ -6,12 +6,12 @@ import ListForm from './ListForm.js';
 
 const GET_LIST = gql`
 query GetLIst($listId: ID!) {
-  list(id: $listId) { id, name, startDate, endDate, closed, entries { id, portions, date, recipe_id } }
+  list(id: $listId) { id, name, closed, entries { id, portions, date, recipe_id } }
 }`;
 
 const UPDATE_LIST = gql`mutation Mutation($list: ListInput) {
     updateList(list: $list) {
-        id, name, startDate, endDate, closed, entries { id, portions, date, recipe_id }
+        id, name, closed, entries { id, portions, date, recipe_id }
     }
   }`;
 

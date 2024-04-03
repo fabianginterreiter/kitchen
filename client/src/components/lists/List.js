@@ -9,8 +9,7 @@ query GetLIst($listId: ID!) {
     list(id: $listId) {
     id
     name
-    startDate
-    endDate
+    closed
     entries {
       id
       portions
@@ -20,15 +19,7 @@ query GetLIst($listId: ID!) {
         id
       }
     }
-
-    ingredients {
-        amount
-        unit { id, name }
-        ingredient { id, name, category_id }
-      }
   }
-
-  categories: ingredientsCategories(includeUncategorized: true) { id, name }
 }`;
 
 
@@ -43,13 +34,17 @@ export default function List() {
     if (error) return <Error message={error.message} />;
 
     return (<div>
+        <div><Link to="/lists">Listen</Link></div>
         <h1>{data.list.name}</h1>
+
+        {data.list.closed && <span>Abgeschlossen</span>}
 
         <h2>Rezepte</h2>
 
         <div className="recipeOptions">
             <Options size="large">
                 <Option linkTo={`/lists/${listId}/edit`}>Bearbeiten</Option>
+                <Option linkTo={`/lists/${listId}/ingredients`}>Zutaten</Option>
                 <Option onClick={() => alert("delete!")}>Löschen</Option>
             </Options>
         </div>
@@ -68,26 +63,6 @@ export default function List() {
                     <td>{entry.date}</td>
                     <td>{entry.portions}</td>
                 </tr>)}
-            </tbody>
-        </table>
-
-
-        <h2>Shopping List</h2>
-        <table className="table">
-            <thead>
-                <tr>
-                    <th>Menge</th>
-                    <th>Zutat</th>
-                </tr>
-            </thead>
-            <tbody>
-                {data.categories.filter((c) => c.id === '0' || data.list.ingredients.find((i) => c.id === i.ingredient.category_id)).map((c) => <Fragment key={c.id}>
-                    <tr key={c.id}><td colSpan={2}><b>{c.id === '0' ? 'Unkategorisiert' : c.name}</b></td></tr>
-                    {data.list.ingredients.filter((i) => c.id === i.ingredient.category_id || (c.id === '0' && !i.ingredient.category_id)).map((i, k) => <tr key={c.id + k}>
-                        <td>{Math.round(i.amount * 100) / 100} {i.unit && <>{i.unit.name}</>}</td>
-                        <td><Link to={`/ingredients/${i.ingredient.id}`}>{i.ingredient.name}</Link></td>
-                    </tr>)}
-                </Fragment>)}
             </tbody>
         </table>
     </div >);

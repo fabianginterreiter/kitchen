@@ -8,6 +8,7 @@ nav#nav {
     z-index: 110;
     transition: width 0.2s;
     box-shadow: 0 4px 4px -2px #000000;
+    overflow: auto;
   }
   
   nav#nav > header {

@@ -33,8 +33,6 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
         return ({
             id: list.id,
             name: list.name,
-            startDate: list.startDate,
-            endDate: list.endDate,
             closed: list.closed,
             entries: list.entries.filter((entry) => entry.recipe_id).map((entry) => ({
                 id: entry.id,
@@ -89,15 +87,9 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
             <fieldset>
                 <legend>Eigenschaften</legend>
                 <div>
-                    <input type="checkbox" value={list.closed}
+                    <input type="checkbox" checked={list.closed}
                         id="closed" onChange={(e) => update({ closed: e.target.checked })} />
-                    <label htmlFor="closed">Closed</label>
-                </div>
-                <div>
-                    <input type="date" value={list.startDate ? list.startDate : ""} onChange={(e) => update({ ...list, startDate: e.target.value.length > 0 ? e.target.value : null })} />
-                </div>
-                <div>
-                    <input type="date" value={list.endDate ? list.endDate : ""} onChange={(e) => update({ ...list, endDate: e.target.value.length > 0 ? e.target.value : null })} />
+                    <label htmlFor="closed">Abgeschlossen</label>
                 </div>
             </fieldset>
 

@@ -7,8 +7,6 @@ exports.up = function (knex) {
     return knex.schema.createTable('lists', table => {
         table.increments();
         table.string('name', 50).unique();
-        table.date('start_date').defaultTo(null);
-        table.date('end_date').defaultTo(null);
         table.boolean('closed').defaultTo(false);
         table.timestamps();
     }).createTable('lists_recipes', table => {

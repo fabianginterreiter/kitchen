@@ -118,7 +118,7 @@ const typeDefs = `#graphql
 
     ingredientsCategories(includeUncategorized: Boolean): [IngredientsCategory],
 
-    lists: [List],
+    lists(closed: Boolean): [List],
     list(id: ID!): List,
   }
 

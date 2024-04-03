@@ -5,7 +5,7 @@ import knex from '../knex.mjs';
 // A map of functions which return data for the schema.
 const resolvers = {
     Query: {
-        recipes: (_, {sortBy, limit}) => {
+        recipes: (_, { sortBy, limit }) => {
             var obj = knex('recipes');
 
             if (sortBy) {
@@ -49,15 +49,25 @@ const resolvers = {
             return rows;
         })),
 
-        lists: () => knex('lists'),
+        lists: (_, args) => { 
+            let obj = knex('lists');
+
+            if ('closed' in args) {
+               obj.where('closed', args.closed);
+            }
+
+            return obj;
+        },
 
         list: (_, args) => knex('lists').where('id', args.id).first()
     },
 
     List: {
         entries: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date'),
-        startDate: (parent) => parent.start_date,
-        endDate: (parent) => parent.end_date,
+        startDate: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date', 'asc').first()
+            .then((e) => e ? e.date : null),
+        endDate: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date', 'desc').first()
+            .then((e) => e ? e.date : null),
 
         ingredients: (parent) => knex(knex('lists_recipes')
             .join('preparations', 'lists_recipes.recipe_id', '=', 'preparations.recipe_id')
@@ -308,8 +318,6 @@ const resolvers = {
 
         createList: (_, { list }) => knex('lists').insert({
             name: list.name,
-            start_date: list.startDate,
-            end_date: list.endDate,
             closed: list.closed,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
@@ -322,8 +330,6 @@ const resolvers = {
 
         updateList: (_, { list }) => knex('lists').update({
             name: list.name,
-            start_date: list.startDate,
-            end_date: list.endDate,
             closed: list.closed,
             updated_at: knex.fn.now()
         }).where('id', list.id).then(() => Promise.all(list.entries.map((entry) => {

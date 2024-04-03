@@ -41,8 +41,6 @@ export default function List() {
         const result = {
             name: "",
             portions: 2,
-            startDate: null,
-            endDate: null,
             closed: false,
             entries: []
         };
@@ -61,9 +59,6 @@ export default function List() {
 
             let endDate = new Date(startDate);
             endDate.setDate(endDate.getDate() + 7);
-
-            result.startDate = parseDate(startDate);
-            result.endDate = parseDate(endDate);
 
             for (var i = 0; i < endDate.getDate() - startDate.getDate(); i++) {
                 const date = new Date(startDate);
