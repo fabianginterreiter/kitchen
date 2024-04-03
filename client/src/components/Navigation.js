@@ -12,6 +12,9 @@ export default function Navigation({ visible, onClose }) {
                 <li><NavLink to={`/categories`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Kategorien</NavLink></li>
                 <li><NavLink to={`/ingredients`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Zutaten</NavLink></li>
                 <li><NavLink to={`/tags`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Tags</NavLink></li>
+                <li className="header">Plannung</li>
+                <li><NavLink to={`/lists/create`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Erstellen</NavLink></li>
+                <li><NavLink to={`/lists`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Liste</NavLink></li>
                 <li className="header">Optionen</li>
                 <li><NavLink to={`/options/units`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Einheiten</NavLink></li>
                 <li><NavLink to={`/options/categories`} className={({ isActive }) => ((isActive ? "active" : ""))} end>Kategorien</NavLink></li>

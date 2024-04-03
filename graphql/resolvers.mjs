@@ -5,33 +5,33 @@ import knex from '../knex.mjs';
 // A map of functions which return data for the schema.
 const resolvers = {
     Query: {
-        recipes: (_, args) => {
+        recipes: (_, { sortBy, limit }) => {
             var obj = knex('recipes');
 
-            if (args.sortBy) {
-                obj.orderBy(args.sortBy.field, args.sortBy.order);
+            if (sortBy) {
+                obj.orderBy(sortBy.field, sortBy.order);
             } else {
                 obj.orderBy('name');
             };
 
-            if (args.limit) {
-                obj.limit(args.limit);
+            if (limit) {
+                obj.limit(limit);
             }
 
             return obj;
         },
 
-        recipe: (_, args) => knex('recipes').where('id', args.id).first(),
+        recipe: (_, { id }) => knex('recipes').where('id', id).first(),
 
         ingredients: () => knex('ingredients').orderBy('name'),
 
-        ingredient: (_, args) => knex('ingredients').where('id', args.id).first(),
+        ingredient: (_, { id }) => knex('ingredients').where('id', id).first(),
 
         units: () => knex('units').orderBy('name'),
 
         tags: () => knex('tags').orderBy('name'),
 
-        tag: (_, args) => knex('tags').where('id', args.id).first(),
+        tag: (_, { id }) => knex('tags').where('id', id).first(),
 
         categories: (_, args) => knex('categories').orderBy('position').select('categories.*').then((rows => {
             if (args.includeUncategorized) {
@@ -47,7 +47,62 @@ const resolvers = {
             }
 
             return rows;
-        }))
+        })),
+
+        lists: (_, args) => { 
+            let obj = knex('lists');
+
+            if ('closed' in args) {
+               obj.where('closed', args.closed);
+            }
+
+            return obj;
+        },
+
+        list: (_, args) => knex('lists').where('id', args.id).first(),
+
+        entries: (_, {upcoming, limit}) => {
+            let obj = knex('lists_recipes');
+
+            if (upcoming) {
+                obj.where('date', '>', knex.fn.now());
+                obj.orderBy('date', 'asc');
+            }
+
+            if (limit > 0) {
+                obj.limit(limit);
+            }
+
+            return obj;
+        }
+    },
+
+    List: {
+        entries: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date'),
+        startDate: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date', 'asc').first()
+            .then((e) => e ? e.date : null),
+        endDate: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date', 'desc').first()
+            .then((e) => e ? e.date : null),
+
+        ingredients: (parent) => knex(knex('lists_recipes')
+            .join('preparations', 'lists_recipes.recipe_id', '=', 'preparations.recipe_id')
+            .where('lists_recipes.list_id', parent.id)
+            .where('preparations.amount', '>', 0)
+            .join('recipes', 'lists_recipes.recipe_id', '=', 'recipes.id')
+            .select(knex.raw('preparations.amount / recipes.portions * lists_recipes.portions as amount'), 'preparations.unit_id', 'preparations.ingredient_id'))
+            .groupBy('unit_id', 'ingredient_id')
+            .sum('amount as amount')
+            .select('unit_id', 'ingredient_id')
+    },
+
+    Entry: {
+        recipe: (parent) => knex('recipes').where('id', parent.recipe_id).first()
+    },
+
+    ListIngredient: {
+        unit: (parent) => knex('units').where('id', parent.unit_id).first(),
+
+        ingredient: (parent) => knex('ingredients').where('id', parent.ingredient_id).first()
     },
 
     Ingredient: {
@@ -226,32 +281,32 @@ const resolvers = {
             return knex('units').del().where('id', args.unit.id).then(() => true);
         }),
 
-        createTag: (_, args) => knex('tags').insert({
-            name: args.tag.name,
+        createTag: (_, { tag }) => knex('tags').insert({
+            name: tag.name,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => knex('tags').where('id', obj[0].id).first()),
 
-        updateTag: (_, args) => knex('tags').update({
-            name: args.tag.name,
-        }).where('id', args.tag.id).then((obj) => knex('tags').where('id', args.tag.id).first()),
+        updateTag: (_, { tag }) => knex('tags').update({
+            name: tag.name,
+        }).where('id', tag.id).then((obj) => knex('tags').where('id', tag.id).first()),
 
-        deleteTag: (_, args) => knex('recipe_tags').del().where('tag_id', args.tag.id)
-            .then(() => knex('tags').del().where('id', args.tag.id))
+        deleteTag: (_, { tag }) => knex('recipe_tags').del().where('tag_id', tag.id)
+            .then(() => knex('tags').del().where('id', tag.id))
             .then(() => true),
 
-        createCategory: (_, args) => knex('categories').insert({
-            name: args.category.name,
-            position: args.category.position,
+        createCategory: (_, { category }) => knex('categories').insert({
+            name: category.name,
+            position: category.position,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
         }).returning('id').then((obj) => knex('categories').where('id', obj[0].id).first()),
 
-        updateCategory: (_, args) => knex('categories').update({
-            name: args.category.name,
-            position: args.category.position,
+        updateCategory: (_, { category }) => knex('categories').update({
+            name: category.name,
+            position: category.position,
             updated_at: knex.fn.now()
-        }).where('id', args.category.id).then((obj) => knex('categories').where('id', args.category.id).first()),
+        }).where('id', category.id).then((obj) => knex('categories').where('id', category.id).first()),
 
         deleteCategory: (_, args) => knex('recipes')
             .update({ category_id: null })
@@ -275,6 +330,47 @@ const resolvers = {
             .where('category_id', args.category.id)
             .then(() => knex('ingredients_categories').del().where('id', args.category.id)
                 .then(() => true)),
+
+        createList: (_, { list }) => knex('lists').insert({
+            name: list.name,
+            description: list.description,
+            closed: list.closed,
+            created_at: knex.fn.now(),
+            updated_at: knex.fn.now()
+        }).returning('id').then((obj) => Promise.all(list.entries.map((entry) => knex('lists_recipes').insert({
+            list_id: obj[0].id,
+            recipe_id: entry.recipe_id,
+            portions: entry.portions,
+            date: (entry.date ? entry.date : null)
+        }))).then(() => knex('lists').where('id', obj[0].id).first())),
+
+        updateList: (_, { list }) => knex('lists').update({
+            name: list.name,
+            description: list.description,
+            closed: list.closed,
+            updated_at: knex.fn.now()
+        }).where('id', list.id).then(() => Promise.all(list.entries.map((entry) => {
+            if (entry.id) {
+                return knex('lists_recipes').update({
+                    recipe_id: entry.recipe_id,
+                    portions: entry.portions,
+                    date: (entry.date ? entry.date : null)
+                }).where('id', entry.id).returning('id').then((obj) => obj[0].id);
+            } else {
+                return knex('lists_recipes').insert({
+                    list_id: list.id,
+                    recipe_id: entry.recipe_id,
+                    portions: entry.portions,
+                    date: (entry.date ? entry.date : null)
+                }).returning('id').then((obj) => obj[0].id);
+            }
+        })))
+            .then((results) => knex('lists_recipes').where('list_id', list.id).whereNotIn('id', results).del())
+            .then(() => knex('lists').where('id', list.id).first()),
+
+        deleteList: (_, { list }) => knex('lists_recipes').where('list_id', list.id).del()
+            .then(() => knex('lists').where('id', list.id).del())
+            .then(() => true)
     }
 };
 

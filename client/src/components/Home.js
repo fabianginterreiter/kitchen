@@ -6,6 +6,8 @@ import { Link, useParams } from 'react-router-dom';
 const GET_LATEST_RECIPES = gql`query GetCategories {
     newestRecipes: recipes(sortBy:{field: "created_at", order: DESC}, limit: 5) {id,name}
     latestRecipes: recipes(sortBy:{field: "updated_at", order: DESC}, limit: 5) {id,name}
+
+    upcomingRecipes: entries(upcoming: true, limit: 5) { id, recipe {id, name}, date}
   }`;
 
 
@@ -30,6 +32,12 @@ export default function Home() {
                     <div>Neuste Rezepte</div>
                     <ul>
                         {data.newestRecipes.map((recipe) => <li key={recipe.id}><Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link></li>)}
+                    </ul>
+                </li>
+                <li>
+                    <div>Geplant</div>
+                    <ul>
+                        {data.upcomingRecipes.map((entry) => <li key={entry.id}><Link to={`/recipes/${entry.recipe.id}`}>{entry.recipe.name} {entry.date}</Link></li>)}
                     </ul>
                 </li>
             </ul>

@@ -41,6 +41,7 @@ body {
 input[type=text],
 input[type=number],
 input[type=search],
+input[type=date],
 textarea {
     display: block;
     width: 100%;

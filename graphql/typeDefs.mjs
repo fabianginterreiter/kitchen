@@ -12,7 +12,7 @@ const typeDefs = `#graphql
     recipes: [Recipe]
     usages: Int
     category_id: ID
-    category: [Category]
+    category: Category
   }
 
   type IngredientsCategory {
@@ -76,6 +76,33 @@ const typeDefs = `#graphql
     recipes: [Recipe]
   }
 
+  type Entry {
+    id: ID!
+    recipe: Recipe!
+    recipe_id: ID!
+    portions: Int!
+    date: String
+  }
+
+  type List {
+    id: ID!
+    name: String!
+    description: String
+    startDate: String
+    endDate: String
+    closed: Boolean
+    entries: [Entry]
+    ingredients: [ListIngredient]
+  }
+
+  type ListIngredient {
+    amount: Float!
+    unit: Unit
+    unit_id: Int
+    ingredient: Ingredient!
+    ingredient_id: Int!
+  }
+
   type Query {
     recipes(sortBy: SortBy, limit: Int): [Recipe],
     recipe(id: ID!): Recipe,
@@ -91,7 +118,28 @@ const typeDefs = `#graphql
     categories(includeUncategorized: Boolean): [Category],
 
     ingredientsCategories(includeUncategorized: Boolean): [IngredientsCategory],
+
+    lists(closed: Boolean): [List],
+    list(id: ID!): List,
+
+    entries(upcoming: Boolean, limit: Int): [Entry],
   }
+
+  input EntryInput {
+    id: ID
+    recipe_id: ID!
+    portions: Int!
+    date: String
+  }
+
+  input ListInput {
+    id: ID,
+    name: String
+    description: String
+    closed: Boolean
+    entries: [EntryInput]
+  }
+
 
   input TagInput {
     id: ID,
@@ -168,6 +216,10 @@ const typeDefs = `#graphql
     createIngredientsCategory(category: IngredientsCategoryInput): IngredientsCategory
     updateIngredientsCategory(category: IngredientsCategoryInput): IngredientsCategory
     deleteIngredientsCategory(category: IngredientsCategoryInput): Boolean
+
+    createList(list: ListInput): List
+    updateList(list: ListInput): List
+    deleteList(list: ListInput): List
   }
 `;
 
