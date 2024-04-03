@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
-import { Options, Option } from '../recipes/Options.js';
+import { Options, Option } from '../../ui/Options.js';
 
 const GET_LIST = gql`
 query GetLIst($listId: ID!) {

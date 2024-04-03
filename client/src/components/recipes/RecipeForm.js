@@ -3,7 +3,7 @@ import { useState } from "react";
 import Select from 'react-select';
 import Creatable from 'react-select/creatable';
 import { Loading, Error } from '../../ui/Utils.js';
-import { Options, Option } from './Options.js';
+import { Options, Option } from '../../ui/Options.js';
 import AutoResizeTextarea from '../../ui/AutoResizeTextarea.js';
 
 const GET_DATA = gql`query GetData {

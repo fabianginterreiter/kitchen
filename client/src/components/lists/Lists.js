@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
-import { Options, Option } from '../recipes/Options.js';
+import { Options, Option } from '../../ui/Options.js';
 
 const GET_LISTS = gql`
 query Recipes {

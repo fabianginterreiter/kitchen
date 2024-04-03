@@ -2,7 +2,7 @@ import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
 import Select from 'react-select';
-import { Options, Option } from '../recipes/Options.js';
+import { Options, Option } from '../../ui/Options.js';
 import AutoResizeTextarea from "../../ui/AutoResizeTextarea.js";
 
 const GET_LIST = gql`

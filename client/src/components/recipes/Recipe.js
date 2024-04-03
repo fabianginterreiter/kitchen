@@ -1,6 +1,6 @@
 import { useQuery, gql } from '@apollo/client';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Options, Option } from './Options.js';
+import { Options, Option } from '../../ui/Options.js';
 import { Loading, Error } from '../../ui/Utils.js';
 import Tags from './Tags.js';
 import { useState } from "react";
