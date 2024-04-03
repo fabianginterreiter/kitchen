@@ -4,17 +4,26 @@ import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
 import Select from 'react-select';
 import { Options, Option } from '../recipes/Options.js';
+import AutoResizeTextarea from "../../ui/AutoResizeTextarea.js";
 
 const GET_LIST = gql`
 query getData {
   recipes { id, name, portions }
 }`;
 
+const Status = {
+    NoChanges: 1,
+    Changed: 2,
+    Progress: 3,
+    Done: 4
+}
+
 
 export default function List({ list, onChange, onClose, onSave, onSaveAndClose }) {
 
     const [recipes, setRecipes] = useState(null);
-    const [title] = useState(list.id ? list.name : "Neue Liste");
+    const [title, setTitle] = useState(list.id ? list.name : "Neue Liste");
+    const [status, setStatus] = useState(Status.NoChanges);
 
     const { loading, error } = useQuery(GET_LIST, {
         onCompleted: (data) => {
@@ -33,6 +42,7 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
         return ({
             id: list.id,
             name: list.name,
+            description: list.description,
             closed: list.closed,
             entries: list.entries.filter((entry) => entry.recipe_id).map((entry) => ({
                 id: entry.id,
@@ -71,9 +81,15 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
                 <div className="title">{title}</div>
 
                 <button onClick={() => onClose()}>Abbrechen</button>
-                <button onClick={() => {
-                    onSave(getListObject())
-                }}>Speichern</button>
+                <button className={(status === Status.Done ? 'button-success' : '')}
+                    onClick={() => {
+                        setStatus(Status.Progress);
+                        onSave(getListObject(), () => {
+                            setStatus(Status.Done);
+                            setTitle(list.name);
+                            setTimeout(() => setStatus(Status.NoChanges), 1000);
+                        });
+                    }}>Speichern</button>
                 <button onClick={() => {
                     onSaveAndClose(getListObject())
                 }}>Speichern & Schließen</button>
@@ -86,6 +102,9 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
 
             <fieldset>
                 <legend>Eigenschaften</legend>
+                <div>
+                    <AutoResizeTextarea placeholder="Beschreibung" value={list.description} onChange={(e) => update({ description: e.target.value })} />
+                </div>
                 <div>
                     <input type="checkbox" checked={list.closed}
                         id="closed" onChange={(e) => update({ closed: e.target.checked })} />

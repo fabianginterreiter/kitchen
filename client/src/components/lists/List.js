@@ -7,17 +7,12 @@ import { Options, Option } from '../recipes/Options.js';
 const GET_LIST = gql`
 query GetLIst($listId: ID!) {
     list(id: $listId) {
-    id
-    name
-    closed
+    id, name, description, closed,
     entries {
-      id
-      portions
-      date
-      recipe {
-        name
-        id
-      }
+      id,
+      portions,
+      date,
+      recipe { id, name }
     }
   }
 }`;
@@ -48,6 +43,8 @@ export default function List() {
                 <Option onClick={() => alert("delete!")}>Löschen</Option>
             </Options>
         </div>
+
+        {data.list.description}
 
         <table className="table">
             <thead>

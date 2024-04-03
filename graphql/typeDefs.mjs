@@ -87,6 +87,7 @@ const typeDefs = `#graphql
   type List {
     id: ID!
     name: String!
+    description: String
     startDate: String
     endDate: String
     closed: Boolean
@@ -134,8 +135,7 @@ const typeDefs = `#graphql
   input ListInput {
     id: ID,
     name: String
-    startDate: String
-    endDate: String
+    description: String
     closed: Boolean
     entries: [EntryInput]
   }

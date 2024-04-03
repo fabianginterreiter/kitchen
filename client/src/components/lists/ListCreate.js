@@ -40,7 +40,7 @@ export default function List() {
     const [list, setList] = useState(() => {
         const result = {
             name: "",
-            portions: 2,
+            description: "",
             closed: false,
             entries: []
         };

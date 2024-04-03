@@ -6,12 +6,12 @@ import ListForm from './ListForm.js';
 
 const GET_LIST = gql`
 query GetLIst($listId: ID!) {
-  list(id: $listId) { id, name, closed, entries { id, portions, date, recipe_id } }
+  list(id: $listId) { id, name, description, closed, entries { id, portions, date, recipe_id } }
 }`;
 
 const UPDATE_LIST = gql`mutation Mutation($list: ListInput) {
     updateList(list: $list) {
-        id, name, closed, entries { id, portions, date, recipe_id }
+        id, name, description, closed, entries { id, portions, date, recipe_id }
     }
   }`;
 
@@ -42,9 +42,10 @@ export default function List() {
                 navigate(`/lists/${list.id}`)
             }
         })}
-        onSave={(list) => updateList({
+        onSave={(list, cb) => updateList({
             variables: { list }, onCompleted: (data) => {
                 setList(data.updateList);
+                cb();
             }
         })}
         list={list} />);

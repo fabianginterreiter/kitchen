@@ -333,6 +333,7 @@ const resolvers = {
 
         createList: (_, { list }) => knex('lists').insert({
             name: list.name,
+            description: list.description,
             closed: list.closed,
             created_at: knex.fn.now(),
             updated_at: knex.fn.now()
@@ -345,6 +346,7 @@ const resolvers = {
 
         updateList: (_, { list }) => knex('lists').update({
             name: list.name,
+            description: list.description,
             closed: list.closed,
             updated_at: knex.fn.now()
         }).where('id', list.id).then(() => Promise.all(list.entries.map((entry) => {
