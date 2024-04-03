@@ -59,7 +59,22 @@ const resolvers = {
             return obj;
         },
 
-        list: (_, args) => knex('lists').where('id', args.id).first()
+        list: (_, args) => knex('lists').where('id', args.id).first(),
+
+        entries: (_, {upcoming, limit}) => {
+            let obj = knex('lists_recipes');
+
+            if (upcoming) {
+                obj.where('date', '>', knex.fn.now());
+                obj.orderBy('date', 'asc');
+            }
+
+            if (limit > 0) {
+                obj.limit(limit);
+            }
+
+            return obj;
+        }
     },
 
     List: {

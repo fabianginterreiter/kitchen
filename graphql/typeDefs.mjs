@@ -120,6 +120,8 @@ const typeDefs = `#graphql
 
     lists(closed: Boolean): [List],
     list(id: ID!): List,
+
+    entries(upcoming: Boolean, limit: Int): [Entry],
   }
 
   input EntryInput {
