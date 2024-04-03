@@ -89,7 +89,7 @@ const resolvers = {
             .where('lists_recipes.list_id', parent.id)
             .where('preparations.amount', '>', 0)
             .join('recipes', 'lists_recipes.recipe_id', '=', 'recipes.id')
-            .select(knex.raw('preparations.amount / recipes.portions * lists_recipes.portions as amount'), 'preparations.unit_id', 'preparations.ingredient_id'))
+            .select(knex.raw('preparations.amount / recipes.portions * lists_recipes.portions as amount'), 'preparations.unit_id', 'preparations.ingredient_id').as('ings'))
             .groupBy('unit_id', 'ingredient_id')
             .sum('amount as amount')
             .select('unit_id', 'ingredient_id')
