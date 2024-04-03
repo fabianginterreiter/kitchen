@@ -58,7 +58,7 @@ export default function Content({ visible, onClose }) {
                 return <li key={category.id}>
                     <div onClick={() => {
                         if (!open) {
-                            setClosed(closed.filter((id) => id != category.id));
+                            setClosed(closed.filter((id) => id !== category.id));
                         } else {
                             setClosed([...closed, category.id]);
                         }

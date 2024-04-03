@@ -1,7 +1,6 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
-import Collapse from "../../ui/Collapse.js";
 import Select from 'react-select';
 import { Loading, Error } from '../../ui/Utils.js';
 

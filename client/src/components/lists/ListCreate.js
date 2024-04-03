@@ -1,6 +1,5 @@
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useQuery, useMutation, gql } from '@apollo/client';
-import { Loading, Error } from '../../ui/Utils.js';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useMutation, gql } from '@apollo/client';
 import { useState } from "react";
 import ListForm from './ListForm.js';
 

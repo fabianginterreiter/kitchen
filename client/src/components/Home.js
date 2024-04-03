@@ -1,7 +1,6 @@
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../ui/Utils.js';
-import { useState } from "react";
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const GET_LATEST_RECIPES = gql`query GetCategories {
     newestRecipes: recipes(sortBy:{field: "created_at", order: DESC}, limit: 5) {id,name}
