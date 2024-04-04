@@ -65,11 +65,6 @@ table.preparations>tbody>tr.title {
     right: 0px;
 }
 
-.overflow {
-    overflow: auto;
-    white-space: nowrap;
-}
-
 input.title {
     font-size: 1.6em !important;
 }

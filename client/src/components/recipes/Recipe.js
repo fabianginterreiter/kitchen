@@ -64,7 +64,7 @@ export default function Recipe() {
         <div className="recipeOptions">
             <Options size="large">
                 <Option linkTo={`/recipes/${recipeId}/edit`}>Bearbeiten</Option>
-                <Option linkTo={`/recipes/${recipeId}/cooking`}>Koch-View</Option>
+                <Option linkTo={`/recipes/${recipeId}/cooking?portions=${portions}`}>Koch-View</Option>
                 <Option onClick={() => alert("delete!")}>Löschen</Option>
             </Options>
         </div>
