@@ -44,6 +44,7 @@ table.preparations>thead>tr>th.ingredient {
 
 table.preparations>thead>tr>th.description {
     width: 50%;
+    min-width: 260px;
 }
 
 td.description {
@@ -74,38 +75,3 @@ input.title {
 }
 
 
-div#RecipeForm {
-    position: fixed;
-    z-index: 2000;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: white;
-
-    padding: 70px 5px 5px 5px;
-
-    overflow: auto;
-}
-
-div#RecipeForm>header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 36px;
-    border-bottom: 1px solid black;
-    box-shadow: 0 4px 4px -2px #000000;
-    background-color: white;
-    z-index: 3000;
-    padding: 10px;
-    text-align: right;
-}
-
-div#RecipeForm>header>div.title {
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 11px;
-    font-size: 1.8em;
-}

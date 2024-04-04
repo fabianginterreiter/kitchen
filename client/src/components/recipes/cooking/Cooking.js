@@ -53,8 +53,10 @@ export default function Cooking() {
     if (error) return <Error message={error.message} />;
 
     return (
-        <div id="Cooking">
-            <h1>{data.recipe.name}</h1>
+        <div id="Cooking" className="Fullscreen">
+            <header>
+                <div className="title">{data.recipe.name}</div>
+            </header>
 
             <table className="table">
                 <tbody>

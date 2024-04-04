@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
 import { Options, Option } from '../../ui/Options.js';
+import { formatDate } from '../../ui/DateUtils.js';
 
 const GET_LIST = gql`
 query GetLIst($listId: ID!) {
@@ -15,7 +16,6 @@ query GetLIst($listId: ID!) {
     }
   }
 }`;
-
 
 export default function List() {
     const { listId } = useParams();
@@ -56,7 +56,7 @@ export default function List() {
             <tbody>
                 {data.list.entries.map((entry) => <tr key={entry.id}>
                     <td><Link to={`/recipes/${entry.recipe.id}?portions=${entry.portions}`}>{entry.recipe.name}</Link></td>
-                    <td>{entry.date}</td>
+                    <td>{entry.date && formatDate(new Date(entry.date))}</td>
                     <td>{entry.portions}</td>
                 </tr>)}
             </tbody>

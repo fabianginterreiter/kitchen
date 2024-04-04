@@ -41,27 +41,27 @@ const resolvers = {
             return rows;
         })),
 
-        ingredientsCategories: (_, args) => knex('ingredients_categories').orderBy('name').then((rows => {
-            if (args.includeUncategorized) {
+        ingredientsCategories: (_, { includeUncategorized }) => knex('ingredients_categories').orderBy('name').then((rows => {
+            if (includeUncategorized) {
                 return [...rows, { id: 0, name: "", position: 1000 }];
             }
 
             return rows;
         })),
 
-        lists: (_, args) => { 
+        lists: (_, args) => {
             let obj = knex('lists');
 
             if ('closed' in args) {
-               obj.where('closed', args.closed);
+                obj.where('closed', args.closed);
             }
 
             return obj;
         },
 
-        list: (_, args) => knex('lists').where('id', args.id).first(),
+        list: (_, { id }) => knex('lists').where('id', id).first(),
 
-        entries: (_, {upcoming, limit}) => {
+        entries: (_, { upcoming, limit }) => {
             let obj = knex('lists_recipes');
 
             if (upcoming) {
@@ -124,21 +124,21 @@ const resolvers = {
     },
 
     Preparation: {
-        unit: (parent) => knex('units').where('id', parent.unit_id).first(),
+        unit: ({ unit_id }) => knex('units').where('id', unit_id).first(),
 
-        ingredient: (parent) => knex('ingredients').where('id', parent.ingredient_id).first()
+        ingredient: ({ ingredient_id }) => knex('ingredients').where('id', ingredient_id).first()
     },
 
     Tag: {
-        recipes: (parent) => knex('recipes').select('recipes.*').join('recipe_tags', 'recipes.id', '=', 'recipe_tags.recipe_id').where('recipe_tags.tag_id', parent.id).orderBy('recipes.name')
+        recipes: ({ id }) => knex('recipes').select('recipes.*').join('recipe_tags', 'recipes.id', '=', 'recipe_tags.recipe_id').where('recipe_tags.tag_id', id).orderBy('recipes.name')
     },
 
     Category: {
-        recipes: (parent) => knex('recipes').where('category_id', (parent.id === 0 ? null : parent.id)).orderBy('name')
+        recipes: ({ id }) => knex('recipes').where('category_id', (id === 0 ? null : id)).orderBy('name')
     },
 
     IngredientsCategory: {
-        ingredients: (parent) => knex('ingredients').where('category_id', (parent.id === 0 ? null : parent.id)).orderBy('name')
+        ingredients: ({ id }) => knex('ingredients').where('category_id', (id === 0 ? null : id)).orderBy('name')
     },
 
     Mutation: {

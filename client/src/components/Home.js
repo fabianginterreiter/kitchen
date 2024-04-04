@@ -1,6 +1,7 @@
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../ui/Utils.js';
 import { Link } from 'react-router-dom';
+import { formatDate } from '../ui/DateUtils.js';
 
 const GET_LATEST_RECIPES = gql`query GetCategories {
     newestRecipes: recipes(sortBy:{field: "created_at", order: DESC}, limit: 5) {id,name}
@@ -36,7 +37,7 @@ export default function Home() {
                 <li>
                     <div>Geplant</div>
                     <ul>
-                        {data.upcomingRecipes.map((entry) => <li key={entry.id}><Link to={`/recipes/${entry.recipe.id}`}>{entry.recipe.name} {entry.date}</Link></li>)}
+                        {data.upcomingRecipes.map((entry) => <li key={entry.id}><Link to={`/recipes/${entry.recipe.id}`}>{entry.recipe.name} ({formatDate(new Date(entry.date))})</Link></li>)}
                     </ul>
                 </li>
             </ul>

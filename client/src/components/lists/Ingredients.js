@@ -33,10 +33,12 @@ export default function List() {
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
 
-    return (<div id="Cooking">
-        <div><Link to="/lists">Listen</Link> » <Link to={`/lists/${data.list.id}`}>{data.list.name}</Link></div>
+    return (<div className="Fullscreen">
+        <header>
+            <div className="title">{data.list.name}</div>
+        </header>
 
-        <h1>Shopping List</h1>
+        <div><Link to="/lists">Listen</Link> » <Link to={`/lists/${data.list.id}`}>{data.list.name}</Link></div>
         <table className="table">
             <thead>
                 <tr>
