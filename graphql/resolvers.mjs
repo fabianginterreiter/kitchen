@@ -80,9 +80,9 @@ const resolvers = {
     List: {
         entries: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date'),
         startDate: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date', 'asc').first()
-            .then((e) => e ? e.date : null),
+            .then((e) => e && e.date ? new Date(e.date).toISOString().split('T')[0] : null),
         endDate: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date', 'desc').first()
-            .then((e) => e ? e.date : null),
+            .then((e) => e && e.date ? new Date(e.date).toISOString().split('T')[0] : null),
 
         ingredients: (parent) => knex(knex('lists_recipes')
             .join('preparations', 'lists_recipes.recipe_id', '=', 'preparations.recipe_id')
