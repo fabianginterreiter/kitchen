@@ -96,7 +96,8 @@ const resolvers = {
     },
 
     Entry: {
-        recipe: (parent) => knex('recipes').where('id', parent.recipe_id).first()
+        recipe: (parent) => knex('recipes').where('id', parent.recipe_id).first(),
+        date: (parent) => parent.date ? new Date(parent.date).toISOString().split('T')[0] : null
     },
 
     ListIngredient: {

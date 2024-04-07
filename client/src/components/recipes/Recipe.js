@@ -5,10 +5,11 @@ import { Loading, Error } from '../../ui/Utils.js';
 import Tags from './Tags.js';
 import { useState } from "react";
 import './Recipe.css';
+import Text from '../../ui/Text.js';
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
-      id, name, portions, source, preparations {
+      id, name, portions, description, source, preparations {
         id, step, title, amount, unit {name}, ingredient {name}, description
       }
       tags {id, name}
@@ -69,14 +70,18 @@ export default function Recipe() {
             </Options>
         </div>
 
+        <div className="description"><Text value={data.recipe.description} /></div>
+
         <div className="row">
-            <div>Portionen: {data.recipe.portions}</div>
-            <input type="number" min="1" step="1" value={portions} onChange={(e) => setPortions(parseInt(e.target.value))} />
+            <div className='portions'>Portionen:
+                <input type="number" min="1" step="1" value={portions} onChange={(e) => setPortions(parseInt(e.target.value))} />
+                {data.recipe.portions !== portions && <button onClick={() => setPortions(data.recipe.portions)}>x</button>}
+            </div>
         </div>
 
         <h2>Zubereitung</h2>
 
-        <table className="table">
+        <table>
             <tbody>
                 {data.recipe.preparations.map((step) => (step.title ?
                     <tr key={step.id}>

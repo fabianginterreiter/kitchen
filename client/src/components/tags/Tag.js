@@ -17,13 +17,11 @@ export default function Ingredients() {
   if (loading) return <Loading />;
   if (error) return <Error message={error.message} />;
 
-  return (
-    <div>
-      <div><Link to="/tags">Tags</Link></div>
-      <h1>{data.tag.name}</h1>
-      {data.tag.recipes.map(recipe =>
-        <div key={recipe.id}><Link to={`/tags/${tagId}/recipes/${recipe.id}`}>{recipe.name}</Link></div>
-      )}
-    </div>
-  );
+  return (<div>
+    <div><Link to="/tags">Tags</Link></div>
+    <h1>{data.tag.name}</h1>
+    {data.tag.recipes.map(recipe =>
+      <div key={recipe.id}><Link to={`/tags/${tagId}/recipes/${recipe.id}`}>{recipe.name}</Link></div>
+    )}
+  </div>);
 };

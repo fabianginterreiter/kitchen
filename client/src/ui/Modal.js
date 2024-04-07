@@ -3,7 +3,7 @@ import './Modal.css';
 export default function Modal({ onClose, onSave, title, children }) {
     return (<div className="background">
         <div className="fullscreen" onClick={() => onClose()} />
-        <div className="modal">
+        <div className="Modal">
             <header>{title}</header>
             <div className="content">{children}</div>
             <footer>

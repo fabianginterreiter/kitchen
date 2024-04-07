@@ -7,7 +7,7 @@
     z-index: 103;
 }
 
-.modal {
+.Modal {
     position: relative;
     z-index: 1200;
     top: 20px;
@@ -21,17 +21,21 @@
     background-color: white;
 }
 
-.modal>header {
+.Modal>header {
     border-bottom: 1px solid #ddd;
     font-weight: 500;
     padding: 20px;
 }
 
-.modal>div.content {
+.Modal>div.content {
     padding: 20px;
 }
 
-.modal>footer {
+.Modal>footer {
     border-top: 1px solid #ddd;
-    padding: 20x;
+    padding: 10px 15px 15px 20px;
+    text-align: right;
+}
+.Modal>footer>button {
+    margin: 0 5px;
 }

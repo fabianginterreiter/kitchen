@@ -185,7 +185,7 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
             <fieldset>
                 <legend>Zubereitung</legend>
 
-                {recipe.preparations.length > 0 ? <table className="table preparations">
+                {recipe.preparations.length > 0 ? <table className="preparations">
                     <thead>
                         <tr>
                             <th className="amount">Menge</th>
@@ -246,6 +246,13 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
                                     <Option onClick={() => update({
                                         preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, title: !step.title } : p))
                                     })}>Titel</Option>
+                                    <Option onClick={() => update({
+                                        preparations: recipe.preparations
+                                            .filter((f, k) => k < key)
+                                            .concat([{ ...NEW_PREPARATION }])
+                                            .concat(recipe.preparations.filter((f, k) => k >= key))
+                                            .map((e, k) => ({ ...e, step: k + 1 }))
+                                    })}>Add before</Option>
                                     <Option onClick={() => update({
                                         preparations: recipe.preparations
                                             .filter((f, k) => k <= key)

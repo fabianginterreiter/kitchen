@@ -2,11 +2,17 @@
     position: relative;
 }
 
-.ingredients {
+div.portions > input {
+display: inline-block;
+width: 70px;
+margin: 3px;
+}
+
+td.ingredients {
     width: 10%;
 }
 
-.description {
+td.description {
     width: 90%;
 }
 
@@ -69,4 +75,7 @@ input.title {
     font-size: 1.6em !important;
 }
 
+div.description {
+    text-align: center;
+}
 
