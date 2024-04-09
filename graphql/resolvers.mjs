@@ -342,7 +342,7 @@ const resolvers = {
             list_id: obj[0].id,
             recipe_id: entry.recipe_id,
             portions: entry.portions,
-            date: (entry.date ? Date.parse(entry.date + "T00:00:00") : null)
+            date: (entry.date ? Date.parse(entry.date + "T00:00:00").toISOString().split('T')[0] : null)
         }))).then(() => knex('lists').where('id', obj[0].id).first())),
 
         updateList: (_, { list }) => knex('lists').update({
@@ -355,14 +355,14 @@ const resolvers = {
                 return knex('lists_recipes').update({
                     recipe_id: entry.recipe_id,
                     portions: entry.portions,
-                    date: (entry.date ? Date.parse(entry.date + "T00:00:00") : null)
+                    date: (entry.date ? Date.parse(entry.date + "T00:00:00").toISOString().split('T')[0] : null)
                 }).where('id', entry.id).returning('id').then((obj) => obj[0].id);
             } else {
                 return knex('lists_recipes').insert({
                     list_id: list.id,
                     recipe_id: entry.recipe_id,
                     portions: entry.portions,
-                    date: (entry.date ? entry.date : null)
+                    date: (entry.date ? Date.parse(entry.date + "T00:00:00").toISOString().split('T')[0] : null)
                 }).returning('id').then((obj) => obj[0].id);
             }
         })))
