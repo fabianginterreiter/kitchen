@@ -80,9 +80,9 @@ const resolvers = {
     List: {
         entries: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date'),
         startDate: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date', 'asc').first()
-            .then((e) => e && e.date ? new Date(e.date).toISOString().split('T')[0] : null),
+            .then((e) => e && e.date ? e.date : null),
         endDate: (parent) => knex('lists_recipes').where('list_id', parent.id).orderBy('date', 'desc').first()
-            .then((e) => e && e.date ? new Date(e.date).toISOString().split('T')[0] : null),
+            .then((e) => e && e.date ? e.date : null),
 
         ingredients: (parent) => knex(knex('lists_recipes')
             .join('preparations', 'lists_recipes.recipe_id', '=', 'preparations.recipe_id')
@@ -96,8 +96,7 @@ const resolvers = {
     },
 
     Entry: {
-        recipe: (parent) => knex('recipes').where('id', parent.recipe_id).first(),
-        date: (parent) => parent.date ? new Date(parent.date).toISOString().split('T')[0] : null
+        recipe: (parent) => knex('recipes').where('id', parent.recipe_id).first()
     },
 
     ListIngredient: {
@@ -342,7 +341,7 @@ const resolvers = {
             list_id: obj[0].id,
             recipe_id: entry.recipe_id,
             portions: entry.portions,
-            date: (entry.date ? new Date(entry.date + "T00:00:00").toISOString().split('T')[0] : null)
+            date: entry.date
         }))).then(() => knex('lists').where('id', obj[0].id).first())),
 
         updateList: (_, { list }) => knex('lists').update({
@@ -355,14 +354,14 @@ const resolvers = {
                 return knex('lists_recipes').update({
                     recipe_id: entry.recipe_id,
                     portions: entry.portions,
-                    date: (entry.date ? new Date(entry.date + "T00:00:00").toISOString().split('T')[0] : null)
+                    date: entry.date
                 }).where('id', entry.id).returning('id').then((obj) => obj[0].id);
             } else {
                 return knex('lists_recipes').insert({
                     list_id: list.id,
                     recipe_id: entry.recipe_id,
                     portions: entry.portions,
-                    date: (entry.date ? new Date(entry.date + "T00:00:00").toISOString().split('T')[0] : null)
+                    date: entry.date
                 }).returning('id').then((obj) => obj[0].id);
             }
         })))

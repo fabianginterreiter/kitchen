@@ -15,7 +15,7 @@ exports.up = function (knex) {
         table.integer('recipe_id').notNullable();
         table.integer('list_id').notNullable();
         table.integer('portions').notNullable();
-        table.date('date').defaultTo(null);
+        table.string('date', 10).defaultTo(null); // 2024-01-01
         table.foreign('recipe_id').references('id').inTable('recipes').onDelete('CASCADE');
         table.foreign('list_id').references('id').inTable('lists').onDelete('CASCADE');
         table.unique(['recipe_id', 'list_id']);
