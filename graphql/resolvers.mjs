@@ -65,7 +65,7 @@ const resolvers = {
             let obj = knex('lists_recipes');
 
             if (upcoming) {
-                obj.where('date', '>', knex.fn.now());
+                obj.where('date', '>', new Date().toISOString().split('T')[0]);
                 obj.orderBy('date', 'asc');
             }
 
