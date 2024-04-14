@@ -8,6 +8,8 @@ const GET_LATEST_RECIPES = gql`query GetCategories {
     latestRecipes: recipes(sortBy:{field: "updated_at", order: DESC}, limit: 5) {id,name}
 
     upcomingRecipes: entries(upcoming: true, limit: 5) { id, recipe {id, name}, date}
+
+    lists: lists(active: true, closed: false) { id, name }
   }`;
 
 
@@ -38,6 +40,13 @@ export default function Home() {
                     <div>Geplant</div>
                     <ul>
                         {data.upcomingRecipes.map((entry) => <li key={entry.id}><Link to={`/recipes/${entry.recipe.id}`}>{entry.recipe.name} ({formatDate(new Date(entry.date))})</Link></li>)}
+                    </ul>
+                </li>
+
+                <li>
+                    <div>Listen</div>
+                    <ul>
+                        {data.lists.map((list) => <li key={list.id}><Link to={`/lists/${list.id}`}>{list.name}</Link></li>)}
                     </ul>
                 </li>
             </ul>

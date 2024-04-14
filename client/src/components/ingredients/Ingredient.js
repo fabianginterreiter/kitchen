@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { Loading, Error } from '../../ui/Utils.js';
+import Recipes from '../../ui/Recipes.js';
+
 
 const GET_INGREDIENT = gql`query GetIngredient($ingredientId: ID!) {
     ingredient(id: $ingredientId) { id, name, recipes { id, name } }
@@ -21,9 +23,7 @@ export default function Ingredients() {
     <div>
        <div><Link to="/ingredients">Zutaten</Link></div>
       <h1>{data.ingredient.name}</h1>
-      {data.ingredient.recipes.map(recipe =>
-        <div key={recipe.id}><Link to={`/ingredients/${data.ingredient.id}/recipes/${recipe.id}`}>{recipe.name}</Link></div>
-      )}
+      <Recipes recipes={data.ingredient.recipes} />
     </div>
   );
 };

@@ -56,6 +56,10 @@ const resolvers = {
                 obj.where('closed', args.closed);
             }
 
+            if ('active' in args) {
+                obj.select('lists.*').distinct().join('lists_recipes', 'lists.id', '=', 'lists_recipes.list_id').where('lists_recipes.date','>=', knex.fn.now());
+            }
+
             return obj;
         },
 
@@ -65,7 +69,7 @@ const resolvers = {
             let obj = knex('lists_recipes');
 
             if (upcoming) {
-                obj.where('date', '>', new Date().toISOString().split('T')[0]);
+                obj.where('date', '>=', new Date().toISOString().split('T')[0]);
                 obj.orderBy('date', 'asc');
             }
 
