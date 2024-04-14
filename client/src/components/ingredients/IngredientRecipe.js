@@ -18,10 +18,8 @@ export default function Ingredients() {
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
 
-    return (
-        <div>
-            <div><Link to="/ingredients">Zutaten</Link> » <Link to={`/ingredients/${data.ingredient.id}`}>{data.ingredient.name}</Link></div>
-            <Recipe />
-        </div>
-    );
+    return (<div>
+        <div><Link to="/ingredients">Zutaten</Link> » <Link to={`/ingredients/${data.ingredient.id}`}>{data.ingredient.name}</Link></div>
+        <Recipe />
+    </div>);
 };

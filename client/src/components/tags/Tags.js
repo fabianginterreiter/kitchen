@@ -71,14 +71,12 @@ export default function Tags() {
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Verwendungen</th>
-                    <th></th>
+                    <th>Optionen</th>
                 </tr>
             </thead>
             <tbody>
                 {tags.map(tag => <tr key={tag.id}>
                     <td><Link to={`/tags/${tag.id}`}>{tag.name}</Link></td>
-                    <td>{tag.usages}</td>
                     <td>
                         <button onClick={() => setTag(tag)}>Edit</button>&nbsp;
                         <button onClick={() =>

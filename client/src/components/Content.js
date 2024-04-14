@@ -39,6 +39,14 @@ export default function Content({ visible, onClose }) {
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
 
+    const onClick = (e) => {
+        if(e.target.nodeName === "A") {
+            if (window.innerWidth / 400 < 2) {
+                onClose();
+            }
+        }
+    };
+
     return (<div id="Content" className={(visible ? 'visible' : '')}>
         <header>
             <div className="searchBar">
@@ -47,7 +55,7 @@ export default function Content({ visible, onClose }) {
             <div className="close" onClick={() => onClose()}>✕</div>
         </header>
         <div className="con">
-            <ul>{data.categories.map(category => {
+            <ul onClick={(e) => onClick(e)}>{data.categories.map(category => {
                 if (category.recipes.length === 0) { return <li key={category.id} /> }
 
                 const open = !isClosed(category);
