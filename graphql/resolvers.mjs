@@ -57,7 +57,7 @@ const resolvers = {
             }
 
             if ('active' in args) {
-                obj.select('lists.*').distinct().join('lists_recipes', 'lists.id', '=', 'lists_recipes.list_id').where('lists_recipes.date','>=', knex.fn.now());
+                obj.select('lists.*').distinct().join('lists_recipes', 'lists.id', '=', 'lists_recipes.list_id').where('lists_recipes.date','>=', new Date().toISOString().split('T')[0]);
             }
 
             return obj;
