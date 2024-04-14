@@ -2,6 +2,7 @@ ul.Tags {
     height: 20px;
     padding: 0;
     margin: 0;
+    text-align: center;
 }
 
 ul.Tags>li {
@@ -13,7 +14,8 @@ ul.Tags>li {
 
 ul.Tags>li>a {
     text-decoration: none;
-    padding: 0 5px 0 0;
+    padding: 3px 4px;
+    text-transform: lowercase;
 }
 
 ul.Tags>li>a:hover {

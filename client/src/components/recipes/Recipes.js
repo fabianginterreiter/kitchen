@@ -1,9 +1,8 @@
-import { Link, useSearchParams } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
-import Collapse from "../../ui/Collapse.js";
 import Select from 'react-select';
 import { Loading, Error } from '../../ui/Utils.js';
+import Recipes from '../../ui/Recipes.js';
 
 const GET_RECIPES = gql`query GetRecipes {
     recipes { id, name, portions, vegan, vegetarian, tags { id }, ingredients { id } }
@@ -11,7 +10,7 @@ const GET_RECIPES = gql`query GetRecipes {
     ingredients { id, name}
   }`;
 
-export default function Recipes() {
+export default function RecipesOverview() {
 
   const [filter, setFilter] = useState({ name: "", tags: [], ingredients: [], vegan: false, vegetarian: false });
 
@@ -83,15 +82,6 @@ export default function Recipes() {
       </div>
     </fieldset>
 
-    <table className="table table-striped">
-      <thead><tr><th>Name</th></tr></thead>
-      <tbody>
-        {data.recipes.filter((r) => isVisible(r)).map(recipe =>
-          <tr key={recipe.id}>
-            <td><Link to={`/recipes/${recipe.id}`}>{recipe.name}</Link></td>
-          </tr>
-        )}
-      </tbody>
-    </table>
+    <Recipes recipes={data.recipes.filter((r) => isVisible(r))} />
   </div >);
 };

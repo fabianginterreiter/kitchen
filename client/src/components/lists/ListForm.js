@@ -1,15 +1,13 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useQuery, useMutation, gql } from '@apollo/client';
+import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
 import Select from 'react-select';
-import { Options, Option } from '../recipes/Options.js';
+import { Options, Option } from '../../ui/Options.js';
 import AutoResizeTextarea from "../../ui/AutoResizeTextarea.js";
+import './List.css';
 
 const GET_LIST = gql`
-query getData {
-  recipes { id, name, portions }
-}`;
+query getData { recipes { id, name, portions } }`;
 
 const Status = {
     NoChanges: 1,
@@ -17,7 +15,6 @@ const Status = {
     Progress: 3,
     Done: 4
 }
-
 
 export default function List({ list, onChange, onClose, onSave, onSaveAndClose }) {
 
@@ -53,122 +50,111 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
         });
     }
 
-    const getDayName = (day) => {
-        switch (day) {
-            case 0: return 'Sonntag';
-            case 1: return 'Montag';
-            case 2: return 'Dienstag';
-            case 3: return 'Mittwoch';
-            case 4: return 'Donnerstag';
-            case 5: return 'Freitag';
-            case 6: return 'Samstag';
-            default: return '???';
-        }
-    }
+    return (<div id="ListForm" class="Fullscreen">
+        <header>
+            <div className="title">{title}</div>
 
-    const getWorkday = (date) => {
-        if (!date) {
-            return <span />
-        }
-        const day = new Date(date).getDay();
+            <button onClick={() => onClose()}>Abbrechen</button>
+            <button className={(status === Status.Done ? 'button-success' : '')}
+                onClick={() => {
+                    setStatus(Status.Progress);
+                    onSave(getListObject(), () => {
+                        setStatus(Status.Done);
+                        setTitle(list.name);
+                        setTimeout(() => setStatus(Status.NoChanges), 1000);
+                    });
+                }}>Speichern</button>
+            <button onClick={() => {
+                onSaveAndClose(getListObject())
+            }}>Speichern & Schließen</button>
+        </header>
 
-        return <span>{getDayName(day)}</span>;
-    }
-
-    return (
-        <div id="RecipeForm">
-            <header>
-                <div className="title">{title}</div>
-
-                <button onClick={() => onClose()}>Abbrechen</button>
-                <button className={(status === Status.Done ? 'button-success' : '')}
-                    onClick={() => {
-                        setStatus(Status.Progress);
-                        onSave(getListObject(), () => {
-                            setStatus(Status.Done);
-                            setTitle(list.name);
-                            setTimeout(() => setStatus(Status.NoChanges), 1000);
-                        });
-                    }}>Speichern</button>
-                <button onClick={() => {
-                    onSaveAndClose(getListObject())
-                }}>Speichern & Schließen</button>
-            </header>
-
+        <fieldset>
+            <legend>Liste</legend>
             <div>
-                <label htmlFor="name">Name</label>
-                <input name="title" className="title" id="name" type="text" value={list.name} placeholder="Name" onChange={(e) => update({ name: e.target.value })} />
+                <input name="title" className="title" type="text" value={list.name} placeholder="Name" onChange={(e) => update({ name: e.target.value })} />
             </div>
 
-            <fieldset>
-                <legend>Eigenschaften</legend>
-                <div>
-                    <AutoResizeTextarea placeholder="Beschreibung" value={list.description} onChange={(e) => update({ description: e.target.value })} />
-                </div>
-                <div>
-                    <input type="checkbox" checked={list.closed}
-                        id="closed" onChange={(e) => update({ closed: e.target.checked })} />
-                    <label htmlFor="closed">Abgeschlossen</label>
-                </div>
-            </fieldset>
+            {list.id && <div>
+                <input type="checkbox" checked={list.closed}
+                    id="closed" onChange={(e) => update({ closed: e.target.checked })} />
+                <label htmlFor="closed">Abgeschlossen</label>
+            </div>}
 
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Datum</th>
-                        <th>Rezept</th>
-                        <th>Portionen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {list.entries.map((entry, key) => <tr key={key}>
-                        <td>
-                            {getWorkday(entry.date)}
-                            <input type="date" value={entry.date ? entry.date : ""} onChange={(e) => update({
-                                entries: list.entries.map((en, k) => (k === key ? {
-                                    ...en,
-                                    date: e.target.value.length > 0 ? e.target.value : null
-                                } : en))
-                            })} /></td>
-                        <td>
-                            <Select
-                                value={entry.recipe_id ? recipes.find((r) => r.value === entry.recipe_id) : null}
-                                options={recipes}
-                                onChange={(e) => update({
+            <div>
+                <AutoResizeTextarea placeholder="Beschreibung" value={list.description} onChange={(e) => update({ description: e.target.value })} />
+            </div>
+        </fieldset>
+
+        <div className='overflow'>
+            <fieldset>
+                <legend>Rezepte</legend>
+
+                {list.entries.length > 0 ? <table className="table">
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>Rezept</th>
+                            <th>Portionen</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {list.entries.map((entry, key) => <tr key={key}>
+                            <td className="date">
+                                <input type="date" value={entry.date ? entry.date : ""} onChange={(e) => update({
                                     entries: list.entries.map((en, k) => (k === key ? {
                                         ...en,
-                                        recipe_id: e.value,
-                                        portions: e.portions
+                                        date: e.target.value.length > 0 ? e.target.value : null
+                                    } : en))
+                                })} /></td>
+                            <td className="recipe">
+                                <Select
+                                    value={entry.recipe_id ? recipes.find((r) => r.value === entry.recipe_id) : null}
+                                    options={recipes}
+                                    onChange={(e) => update({
+                                        entries: list.entries.map((en, k) => (k === key ? {
+                                            ...en,
+                                            recipe_id: e.value,
+                                            portions: e.portions
+                                        } : en))
+                                    })} />
+                            </td>
+                            <td className="portions">
+                                <input type="number" value={entry.portions} min="1" step="1" onChange={(e) => update({
+                                    entries: list.entries.map((en, k) => (k === key ? {
+                                        ...en,
+                                        portions: parseInt(e.target.value)
                                     } : en))
                                 })} />
-                        </td>
-                        <td>
-                            <input type="number" value={entry.portions} min="1" step="1" onChange={(e) => update({
-                                entries: list.entries.map((en, k) => (k === key ? {
-                                    ...en,
-                                    portions: parseInt(e.target.value)
-                                } : en))
-                            })} />
-                        </td>
-                        <td>
-                            <Options>
-                                <Option onClick={() => update({
-                                    entries: list.entries.filter((e, id) => key !== id)
-                                })}>Delete</Option>
-                            </Options>
-                        </td>
-                    </tr>)}
-                </tbody>
-            </table>
+                            </td>
+                            <td className="options">
+                                <Options>
+                                    <Option onClick={() => update({
+                                        entries: list.entries.filter((e, id) => key !== id)
+                                    })}>Delete</Option>
+                                </Options>
+                            </td>
+                        </tr>)}
+                    </tbody>
+                </table> : <button onClick={() => update({
+                    entries: [...list.entries, {
+                        id: null,
+                        portions: 1,
+                        date: null,
+                        recipe_id: null
+                    }]
+                })}>Füge ein erstes Gericht hinzufügen</button>}
 
-            <button onClick={() => update({
-                entries: [...list.entries, {
-                    id: null,
-                    portions: 2,
-                    date: null,
-                    recipe_id: null
-                }]
-            })}>Add</button>
-        </div >
-    );
+                {list.entries.length > 0 && <button onClick={() => update({
+                    entries: [...list.entries, {
+                        id: null,
+                        portions: 1,
+                        date: null,
+                        recipe_id: null
+                    }]
+                })}>Weiteres Gericht hinzufügen</button>}
+            </fieldset>
+        </div>
+    </div >);
 };

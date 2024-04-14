@@ -3,7 +3,7 @@ import { useState } from "react";
 import Select from 'react-select';
 import Creatable from 'react-select/creatable';
 import { Loading, Error } from '../../ui/Utils.js';
-import { Options, Option } from './Options.js';
+import { Options, Option } from '../../ui/Options.js';
 import AutoResizeTextarea from '../../ui/AutoResizeTextarea.js';
 
 const GET_DATA = gql`query GetData {
@@ -82,7 +82,7 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
     if (loading || units === null || ingredients === null || tags === null) return <Loading />;
     if (error) return <Error message={error.message} />;
 
-    return (<div id="RecipeForm">
+    return (<div class="Fullscreen">
 
         <header>
             <div className="title">{title}</div>
@@ -109,13 +109,15 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
                 }}>Speichern & Schließen</button> : <span />)}
         </header>
 
-        <div>
-            <label htmlFor="name">Name</label>
-            <input name="title" className="title" id="name" type="text" value={recipe.name} placeholder="Name" onChange={(e) => update({ name: e.target.value })} />
-        </div>
+
 
         <fieldset>
-            <legend>Eigenschaften</legend>
+            <legend>Rezept</legend>
+
+            <div>
+                <label htmlFor="name">Name</label>
+                <input name="title" className="title" id="name" type="text" value={recipe.name} placeholder="Name" onChange={(e) => update({ name: e.target.value })} />
+            </div>
 
             <div>
                 <label htmlFor="category">Kategorie</label>
@@ -180,89 +182,102 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
 
 
         <div className="overflow">
-            <table className="table preparations">
-                <thead>
-                    <tr>
-                        <th className="amount">Menge</th>
-                        <th className="unit">Einheit</th>
-                        <th className="ingredient">Zutat</th>
-                        <th className="description">Beschreibung</th>
-                        <th className="options"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {recipe.preparations.map((step, key) => <tr key={`${step.id}+${step.step}+${key}`} className={step.title ? "title" : ""}>
-                        {!step.title && <>
-                            <td className="amount">
-                                <input disabled={step.title} name={`amount_${key}`} type="number" value={step.amount} min="0" onChange={(e) => update({
-                                    preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, amount: e.target.value } : p))
-                                })} />
-                            </td>
-                            <td className="unit">
-                                <Select options={units} isDisabled={step.title} isClearable={true}
-                                    value={{ label: (units.length > 0 && step.unit_id ? units.find((u) => u.value === step.unit_id).label : "") }}
-                                    onChange={(e) => update({
-                                        preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, unit_id: e === null ? null : e.value } : p))
-                                    })} />
-                            </td>
-                            <td className="ingredient">
-                                <Creatable isDisabled={step.title}
-                                    options={ingredients}
-                                    isClearable={true}
-                                    value={{ label: (step.ingredient_id ? ingredients.find((u) => u.value === step.ingredient_id).label : (step.ingredient ? step.ingredient : "")) }}
-                                    onCreateOption={(e) => {
-                                        console.log(e);
-                                        createIngredient({
-                                            variables: { ingredient: { name: e } },
-                                            onCompleted: (data) => {
-                                                setIngredients([...ingredients, { "value": data.createIngredient.id, "label": data.createIngredient.name }].sort((a, b) => a.label < b.label ? -1 : 1))
+            <fieldset>
+                <legend>Zubereitung</legend>
 
-                                                update({
-                                                    preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: data.createIngredient.id } : p))
-                                                });
-                                            }
-                                        })
-                                    }}
+                {recipe.preparations.length > 0 ? <table className="preparations">
+                    <thead>
+                        <tr>
+                            <th className="amount">Menge</th>
+                            <th className="unit">Einheit</th>
+                            <th className="ingredient">Zutat</th>
+                            <th className="description">Beschreibung</th>
+                            <th className="options"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {recipe.preparations.map((step, key) => <tr key={`${step.id}+${step.step}+${key}`} className={step.title ? "title" : ""}>
+                            {!step.title && <>
+                                <td className="amount">
+                                    <input disabled={step.title} name={`amount_${key}`} type="number" value={step.amount} min="0" onChange={(e) => update({
+                                        preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, amount: e.target.value } : p))
+                                    })} />
+                                </td>
+                                <td className="unit">
+                                    <Select options={units} isDisabled={step.title} isClearable={true}
+                                        value={{ label: (units.length > 0 && step.unit_id ? units.find((u) => u.value === step.unit_id).label : "") }}
+                                        onChange={(e) => update({
+                                            preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, unit_id: e === null ? null : e.value } : p))
+                                        })} />
+                                </td>
+                                <td className="ingredient">
+                                    <Creatable isDisabled={step.title}
+                                        options={ingredients}
+                                        isClearable={true}
+                                        value={{ label: (step.ingredient_id ? ingredients.find((u) => u.value === step.ingredient_id).label : (step.ingredient ? step.ingredient : "")) }}
+                                        onCreateOption={(e) => {
+                                            console.log(e);
+                                            createIngredient({
+                                                variables: { ingredient: { name: e } },
+                                                onCompleted: (data) => {
+                                                    setIngredients([...ingredients, { "value": data.createIngredient.id, "label": data.createIngredient.name }].sort((a, b) => a.label < b.label ? -1 : 1))
+
+                                                    update({
+                                                        preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: data.createIngredient.id } : p))
+                                                    });
+                                                }
+                                            })
+                                        }}
+                                        onChange={(e) => update({
+                                            preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: e === null ? null : e.value } : p))
+                                        })} />
+                                </td>
+                            </>}
+                            <td className="description" colSpan={step.title ? 4 : 1}>
+                                <AutoResizeTextarea
+                                    name={`description_${key}`}
+                                    value={step.description ? step.description : ""}
                                     onChange={(e) => update({
-                                        preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, ingredient_id: e === null ? null : e.value } : p))
+                                        preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, description: e.target.value } : p))
                                     })} />
                             </td>
-                        </>}
-                        <td className="description" colSpan={step.title ? 4 : 1}>
-                            <AutoResizeTextarea
-                                name={`description_${key}`}
-                                value={step.description ? step.description : ""}
-                                onChange={(e) => update({
-                                    preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, description: e.target.value } : p))
-                                })} />
-                        </td>
-                        <td className="options">
-                            <Options>
-                                <Option onClick={() => update({
-                                    preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, title: !step.title } : p))
-                                })}>Titel</Option>
-                                <Option onClick={() => update({
-                                    preparations: recipe.preparations
-                                        .filter((f, k) => k <= key)
-                                        .concat([{ ...NEW_PREPARATION }])
-                                        .concat(recipe.preparations.filter((f, k) => k > key))
-                                        .map((e, k) => ({ ...e, step: k + 1 }))
-                                })}>Add After</Option>
-                                <Option onClick={() => update({
-                                    preparations: recipe.preparations.filter((e, id) => key !== id).map((e, k) => ({ ...e, step: k + 1 }))
-                                })}>Delete</Option>
-                            </Options>
-                        </td>
-                    </tr>)}
-                </tbody>
-            </table>
+                            <td className="options">
+                                <Options>
+                                    <Option onClick={() => update({
+                                        preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, title: !step.title } : p))
+                                    })}>Titel</Option>
+                                    <Option onClick={() => update({
+                                        preparations: recipe.preparations
+                                            .filter((f, k) => k < key)
+                                            .concat([{ ...NEW_PREPARATION }])
+                                            .concat(recipe.preparations.filter((f, k) => k >= key))
+                                            .map((e, k) => ({ ...e, step: k + 1 }))
+                                    })}>Add before</Option>
+                                    <Option onClick={() => update({
+                                        preparations: recipe.preparations
+                                            .filter((f, k) => k <= key)
+                                            .concat([{ ...NEW_PREPARATION }])
+                                            .concat(recipe.preparations.filter((f, k) => k > key))
+                                            .map((e, k) => ({ ...e, step: k + 1 }))
+                                    })}>Add After</Option>
+                                    <Option onClick={() => update({
+                                        preparations: recipe.preparations.filter((e, id) => key !== id).map((e, k) => ({ ...e, step: k + 1 }))
+                                    })}>Delete</Option>
+                                </Options>
+                            </td>
+                        </tr>)}
+                    </tbody>
+                </table> : <button name="addStep" className="btn btn-default" onClick={() => update({
+                    preparations: [...recipe.preparations,
+                    { ...NEW_PREPARATION, step: recipe.preparations.length + 2 }]
+                })}>Ersten Arbeitsschritt hinzufügen</button>}
+                
+                {recipe.preparations.length > 0 &&
+                    <button name="addStep" className="btn btn-default" onClick={() => update({
+                        preparations: [...recipe.preparations,
+                        { ...NEW_PREPARATION, step: recipe.preparations.length + 2 }]
+                    })}>Arbeitsschritt hinzufügen</button>}
+            </fieldset>
         </div>
-
-        <button name="addStep" className="btn btn-default" onClick={() => update({
-            preparations: [...recipe.preparations,
-            { ...NEW_PREPARATION, step: recipe.preparations.length + 2 }]
-        })}>Add</button>
-
-
     </div>);
 }

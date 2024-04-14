@@ -1,7 +1,7 @@
 import './Recipe.css';
 
 import { useQuery, useMutation, gql } from '@apollo/client';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from "react";
 import RecipeForm from './RecipeForm.js';
 

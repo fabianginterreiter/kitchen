@@ -119,7 +119,7 @@ const typeDefs = `#graphql
 
     ingredientsCategories(includeUncategorized: Boolean): [IngredientsCategory],
 
-    lists(closed: Boolean): [List],
+    lists(closed: Boolean, active: Boolean): [List],
     list(id: ID!): List,
 
     entries(upcoming: Boolean, limit: Int): [Entry],

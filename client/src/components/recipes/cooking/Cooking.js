@@ -1,5 +1,5 @@
 import { useQuery, gql } from '@apollo/client';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Loading, Error } from '../../../ui/Utils.js';
 import './Cooking.css';
 import { useState } from "react";
@@ -12,31 +12,26 @@ const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     }
   }`;
 
-function getIngredient(step) {
-    if (!step.ingredient) {
-        return;
-    }
 
-    var amount = "";
-
-    if (step.amount) {
-        amount = step.amount + " ";
-
-        if (step.unit) {
-            amount += step.unit.name + " ";
-        }
-    }
-
-    return <>{amount}{step.ingredient.name}</>
-}
 
 export default function Cooking() {
     const { recipeId } = useParams();
 
     const [done, setDone] = useState([]);
 
+    const [searchParams] = useSearchParams();
+
+    const [portions, setPortions] = useState(0);
+
     const { loading, error, data } = useQuery(GET_RECIPE, {
         variables: { recipeId },
+        onCompleted: (data) => {
+            if (searchParams.get('portions')) {
+                setPortions(parseInt(searchParams.get('portions')));
+            } else {
+                setPortions(data.recipe.portions);
+            }
+        }
     });
 
     const isDone = (step) => done.find((k) => k === step.id);
@@ -49,12 +44,32 @@ export default function Cooking() {
         }
     }
 
+    const getIngredient = (step) => {
+        if (!step.ingredient) {
+            return;
+        }
+
+        var amount = "";
+
+        if (step.amount) {
+            amount = (step.amount / data.recipe.portions * portions) + " ";
+
+            if (step.unit) {
+                amount += step.unit.name + " ";
+            }
+        }
+
+        return <>{amount}{step.ingredient.name}</>
+    }
+
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
 
     return (
-        <div id="Cooking">
-            <h1>{data.recipe.name}</h1>
+        <div id="Cooking" className="Fullscreen">
+            <header>
+                <div className="title">{data.recipe.name}</div>
+            </header>
 
             <table className="table">
                 <tbody>

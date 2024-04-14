@@ -35,70 +35,64 @@ export default function Tags() {
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
 
-    return (
-        <div>
-            <h1>Tags</h1>
+    return (<div>
+        <h1>Tags</h1>
 
-            {tag ? <Modal visible={tag !== null} onClose={() => setTag(null)} onSave={() => {
-                if (tag.id) {
-                    updateTag({
-                        variables: { tag: { id: tag.id, name: tag.name } },
-                        onCompleted: (data) => {
-                            setTags(tags.map((u) => (u.id === data.updateTag.id) ? data.updateTag : u));
-                            setTag(null);
-                        }
-                    })
-                } else {
-                    createTag({
-                        variables: {
-                            tag
-                        },
-                        onCompleted: (data) => {
-                            setTags([...tags, data.createTag]);
-                            setTag(null);
-                        }
-                    })
-                }
+        {tag && <Modal visible={tag !== null} onClose={() => setTag(null)} onSave={() => {
+            if (tag.id) {
+                updateTag({
+                    variables: { tag: { id: tag.id, name: tag.name } },
+                    onCompleted: (data) => {
+                        setTags(tags.map((u) => (u.id === data.updateTag.id) ? data.updateTag : u));
+                        setTag(null);
+                    }
+                })
+            } else {
+                createTag({
+                    variables: {
+                        tag
+                    },
+                    onCompleted: (data) => {
+                        setTags([...tags, data.createTag]);
+                        setTag(null);
+                    }
+                })
+            }
 
-                setTag(null)
-            }} title={`Zutat ${tag.id ? "bearbeiten" : "erstellen"}`}>
-                <label htmlFor="formName" className="form-label">Name</label>
-                <input id="formName" type="text" placeholder="Name" value={tag.name} onChange={e => setTag({ ...tag, name: e.target.value })} />
-            </Modal> : <div />}
+            setTag(null)
+        }} title={`Zutat ${tag.id ? "bearbeiten" : "erstellen"}`}>
+            <label htmlFor="formName" className="form-label">Name</label>
+            <input id="formName" type="text" placeholder="Name" value={tag.name} onChange={e => setTag({ ...tag, name: e.target.value })} />
+        </Modal>}
 
-            <button onClick={() => setTag({ name: "" })}>Erstellen</button>
+        <button onClick={() => setTag({ name: "" })}>Erstellen</button>
 
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Verwendungen</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {tags.map(tag =>
-                        <tr key={tag.id}>
-                            <td><Link to={`/tags/${tag.id}`}>{tag.name}</Link></td>
-                            <td>{tag.usages}</td>
-                            <td>
-                                <button onClick={() => setTag(tag)}>Edit</button>&nbsp;
-                                <button onClick={() =>
-                                    deleteTag({
-                                        variables: {
-                                            tag: { id: tag.id, name: tag.name }
-                                        }, onCompleted: (data) =>
-                                            setTags(tags.filter((u) => u.id !== tag.id)),
-                                        onError: (error) => {
-                                            console.log(error)
-                                            alert("In USE!");
-                                        }
-                                    })} disabled={tag.usages > 0}>Delete</button>
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-        </div >
-    );
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Optionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {tags.map(tag => <tr key={tag.id}>
+                    <td><Link to={`/tags/${tag.id}`}>{tag.name}</Link></td>
+                    <td>
+                        <button onClick={() => setTag(tag)}>Edit</button>&nbsp;
+                        <button onClick={() =>
+                            deleteTag({
+                                variables: {
+                                    tag: { id: tag.id, name: tag.name }
+                                }, onCompleted: (data) =>
+                                    setTags(tags.filter((u) => u.id !== tag.id)),
+                                onError: (error) => {
+                                    console.log(error)
+                                    alert("In USE!");
+                                }
+                            })} disabled={tag.usages > 0}>Delete</button>
+                    </td>
+                </tr>)}
+            </tbody>
+        </table>
+    </div>);
 };

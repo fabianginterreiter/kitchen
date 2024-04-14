@@ -1,0 +1,15 @@
+#ListForm td.date {
+    width: 200px;
+}
+
+#ListForm td.portions {
+    width: 120px;
+}
+
+#ListForm td.recipe {
+    min-width: 300px;
+}
+
+#ListForm td.options {
+    width: 40px;
+}

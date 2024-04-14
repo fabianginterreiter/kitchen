@@ -12,24 +12,24 @@
   }
 }
 
-.table {
+table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.table>tbody>tr {
+table>tbody>tr {
   margin: 0;
   padding: 0;
 }
 
-.table>thead>tr>th {
+table>thead>tr>th {
   font-weight: bold;
   text-align: left;
   padding: 8px 16px;
   margin: 0;
 }
 
-.table>tbody>tr>td {
+table>tbody>tr>td {
   padding: 8px;
   margin: 0;
   border-style: solid;
@@ -37,7 +37,7 @@
   border-width: 1px 0 1px 0;
 }
 
-.table>tbody>tr:nth-child(odd) {
+table>tbody>tr:nth-child(odd) {
   background-color: #f2f2f2;
 
 }
