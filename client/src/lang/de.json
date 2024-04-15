@@ -1,12 +1,35 @@
 {
     "button.edit": "Bearbeiten",
     "button.delete": "Löschen",
-    
     "kitchen": "Kitchen",
-
+    "menu.createRecipe": "Neues Rezept",
+    "menu.createList": "Neue Liste",
+    "content.filter": "Filter",
+    "content.uncategorized": "Unkategorisiert",
     "home.welcome": "Willkommen",
     "home.lastUpdates": "Zuletzt bearbeitet",
     "home.justCreated": "Zuletzt erstellt",
     "home.planned": "Geplant",
-    "home.activeLists": "Aktive Liste"
+    "home.activeLists": "Aktive Liste",
+    "recipes": "Rezepte",
+    "categories": "Kategorien",
+    "categories.uncategorized":  "Unkategorisiert",
+    "tags": "Tags",
+    "tags.create": "Neuen Tag erstellen",
+    "tags.modal.title": "Tag",
+    "tags.modal.title.edit": "bearbeiten",
+    "tags.modal.title.create": "erstellen",
+    "tags.modal.name": "Name",
+    "tags.table.name": "Name",
+    "tags.table.options": "Optionen",
+    "ingredients": "Zutaten",
+    "ingredients.filter": "Filter",
+    "ingredients.uncategorized": "Unkategorisiert",
+    "lists": "Listen",
+    "options": "Optionen",
+    "options.units": "Einheiten",
+    "options.categories": "Kategorien",
+    "options.ingredients": "Zutaten",
+    "options.ingredients.categories": "Zutaten Kategorien",
+    "options.importexport": "Import & Export"
 }

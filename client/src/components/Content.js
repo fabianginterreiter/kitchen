@@ -3,6 +3,7 @@ import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../ui/Utils.js';
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const GET_CATEGORIES = gql`query GetCategories {
     categories(includeUncategorized:true) {id,name,position, recipes {id, name}}
@@ -29,6 +30,8 @@ function BoldedText({ text, filter }) {
 }
 
 export default function Content({ visible, onClose }) {
+    const { t } = useTranslation();
+
     const [filter, setFilter] = useState("");
     const [closed, setClosed] = useState([]);
 
@@ -50,7 +53,7 @@ export default function Content({ visible, onClose }) {
     return (<div id="Content" className={(visible ? 'visible' : '')}>
         <header>
             <div className="searchBar">
-                <input type="search" name="contentFilter" placeholder="Filter" value={filter} onChange={(e) => setFilter(e.target.value)} />
+                <input type="search" name="contentFilter" placeholder={t('content.filter')} value={filter} onChange={(e) => setFilter(e.target.value)} />
             </div>
             <div className="close" onClick={() => onClose()}>✕</div>
         </header>
@@ -70,7 +73,7 @@ export default function Content({ visible, onClose }) {
                         } else {
                             setClosed([...closed, category.id]);
                         }
-                    }}>{(open ? "" : "❯ ")}{(category.id === "0" ? "Unkategorisiert" : category.name)} {number}</div>
+                    }}>{(open ? "" : "❯ ")}{(category.id === "0" ? t('content.uncategorized') : category.name)} {number}</div>
                     {(!open ? <span /> : <ul>{recipes.map((recipe) =>
                         <li key={recipe.id}><NavLink to={`/recipes/${recipe.id}`} className={({ isActive }) => ((isActive ? "active" : ""))}><BoldedText text={recipe.name} filter={filter} /></NavLink></li>
                     )}</ul>)}
