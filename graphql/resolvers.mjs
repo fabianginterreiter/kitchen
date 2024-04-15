@@ -2,6 +2,8 @@ import { GraphQLError } from 'graphql';
 
 import knex from '../knex.mjs';
 
+const todayAsString = () => (new Date().toISOString().split('T')[0]);
+
 // A map of functions which return data for the schema.
 const resolvers = {
     Query: {
@@ -57,7 +59,10 @@ const resolvers = {
             }
 
             if ('active' in args) {
-                obj.select('lists.*').distinct().join('lists_recipes', 'lists.id', '=', 'lists_recipes.list_id').where('lists_recipes.date','>=', new Date().toISOString().split('T')[0]);
+                const today = todayAsString();
+                obj.select('lists.*').distinct()
+                    .join('lists_recipes AS l', 'lists.id', '=', 'l.list_id').where('l.date', '>=', today)
+                    .join('lists_recipes AS r', 'lists.id', '=', 'r.list_id').where('r.date', '<=', today);
             }
 
             return obj;
@@ -69,8 +74,7 @@ const resolvers = {
             let obj = knex('lists_recipes');
 
             if (upcoming) {
-                obj.where('date', '>=', new Date().toISOString().split('T')[0]);
-                obj.orderBy('date', 'asc');
+                obj.where('date', '>=', todayAsString()).orderBy('date', 'asc');
             }
 
             if (limit > 0) {
