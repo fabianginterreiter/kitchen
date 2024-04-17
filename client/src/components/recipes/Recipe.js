@@ -73,7 +73,7 @@ export default function Recipe() {
         <div className="description"><Text value={data.recipe.description} /></div>
 
         <div className="row">
-            <div className='portions'>Portionen:
+            <div className='portions'>{t('recipe.portions')}:
                 <input type="number" min="1" step="1" value={portions} onChange={(e) => setPortions(parseInt(e.target.value))} />
                 {data.recipe.portions !== portions && <button onClick={() => setPortions(data.recipe.portions)}>x</button>}
             </div>

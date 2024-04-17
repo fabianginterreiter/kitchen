@@ -23,31 +23,31 @@ export default function Lists() {
   if (error) return <Error message={error.message} />;
 
   return <div>
-    <h1>Lists</h1>
+    <h1>{t('lists')}</h1>
 
     <div className="recipeOptions">
       <Options size="large">
-        <Option linkTo={`/lists/create`}>Neue Liste</Option>
-        <Option linkTo={`/lists/create?template=week`}>Neuer Wochenplan</Option>
+        <Option linkTo={`/lists/create`}>{t('lists.option.new')}</Option>
+        <Option linkTo={`/lists/create?template=week`}>{t('lists.option.newWeekplan')}</Option>
       </Options>
     </div>
 
     <fieldset>
-      <legend>Filter</legend>
+      <legend>{t('lists.form.filter')}</legend>
       <div>
-        <input type="text" value={filters.name} onChange={(e) => setFilters({ ...filters, name: e.target.value })} placeholder="Filter" />
+        <input type="text" value={filters.name} onChange={(e) => setFilters({ ...filters, name: e.target.value })} placeholder={t('lists.form.filter')} />
       </div>
       <div>
         <input type="checkbox" value={filters.closed} onChange={(e) => setFilters({ ...filters, closed: e.target.checked })} id="closed" />
-        <label htmlFor="closed">Zeige geschlossene Einträge</label>
+        <label htmlFor="closed">{t('lists.form.closed')}</label>
       </div>
     </fieldset>
     <table className="table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Start</th>
-          <th>End</th>
+          <th>{t('lists.table.name')}</th>
+          <th>{t('lists.table.start')}</th>
+          <th>{t('lists.table.end')}</th>
         </tr>
       </thead>
       <tbody>
@@ -62,25 +62,25 @@ export default function Lists() {
     </table>
 
     {filters.closed && <div>
-      <h2>Abgeschlossen</h2>
+      <h2>{t('lists.closed')}</h2>
       <table className="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Start</th>
-          <th>End</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.closed
-          .filter(list => (list.name.toLowerCase().includes(filters.name.toLowerCase())))
-          .map(list => <tr key={list.id}>
-            <td><Link to={`/lists/${list.id}`}>{list.name}</Link></td>
-            <td>{list.startDate}</td>
-            <td>{list.endDate}</td>
-          </tr>)}
-      </tbody>
-    </table>
+        <thead>
+          <tr>
+            <th>{t('lists.table.name')}</th>
+            <th>{t('lists.table.start')}</th>
+            <th>{t('lists.table.end')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.closed
+            .filter(list => (list.name.toLowerCase().includes(filters.name.toLowerCase())))
+            .map(list => <tr key={list.id}>
+              <td><Link to={`/lists/${list.id}`}>{list.name}</Link></td>
+              <td>{list.startDate}</td>
+              <td>{list.endDate}</td>
+            </tr>)}
+        </tbody>
+      </table>
     </div>}
   </div>;
 };
