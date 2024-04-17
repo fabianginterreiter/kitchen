@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
 import { useState, Fragment } from "react";
+import { useTranslation } from 'react-i18next';
 
 const GET_LIST = gql`
 query GetLIst($listId: ID!) {
@@ -22,6 +23,7 @@ query GetLIst($listId: ID!) {
 
 
 export default function List() {
+    const { t } = useTranslation();
     const { listId } = useParams();
 
     const [done, setDone] = useState([]);

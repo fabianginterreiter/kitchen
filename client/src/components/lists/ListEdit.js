@@ -3,6 +3,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
 import ListForm from './ListForm.js';
+import { useTranslation } from 'react-i18next';
 
 const GET_LIST = gql`
 query GetLIst($listId: ID!) {
@@ -17,6 +18,7 @@ const UPDATE_LIST = gql`mutation Mutation($list: ListInput) {
 
 
 export default function List() {
+    const { t } = useTranslation();
     const { listId } = useParams();
 
     const [list, setList] = useState(null);

@@ -5,6 +5,7 @@ import Select from 'react-select';
 import { Options, Option } from '../../ui/Options.js';
 import AutoResizeTextarea from "../../ui/AutoResizeTextarea.js";
 import './List.css';
+import { useTranslation } from 'react-i18next';
 
 const GET_LIST = gql`
 query getData { recipes { id, name, portions } }`;
@@ -17,6 +18,7 @@ const Status = {
 }
 
 export default function List({ list, onChange, onClose, onSave, onSaveAndClose }) {
+    const { t } = useTranslation();
 
     const [recipes, setRecipes] = useState(null);
     const [title, setTitle] = useState(list.id ? list.name : "Neue Liste");
@@ -54,7 +56,7 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
         <header>
             <div className="title">{title}</div>
 
-            <button onClick={() => onClose()}>Abbrechen</button>
+            <button onClick={() => onClose()}>{t('button.cancel')}</button>
             <button className={(status === Status.Done ? 'button-success' : '')}
                 onClick={() => {
                     setStatus(Status.Progress);
@@ -63,39 +65,39 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
                         setTitle(list.name);
                         setTimeout(() => setStatus(Status.NoChanges), 1000);
                     });
-                }}>Speichern</button>
+                }}>{t('button.save')}</button>
             <button onClick={() => {
                 onSaveAndClose(getListObject())
-            }}>Speichern & Schließen</button>
+            }}>{('button.saveAndClose')}</button>
         </header>
 
         <fieldset>
-            <legend>Liste</legend>
+            <legend>{t('list.form.details')}</legend>
             <div>
-                <input name="title" className="title" type="text" value={list.name} placeholder="Name" onChange={(e) => update({ name: e.target.value })} />
+                <input name="title" className="title" type="text" value={list.name} placeholder={t('list.form.name')} onChange={(e) => update({ name: e.target.value })} />
             </div>
 
             {list.id && <div>
                 <input type="checkbox" checked={list.closed}
                     id="closed" onChange={(e) => update({ closed: e.target.checked })} />
-                <label htmlFor="closed">Abgeschlossen</label>
+                <label htmlFor="closed">{t('list.form.closed')}</label>
             </div>}
 
             <div>
-                <AutoResizeTextarea placeholder="Beschreibung" value={list.description} onChange={(e) => update({ description: e.target.value })} />
+                <AutoResizeTextarea placeholder={t('list.form.description')} value={list.description} onChange={(e) => update({ description: e.target.value })} />
             </div>
         </fieldset>
 
         <div className='overflow'>
             <fieldset>
-                <legend>Rezepte</legend>
+                <legend>{t('list.form.recipes')}</legend>
 
                 {list.entries.length > 0 ? <table className="table">
                     <thead>
                         <tr>
-                            <th>Datum</th>
-                            <th>Rezept</th>
-                            <th>Portionen</th>
+                            <th>{t('list.form.table.date')}</th>
+                            <th>{t('list.form.table.recipe')}</th>
+                            <th>{t('list.form.table.portions')}</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -132,7 +134,7 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
                                 <Options>
                                     <Option onClick={() => update({
                                         entries: list.entries.filter((e, id) => key !== id)
-                                    })}>Delete</Option>
+                                    })}>{t('list.form.table.options.delete')}</Option>
                                 </Options>
                             </td>
                         </tr>)}
@@ -144,7 +146,7 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
                         date: null,
                         recipe_id: null
                     }]
-                })}>Füge ein erstes Gericht hinzufügen</button>}
+                })}>{t('list.form.recipes.first')}</button>}
 
                 {list.entries.length > 0 && <button onClick={() => update({
                     entries: [...list.entries, {
@@ -153,7 +155,7 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
                         date: null,
                         recipe_id: null
                     }]
-                })}>Weiteres Gericht hinzufügen</button>}
+                })}>{t('list.form.recipes.add')}</button>}
             </fieldset>
         </div>
     </div >);

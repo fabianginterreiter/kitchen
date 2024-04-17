@@ -2,6 +2,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../../../ui/Utils.js';
 import { useState } from "react";
 import Modal from '../../../ui/Modal.js';
+import { useTranslation } from 'react-i18next';
 
 const GET_CATEGORIES = gql`query GetCategories {
     categories {id,name,position}
@@ -25,6 +26,8 @@ const DELETE_CATEGORY = gql`mutation Mutation($category: CategoryInput) {
 }`;
 
 export default function Categories() {
+    const { t } = useTranslation();
+
     const [category, setCategory] = useState(null);
     const [categories, setCategories] = useState([]);
 

@@ -3,12 +3,14 @@ import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { Loading, Error } from '../../ui/Utils.js';
 import Recipes from '../../ui/Recipes.js';
+import { useTranslation } from 'react-i18next';
 
 const GET_TAG = gql`query GetTag($tagId: ID!) {
     tag(id: $tagId) { id, name, recipes { id, name } }
   }`;
 
 export default function Ingredients() {
+  const { t } = useTranslation();
   const { tagId } = useParams();
 
   const { loading, error, data } = useQuery(GET_TAG, {

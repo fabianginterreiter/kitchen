@@ -3,6 +3,7 @@ import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
 import { Options, Option } from '../../ui/Options.js';
+import { useTranslation } from 'react-i18next';
 
 const GET_LISTS = gql`
 query Recipes {
@@ -12,6 +13,8 @@ query Recipes {
 
 
 export default function Lists() {
+  const { t } = useTranslation();
+
   const { loading, error, data } = useQuery(GET_LISTS);
 
   const [filters, setFilters] = useState({ name: "", closed: false });
