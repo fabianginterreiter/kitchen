@@ -1,8 +1,4 @@
-import {
-    createBrowserRouter,
-    RouterProvider,
-} from "react-router-dom";
-
+import { createBrowserRouter } from "react-router-dom";
 import App from './App';
 import { Outlet } from "react-router-dom";
 import Recipe from './components/recipes/Recipe';

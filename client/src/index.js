@@ -1,19 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-
 import reportWebVitals from './reportWebVitals';
-
 import './i18n';
-
 import router from './router.js';
-
 import './global.css';
-
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-
+import { RouterProvider } from "react-router-dom";
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 const client = new ApolloClient({
