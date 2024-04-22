@@ -47,7 +47,7 @@ export default function Categories() {
 
     return (
         <div className="App">
-            <h1>Kategorien</h1>
+            <h1>{t('options.categories')}</h1>
 
             {category ? <Modal visible={category !== null} onClose={() => setCategory(null)} onSave={() => {
                 if (category.id) {
@@ -72,21 +72,20 @@ export default function Categories() {
 
                 setCategory(null)
             }} title={`Kategorie ${category.id ? "bearbeiten" : "erstellen"}`}>
-                <label htmlFor="formName" className="form-label">Name</label>
+                <label htmlFor="formName" className="form-label">{t('options.categories.form.name')}</label>
                 <input id="formName" type="text" className="form-control" placeholder="Name" value={category.name} onChange={e => setCategory({ ...category, name: e.target.value })} />
             </Modal> : <div />}
 
             <button className="btn btn-primary" onClick={() => setCategory({
                 name: "",
                 position: (categories.length === 0 ? 1 : categories[categories.length - 1].position + 1)
-            })}>Erstellen</button>
+            })}>{t('options.categories.create')}</button>
 
             <table className="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Options</th>
+                        <th>{t('options.categories.table.name')}</th>
+                        <th>{t('options.categories.table.options')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,7 +115,7 @@ export default function Categories() {
                                             }))
                                         }
                                     });
-                                }}>Hoch</button>
+                                }}>{t('button.up')}</button>
                                 <button disabled={key === categories.length - 1} onClick={() => {
                                     const c1 = category;
                                     const c2 = categories[key + 1];
@@ -139,10 +138,10 @@ export default function Categories() {
                                             }))
                                         }
                                     });
-                                }}>Runter</button>
+                                }}>{t('button.down')}</button>
                             </td>
                             <td>
-                                <button className="btn btn-primary" onClick={() => setCategory(category)}>Edit</button>&nbsp;
+                                <button className="btn btn-primary" onClick={() => setCategory(category)}>{t('button.edit')}</button>&nbsp;
                                 <button className="btn btn-danger" onClick={() =>
                                     deleteCategory({
                                         variables: {
@@ -153,7 +152,7 @@ export default function Categories() {
                                             console.log(error)
                                             alert("In USE!");
                                         }
-                                    })}>Delete</button></td>
+                                    })}>{t('button.delete')}</button></td>
                         </tr>
                     )}
                 </tbody>

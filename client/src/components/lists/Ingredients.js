@@ -40,17 +40,17 @@ export default function List() {
             <div className="title">{data.list.name}</div>
         </header>
 
-        <div><Link to="/lists">Listen</Link> » <Link to={`/lists/${data.list.id}`}>{data.list.name}</Link></div>
+        <div><Link to="/lists">{t('lists')}</Link> » <Link to={`/lists/${data.list.id}`}>{data.list.name}</Link></div>
         <table className="table">
             <thead>
                 <tr>
-                    <th>Menge</th>
-                    <th>Zutat</th>
+                    <th>{t('list.ingredients.table.amount')}</th>
+                    <th>{t('list.ingredients.table.ingredient')}</th>
                 </tr>
             </thead>
             <tbody>
                 {data.categories.filter((c) => c.id === '0' || data.list.ingredients.find((i) => c.id === i.ingredient.category_id)).map((c) => <Fragment key={c.id}>
-                    <tr key={c.id}><td colSpan={2}><b>{c.id === '0' ? 'Unkategorisiert' : c.name}</b></td></tr>
+                    <tr key={c.id}><td colSpan={2}><b>{c.id === '0' ? t('list.ingredients.table.uncategorized') : c.name}</b></td></tr>
                     {data.list.ingredients.filter((i) => c.id === i.ingredient.category_id || (c.id === '0' && !i.ingredient.category_id)).map((i, k) => <tr key={c.id + k}>
                         <td>{Math.round(i.amount * 100) / 100} {i.unit && <>{i.unit.name}</>}</td>
                         <td><Link to={`/ingredients/${i.ingredient.id}`}>{i.ingredient.name}</Link></td>

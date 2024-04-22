@@ -21,7 +21,7 @@ export default function Ingredients() {
   if (error) return <Error message={error.message} />;
 
   return (<div>
-    <div><Link to="/tags">Tags</Link></div>
+    <div><Link to="/tags">{t('tags')}</Link></div>
     <h1>{data.tag.name}</h1>
     <Recipes recipes={data.tag.recipes} />
   </div>);

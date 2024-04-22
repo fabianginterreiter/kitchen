@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
 import { Loading, Error } from '../../ui/Utils.js';
+import { useTranslation } from 'react-i18next';
 import Recipes from '../../ui/Recipes.js';
 
 
@@ -10,6 +11,7 @@ const GET_INGREDIENT = gql`query GetIngredient($ingredientId: ID!) {
   }`;
 
 export default function Ingredients() {
+  const { t } = useTranslation();
   const { ingredientId } = useParams();
 
   const { loading, error, data } = useQuery(GET_INGREDIENT, {
@@ -20,7 +22,7 @@ export default function Ingredients() {
   if (error) return <Error message={error.message} />;
 
   return (<div>
-    <div><Link to="/ingredients">Zutaten</Link></div>
+    <div><Link to="/ingredients">{t('ingredients')}</Link></div>
     <h1>{data.ingredient.name}</h1>
     <Recipes recipes={data.ingredient.recipes} />
   </div>);

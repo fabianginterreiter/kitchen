@@ -21,7 +21,7 @@ export default function TagRecipe() {
     if (error) return <Error message={error.message} />;
 
     return (<div>
-        <div><Link to="/tags">Tags</Link> » <Link to={`/tags/${data.tag.id}`}>#{data.tag.name}</Link></div>
+        <div><Link to="/tags">{t('tags')}</Link> » <Link to={`/tags/${data.tag.id}`}>#{data.tag.name}</Link></div>
         <Recipe />
     </div>)
 }
