@@ -1,6 +1,7 @@
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../../../ui/Utils.js';
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import Modal from '../../../ui/Modal.js';
 
 const GET_UNITS = gql`query GetUnits {
@@ -21,6 +22,8 @@ const DELETE_UNIT = gql`mutation Mutation($unit: UnitInput) {
 }`;
 
 export default function Units() {
+    const { t } = useTranslation();
+
     const [unit, setUnit] = useState(null);
     const [units, setUnits] = useState([]);
 
@@ -37,71 +40,67 @@ export default function Units() {
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
 
-    return (
-        <div className="App">
-            <h1>Einheiten</h1>
+    return (<div className="App">
+        <h1>{t('options.units')}</h1>
 
-            {unit ? <Modal visible={unit !== null} onClose={() => setUnit(null)} onSave={() => {
-                if (unit.id) {
-                    updateUnit({
-                        variables: { unit: { id: unit.id, name: unit.name, description: unit.description } },
-                        onCompleted: (data) => {
-                            setUnits(units.map((u) => (u.id === data.updateUnit.id) ? data.updateUnit : u));
-                            setUnit(null);
-                        }
-                    })
-                } else {
-                    createUnit({
-                        variables: {
-                            unit
-                        },
-                        onCompleted: (data) => {
-                            setUnits([...units, data.createUnit]);
-                            setUnit(null);
-                        }
-                    })
-                }
+        {unit ? <Modal visible={unit !== null} onClose={() => setUnit(null)} onSave={() => {
+            if (unit.id) {
+                updateUnit({
+                    variables: { unit: { id: unit.id, name: unit.name, description: unit.description } },
+                    onCompleted: (data) => {
+                        setUnits(units.map((u) => (u.id === data.updateUnit.id) ? data.updateUnit : u));
+                        setUnit(null);
+                    }
+                })
+            } else {
+                createUnit({
+                    variables: {
+                        unit
+                    },
+                    onCompleted: (data) => {
+                        setUnits([...units, data.createUnit]);
+                        setUnit(null);
+                    }
+                })
+            }
 
-                setUnit(null)
-            }} title={`Zutat ${unit.id ? "bearbeiten" : "erstellen"}`}>
-                <label htmlFor="formName" className="form-label">Name</label>
-                <input id="formName" type="text" className="form-control" placeholder="Name" value={unit.name} onChange={e => setUnit({ ...unit, name: e.target.value })} />
-                <label htmlFor="formDescription" className="form-label">Beschreibung</label>
-                <input id="formDescription" type="text" className="form-control" placeholder="Beschreibung" value={unit.description} onChange={e => setUnit({ ...unit, description: e.target.value })} />
-            </Modal> : <div />}
+            setUnit(null)
+        }} title={`${t('options.units.form.title')} ${unit.id ? t('options.units.form.title.edit') : t('options.units.form.title.create')}`}>
+            <label htmlFor="formName" className="form-label">{t('options.units.form.name')}</label>
+            <input id="formName" type="text" className="form-control" placeholder="Name" value={unit.name} onChange={e => setUnit({ ...unit, name: e.target.value })} />
+            <label htmlFor="formDescription" className="form-label">{t('options.units.form.description')}</label>
+            <input id="formDescription" type="text" className="form-control" placeholder="Beschreibung" value={unit.description} onChange={e => setUnit({ ...unit, description: e.target.value })} />
+        </Modal> : <div />}
 
-            <button className="btn btn-primary" onClick={() => setUnit({ name: "", description: "" })}>Erstellen</button>
+        <button className="btn btn-primary" onClick={() => setUnit({ name: "", description: "" })}>{t('options.units.create')}</button>
 
-            <table className="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Beschreibung</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {units.map(unit =>
-                        <tr key={unit.id}>
-                            <td>{unit.name}</td>
-                            <td>{unit.description}</td>
-                            <td>
-                                <button className="btn btn-primary" onClick={() => setUnit(unit)}>Edit</button>&nbsp;
-                                <button className="btn btn-danger" onClick={() =>
-                                    deleteUnit({
-                                        variables: {
-                                            unit: { id: unit.id, name: unit.name, description: unit.description }
-                                        }, onCompleted: (data) =>
-                                            setUnits(units.filter((u) => u.id !== unit.id)),
-                                        onError: (error) => {
-                                            console.log(error)
-                                            alert("In USE!");
-                                        }
-                                    })}>Delete</button></td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-        </div>
-    );
+        <table className="table table-striped">
+            <thead>
+                <tr>
+                    <th>{t('options.units.table.name')}</th>
+                    <th>{t('options.units.table.description')}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {units.map(unit => <tr key={unit.id}>
+                    <td>{unit.name}</td>
+                    <td>{unit.description}</td>
+                    <td>
+                        <button className="btn btn-primary" onClick={() => setUnit(unit)}>{t('button.edit')}</button>&nbsp;
+                        <button className="btn btn-danger" onClick={() =>
+                            deleteUnit({
+                                variables: {
+                                    unit: { id: unit.id, name: unit.name, description: unit.description }
+                                }, onCompleted: (data) =>
+                                    setUnits(units.filter((u) => u.id !== unit.id)),
+                                onError: (error) => {
+                                    console.log(error)
+                                    alert("In USE!");
+                                }
+                            })}>{t('button.delete')}</button></td>
+                </tr>)}
+            </tbody>
+        </table>
+    </div>);
 };

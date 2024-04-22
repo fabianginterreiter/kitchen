@@ -2,6 +2,7 @@ import { useQuery, gql } from '@apollo/client';
 import { useState } from "react";
 import Select from 'react-select';
 import { Loading, Error } from '../../ui/Utils.js';
+import { useTranslation } from 'react-i18next';
 import Recipes from '../../ui/Recipes.js';
 
 const GET_RECIPES = gql`query GetRecipes {
@@ -11,6 +12,7 @@ const GET_RECIPES = gql`query GetRecipes {
   }`;
 
 export default function RecipesOverview() {
+  const { t } = useTranslation();
 
   const [filter, setFilter] = useState({ name: "", tags: [], ingredients: [], vegan: false, vegetarian: false });
 
@@ -44,13 +46,13 @@ export default function RecipesOverview() {
   }
 
   return (<div>
-    <h1>Rezepte</h1>
+    <h1>{t('recipes')}</h1>
 
     <fieldset>
-      <legend>Suche</legend>
+      <legend>{t('recipes.filter')}</legend>
 
       <div>
-        <label htmlFor="filterByName">Name</label>
+        <label htmlFor="filterByName">{t('recipes.filter.name')}</label>
         <div>
           <input id="filterByName" type="search" placeholder="Search"
             value={filter.name}
@@ -58,14 +60,14 @@ export default function RecipesOverview() {
       </div>
       <div className="row">
         <div className="col-50">
-          <input type="checkbox" defaultChecked={filter.vegan} onClick={(e) => setFilter({ ...filter, vegan: e.target.checked })} /> Vegan
+          <input type="checkbox" defaultChecked={filter.vegan} onClick={(e) => setFilter({ ...filter, vegan: e.target.checked })} /> {t('recipes.filter.vegan')}
         </div>
         <div className="col-50">
-          <input type="checkbox" defaultChecked={filter.vegetarian} onClick={(e) => setFilter({ ...filter, vegetarian: e.target.checked })} /> Vegetarian
+          <input type="checkbox" defaultChecked={filter.vegetarian} onClick={(e) => setFilter({ ...filter, vegetarian: e.target.checked })} /> {t('recipes.filter.vegetarian')}
         </div>
       </div>
       <div>
-        <label htmlFor="tags">Tags</label>
+        <label htmlFor="tags">{t('recipes.filter.tags')}</label>
         <div>
           <Select id="tags" options={data.tags.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
             onChange={e => setFilter({ ...filter, tags: e.map(t => t.value) })}
@@ -73,7 +75,7 @@ export default function RecipesOverview() {
         </div>
       </div>
       <div>
-        <label htmlFor="ingredients">Zutat</label>
+        <label htmlFor="ingredients">{t('recipes.filter.ingredients')}</label>
         <div id="ingredients">
           <Select options={data.ingredients.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
             onChange={e => setFilter({ ...filter, ingredients: e.map(t => t.value) })}

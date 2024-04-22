@@ -3,6 +3,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../../ui/Utils.js';
 import { useState } from "react";
 import Modal from '../../ui/Modal.js';
+import { useTranslation } from 'react-i18next';
 
 const GET_TAGS = gql`query GetTags {
     tags { id, name }
@@ -21,6 +22,8 @@ const DELETE_TAG = gql`mutation Mutation($tag: TagInput) {
 }`;
 
 export default function Tags() {
+    const { t } = useTranslation();
+
     const [tag, setTag] = useState(null);
     const [tags, setTags] = useState([]);
 
@@ -36,7 +39,7 @@ export default function Tags() {
     if (error) return <Error message={error.message} />;
 
     return (<div>
-        <h1>Tags</h1>
+        <h1>{t('tags')}</h1>
 
         {tag && <Modal visible={tag !== null} onClose={() => setTag(null)} onSave={() => {
             if (tag.id) {
@@ -60,25 +63,25 @@ export default function Tags() {
             }
 
             setTag(null)
-        }} title={`Zutat ${tag.id ? "bearbeiten" : "erstellen"}`}>
-            <label htmlFor="formName" className="form-label">Name</label>
-            <input id="formName" type="text" placeholder="Name" value={tag.name} onChange={e => setTag({ ...tag, name: e.target.value })} />
+        }} title={`${t('tags.modal.title')} ${tag.id ? t('tags.modal.title.edit') : t('tags.modal.title.create')}`}>
+            <label htmlFor="formName" className="form-label">{t('tags.modal.name')}</label>
+            <input id="formName" type="text" placeholder={t('tags.modal.name')} value={tag.name} onChange={e => setTag({ ...tag, name: e.target.value })} />
         </Modal>}
 
-        <button onClick={() => setTag({ name: "" })}>Erstellen</button>
+        <button onClick={() => setTag({ name: "" })}>{t('tags.create')}</button>
 
         <table>
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Optionen</th>
+                    <th>{t('tags.table.name')}</th>
+                    <th>{t('tags.table.options')}</th>
                 </tr>
             </thead>
             <tbody>
                 {tags.map(tag => <tr key={tag.id}>
                     <td><Link to={`/tags/${tag.id}`}>{tag.name}</Link></td>
                     <td>
-                        <button onClick={() => setTag(tag)}>Edit</button>&nbsp;
+                        <button onClick={() => setTag(tag)}>{t('button.edit')}</button>&nbsp;
                         <button onClick={() =>
                             deleteTag({
                                 variables: {
@@ -89,7 +92,7 @@ export default function Tags() {
                                     console.log(error)
                                     alert("In USE!");
                                 }
-                            })} disabled={tag.usages > 0}>Delete</button>
+                            })} disabled={tag.usages > 0}>{t('button.delete')}</button>
                     </td>
                 </tr>)}
             </tbody>

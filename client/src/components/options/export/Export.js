@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 export default function Export() {
+    const { t } = useTranslation();
     const [file, setFile] = useState("");
 
     const upload = () => {
@@ -14,6 +16,7 @@ export default function Export() {
     }
 
     return (<div>
+        <h1>{t('options.importexport')}</h1>
         <div>Export: <a href="/api/export">Export</a></div>
 
         <div>import<input type="file" onChange={(e) => setFile(e.target.files[0])} /></div>

@@ -1,18 +1,20 @@
 import { Link } from "react-router-dom";
 import { useQuery, gql } from '@apollo/client';
 import { Fragment } from "react";
+import { useTranslation } from 'react-i18next';
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) { id, name } 
 }`;
 
 function RecipeLink({ id }) {
+    const { t } = useTranslation();
     const { loading, error, data } = useQuery(GET_RECIPE, {
         variables: { recipeId: id }
     });
 
     if (loading || error) {
-        return <Link to={`/recipes/${id}`}>Rezept({id})</Link>
+        return <Link to={`/recipes/${id}`}>{t('recipe')}({id})</Link>
     }
 
     return <Link to={`/recipes/${id}`}>{data.recipe.name}</Link>
@@ -23,12 +25,13 @@ const GET_TAG = gql`query GetTag($tagId: ID!) {
   }`;
 
 function TagLink({ id }) {
+    const { t } = useTranslation();
     const { loading, error, data } = useQuery(GET_TAG, {
         variables: { tagId: id }
     });
 
     if (loading || error) {
-        return <Link to={`/tags/${id}`}>Tag({id})</Link>
+        return <Link to={`/tags/${id}`}>{t('tag')}({id})</Link>
     }
 
     return <Link to={`/tags/${id}`}>{data.tag.name}</Link>
@@ -38,12 +41,13 @@ const GET_INGREDIENT = gql`query GetIngredient($ingredientId: ID!) {
     ingredient(id: $ingredientId) { id, name, recipes { id, name } }
   }`;
 function IngredientLink({ id }) {
+    const { t } = useTranslation();
     const { loading, error, data } = useQuery(GET_INGREDIENT, {
         variables: { ingredientId: id }
     });
 
     if (loading || error) {
-        return <Link to={`/ingredients/${id}`}>Zutat({id})</Link>
+        return <Link to={`/ingredients/${id}`}>{t('ingredient')}({id})</Link>
     }
 
     return <Link to={`/ingredients/${id}`}>{data.ingredient.name}</Link>

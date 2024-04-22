@@ -6,6 +6,7 @@ import Tags from './Tags.js';
 import { useState } from "react";
 import './Recipe.css';
 import Text from '../../ui/Text.js';
+import { useTranslation } from 'react-i18next';
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
@@ -16,9 +17,8 @@ const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     }
   }`;
 
-
-
 export default function Recipe() {
+    const { t } = useTranslation();
     const { recipeId } = useParams();
 
     const [searchParams] = useSearchParams();
@@ -64,22 +64,22 @@ export default function Recipe() {
 
         <div className="recipeOptions">
             <Options size="large">
-                <Option linkTo={`/recipes/${recipeId}/edit`}>Bearbeiten</Option>
-                <Option linkTo={`/recipes/${recipeId}/cooking?portions=${portions}`}>Koch-View</Option>
-                <Option onClick={() => alert("delete!")}>Löschen</Option>
+                <Option linkTo={`/recipes/${recipeId}/edit`}>{t('recipe.options.edit')}</Option>
+                <Option linkTo={`/recipes/${recipeId}/cooking?portions=${portions}`}>{t('recipe.options.cooking')}</Option>
+                <Option onClick={() => alert("delete!")}>{t('recipe.options.delete')}</Option>
             </Options>
         </div>
 
         <div className="description"><Text value={data.recipe.description} /></div>
 
         <div className="row">
-            <div className='portions'>Portionen:
+            <div className='portions'>{t('recipe.portions')}:
                 <input type="number" min="1" step="1" value={portions} onChange={(e) => setPortions(parseInt(e.target.value))} />
                 {data.recipe.portions !== portions && <button onClick={() => setPortions(data.recipe.portions)}>x</button>}
             </div>
         </div>
 
-        <h2>Zubereitung</h2>
+        <h2>{t('recipe.preparations')}</h2>
 
         <table>
             <tbody>
@@ -94,6 +94,6 @@ export default function Recipe() {
             </tbody>
         </table>
 
-        {(data.recipe.source != null && data.recipe.source.length > 0 && <p><b>Quelle:</b> {data.recipe.source}</p>)}
+        {(data.recipe.source != null && data.recipe.source.length > 0 && <p><b>{t('recipe.source')}:</b> {data.recipe.source}</p>)}
     </div>);
 };

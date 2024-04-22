@@ -5,6 +5,7 @@ import Creatable from 'react-select/creatable';
 import { Loading, Error } from '../../ui/Utils.js';
 import { Options, Option } from '../../ui/Options.js';
 import AutoResizeTextarea from '../../ui/AutoResizeTextarea.js';
+import { useTranslation } from 'react-i18next';
 
 const GET_DATA = gql`query GetData {
     units { id, name, description }
@@ -35,6 +36,7 @@ const Status = {
 }
 
 export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAndClose }) {
+    const { t } = useTranslation();
 
     const [units, setUnits] = useState(null);
     const [ingredients, setIngredients] = useState(null);
@@ -86,7 +88,7 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
 
         <header>
             <div className="title">{title}</div>
-            {(onClose ? <button onClick={() => onClose()}>Abbrechen</button> : <span />)}
+            {(onClose ? <button onClick={() => onClose()}>{t('button.cancel')}</button> : <span />)}
 
             {(onSave ? <button disabled={status !== Status.Changed}
                 className={(status === Status.Done ? 'button-success' : '')}
@@ -97,7 +99,7 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
                         setTitle(recipe.name);
                         setTimeout(() => setStatus(Status.NoChanges), 1000);
                     });
-                }}>Speichern</button> : <span />)}
+                }}>{t('button.save')}</button> : <span />)}
 
             {(onSaveAndClose ? <button
                 onClick={() => {
@@ -106,21 +108,19 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
                     } else {
                         onSaveAndClose(getRecipeObject());
                     }
-                }}>Speichern & Schließen</button> : <span />)}
+                }}>{t('button.saveAndClose')}</button> : <span />)}
         </header>
 
-
-
         <fieldset>
-            <legend>Rezept</legend>
+            <legend>{t('recipe.form.details')}</legend>
 
             <div>
-                <label htmlFor="name">Name</label>
-                <input name="title" className="title" id="name" type="text" value={recipe.name} placeholder="Name" onChange={(e) => update({ name: e.target.value })} />
+                <label htmlFor="name">{t('recipe.form.name')}</label>
+                <input name="title" className="title" id="name" type="text" value={recipe.name} placeholder={t('recipe.form.name')} onChange={(e) => update({ name: e.target.value })} />
             </div>
 
             <div>
-                <label htmlFor="category">Kategorie</label>
+                <label htmlFor="category">{t('recipe.form.category')}</label>
                 <div>
                     <Select id="category" options={data.categories.map(c => ({ value: c.id, label: c.name }))} isClearable={true}
                         value={{ label: (recipe.category_id ? data.categories.find(f => f.id === recipe.category_id).name : "") }}
@@ -129,7 +129,7 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
             </div>
 
             <div>
-                <label htmlFor="tags">Tags</label>
+                <label htmlFor="tags">{t('recipe.form.tags')}</label>
                 <div>
                     <Creatable id="tags"
                         options={tags.map((t) => ({ value: t.id, label: t.name }))} isMulti={true}
@@ -148,33 +148,33 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
             </div>
 
             <div>
-                <label htmlFor="description">Beschreibung</label>
+                <label htmlFor="description">{t('recipe.form.description')}</label>
                 <div>
-                    <AutoResizeTextarea name="description" id="description" value={recipe.description} placeholder="Beschreibung"
+                    <AutoResizeTextarea name="description" id="description" value={recipe.description} placeholder={t('recipe.form.description')}
                         onChange={(e) => update({ description: e.target.value })} />
                 </div>
             </div>
 
 
             <div>
-                <label htmlFor="portions">Portions</label> <input id="portions" type="number" value={`${recipe.portions}`} onChange={(e) => update({ ...recipe, portions: parseInt(e.target.value) })} min="1" step="1" />
+                <label htmlFor="portions">{t('recipe.form.portions')}</label> <input id="portions" type="number" value={`${recipe.portions}`} onChange={(e) => update({ ...recipe, portions: parseInt(e.target.value) })} min="1" step="1" />
             </div>
             <div className="row">
                 <div className="col50">
                     <input type="checkbox" id="vegan" defaultChecked={recipe.vegan} onClick={(e) => update({ vegan: e.target.checked })} />
-                    <label htmlFor="vegan">Vegan</label>
+                    <label htmlFor="vegan">{t('recipe.form.vegan')}</label>
                 </div>
                 <div className="col50">
                     <input type="checkbox" id="vegetarian" defaultChecked={recipe.vegetarian} onClick={(e) => update({ vegetarian: e.target.checked })} />
-                    <label htmlFor="vegetarian">Vegetarian</label>
+                    <label htmlFor="vegetarian">{t('recipe.form.vegetarian')}</label>
                 </div>
             </div>
 
 
             <div>
-                <label htmlFor="source">Quelle</label>
+                <label htmlFor="source">{t('recipe.form.source')}</label>
                 <div>
-                    <input id="source" type="text" value={recipe.source} placeholder="Quelle"
+                    <input id="source" type="text" value={recipe.source} placeholder={t('recipe.form.source')}
                         onChange={(e) => update({ source: e.target.value })} />
                 </div>
             </div>
@@ -183,15 +183,15 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
 
         <div className="overflow">
             <fieldset>
-                <legend>Zubereitung</legend>
+                <legend>{t('recipe.form.preparation')}</legend>
 
                 {recipe.preparations.length > 0 ? <table className="preparations">
                     <thead>
                         <tr>
-                            <th className="amount">Menge</th>
-                            <th className="unit">Einheit</th>
-                            <th className="ingredient">Zutat</th>
-                            <th className="description">Beschreibung</th>
+                            <th className="amount">{t('recipe.form.table.amount')}</th>
+                            <th className="unit">{t('recipe.form.table.unit')}</th>
+                            <th className="ingredient">{t('recipe.form.table.ingredient')}</th>
+                            <th className="description">{t('recipe.form.table.description')}</th>
                             <th className="options"></th>
                         </tr>
                     </thead>
@@ -245,24 +245,24 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
                                 <Options>
                                     <Option onClick={() => update({
                                         preparations: recipe.preparations.map((p, k) => (k === key ? { ...p, title: !step.title } : p))
-                                    })}>Titel</Option>
+                                    })}>{t('recipe.form.table.options.title')}</Option>
                                     <Option onClick={() => update({
                                         preparations: recipe.preparations
                                             .filter((f, k) => k < key)
                                             .concat([{ ...NEW_PREPARATION }])
                                             .concat(recipe.preparations.filter((f, k) => k >= key))
                                             .map((e, k) => ({ ...e, step: k + 1 }))
-                                    })}>Add before</Option>
+                                    })}>{t('recipe.form.table.options.addBefore')}</Option>
                                     <Option onClick={() => update({
                                         preparations: recipe.preparations
                                             .filter((f, k) => k <= key)
                                             .concat([{ ...NEW_PREPARATION }])
                                             .concat(recipe.preparations.filter((f, k) => k > key))
                                             .map((e, k) => ({ ...e, step: k + 1 }))
-                                    })}>Add After</Option>
+                                    })}>{t('recipe.form.table.options.addAfter')}</Option>
                                     <Option onClick={() => update({
                                         preparations: recipe.preparations.filter((e, id) => key !== id).map((e, k) => ({ ...e, step: k + 1 }))
-                                    })}>Delete</Option>
+                                    })}>{t('recipe.form.table.options.delete')}</Option>
                                 </Options>
                             </td>
                         </tr>)}
@@ -270,13 +270,13 @@ export default function RecipeForm({ recipe, onChange, onSave, onClose, onSaveAn
                 </table> : <button name="addStep" className="btn btn-default" onClick={() => update({
                     preparations: [...recipe.preparations,
                     { ...NEW_PREPARATION, step: recipe.preparations.length + 2 }]
-                })}>Ersten Arbeitsschritt hinzufügen</button>}
+                })}>{t('recipe.form.preparations.first')}</button>}
                 
                 {recipe.preparations.length > 0 &&
                     <button name="addStep" className="btn btn-default" onClick={() => update({
                         preparations: [...recipe.preparations,
                         { ...NEW_PREPARATION, step: recipe.preparations.length + 2 }]
-                    })}>Arbeitsschritt hinzufügen</button>}
+                    })}>{t('recipe.form.preparations.add')}</button>}
             </fieldset>
         </div>
     </div>);

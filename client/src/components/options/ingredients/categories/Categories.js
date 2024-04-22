@@ -1,6 +1,7 @@
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../../../../ui/Utils.js';
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 import Modal from '../../../../ui/Modal.js';
 
 const GET_CATEGORIES = gql`query GetIngredientsCategories {
@@ -20,6 +21,8 @@ const DELETE_CATEGORY = gql`mutation Mutation($category: IngredientsCategoryInpu
 }`;
 
 export default function IngredientCategories() {
+    const { t } = useTranslation();
+
     const [category, setCategory] = useState(null);
     const [categories, setCategories] = useState([]);
 
@@ -38,7 +41,7 @@ export default function IngredientCategories() {
 
     return (
         <div className="App">
-            <h1>Kategorien</h1>
+            <h1>{t('options.ingredients.categories')}</h1>
 
             {category ? <Modal visible={category !== null} onClose={() => setCategory(null)} onSave={() => {
                 if (category.id) {
@@ -62,20 +65,20 @@ export default function IngredientCategories() {
                 }
 
                 setCategory(null)
-            }} title={`Kategorie ${category.id ? "bearbeiten" : "erstellen"}`}>
-                <label htmlFor="formName" className="form-label">Name</label>
+            }} title={`${t('options.ingredients.categories.form.title')} ${category.id ? t('options.ingredients.categories.form.title.edit') : t('options.ingredients.categories.form.title.create')}`}>
+                <label htmlFor="formName" className="form-label">{t('options.ingredients.categories.form.name')}</label>
                 <input id="formName" type="text" className="form-control" placeholder="Name" value={category.name} onChange={e => setCategory({ ...category, name: e.target.value })} />
             </Modal> : <div />}
 
             <button className="btn btn-primary" onClick={() => setCategory({
                 name: ""
-            })}>Erstellen</button>
+            })}>{t('options.ingredients.categories.create')}</button>
 
             <table className="table table-striped">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Options</th>
+                        <th>{t('options.ingredients.categories.table.name')}</th>
+                        <th>{t('options.ingredients.categories.table.options')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,7 +86,7 @@ export default function IngredientCategories() {
                         <tr key={category.id}>
                             <td>{category.name}</td>
                             <td>
-                                <button className="btn btn-primary" onClick={() => setCategory(category)}>Edit</button>&nbsp;
+                                <button className="btn btn-primary" onClick={() => setCategory(category)}>{t('button.edit')}</button>&nbsp;
                                 <button className="btn btn-danger" onClick={() =>
                                     deleteCategory({
                                         variables: {
@@ -94,7 +97,7 @@ export default function IngredientCategories() {
                                             console.log(error)
                                             alert("In USE!");
                                         }
-                                    })}>Delete</button></td>
+                                    })}>{t('button.delete')}</button></td>
                         </tr>
                     )}
                 </tbody>
