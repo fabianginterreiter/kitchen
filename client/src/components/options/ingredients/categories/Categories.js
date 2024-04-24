@@ -3,6 +3,7 @@ import { Loading, Error } from '../../../../ui/Utils.js';
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
 import Modal from '../../../../ui/Modal.js';
+import useDialog from '../../../../ui/Dialog.js';
 
 const GET_CATEGORIES = gql`query GetIngredientsCategories {
     ingredientsCategories {id,name}
@@ -23,6 +24,8 @@ const DELETE_CATEGORY = gql`mutation Mutation($category: IngredientsCategoryInpu
 export default function IngredientCategories() {
     const { t } = useTranslation();
 
+    const dialog = useDialog();
+
     const [category, setCategory] = useState(null);
     const [categories, setCategories] = useState([]);
 
@@ -42,6 +45,8 @@ export default function IngredientCategories() {
     return (
         <div className="App">
             <h1>{t('options.ingredients.categories')}</h1>
+
+            {dialog.render}
 
             {category ? <Modal visible={category !== null} onClose={() => setCategory(null)} onSave={() => {
                 if (category.id) {
@@ -88,16 +93,21 @@ export default function IngredientCategories() {
                             <td>
                                 <button className="btn btn-primary" onClick={() => setCategory(category)}>{t('button.edit')}</button>&nbsp;
                                 <button className="btn btn-danger" onClick={() =>
-                                    deleteCategory({
-                                        variables: {
-                                            category: { id: category.id, name: category.name }
-                                        }, onCompleted: (data) =>
-                                            setCategories(categories.filter((u) => u.id !== category.id)),
-                                        onError: (error) => {
-                                            console.log(error)
-                                            alert("In USE!");
+                                    dialog.confirm(`Soll die Kategorie '${category.name}' wirklich gelöscht werden?`).then((value) => {
+                                        if (value) {
+                                            deleteCategory({
+                                                variables: {
+                                                    category: { id: category.id, name: category.name }
+                                                }, onCompleted: (data) =>
+                                                    setCategories(categories.filter((u) => u.id !== category.id)),
+                                                onError: (error) => {
+                                                    console.log(error)
+                                                    alert("In USE!");
+                                                }
+                                            })
                                         }
-                                    })}>{t('button.delete')}</button></td>
+                                    })
+                                }>{t('button.delete')}</button></td>
                         </tr>
                     )}
                 </tbody>
