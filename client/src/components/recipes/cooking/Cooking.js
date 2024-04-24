@@ -1,5 +1,5 @@
 import { useQuery, gql } from '@apollo/client';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { Loading, Error } from '../../../ui/Utils.js';
 import './Cooking.css';
 import { useState } from "react";
@@ -11,8 +11,6 @@ const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
       }
     }
   }`;
-
-
 
 export default function Cooking() {
     const { recipeId } = useParams();
@@ -69,6 +67,7 @@ export default function Cooking() {
         <div id="Cooking" className="Fullscreen">
             <header>
                 <div className="title">{data.recipe.name}</div>
+                <Link to={`/recipes/${recipeId}`} className="button">Close</Link>
             </header>
 
             <table className="table">
