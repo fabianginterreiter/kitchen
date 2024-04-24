@@ -93,7 +93,7 @@ export default function IngredientCategories() {
                             <td>
                                 <button className="btn btn-primary" onClick={() => setCategory(category)}>{t('button.edit')}</button>&nbsp;
                                 <button className="btn btn-danger" onClick={() =>
-                                    dialog.confirm(`Soll die Kategorie '${category.name}' wirklich gelöscht werden?`).then((value) => {
+                                    dialog.confirm(t('options.ingredients.categories.table.delete.confirm', { category: category.name })).then((value) => {
                                         if (value) {
                                             deleteCategory({
                                                 variables: {

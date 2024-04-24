@@ -111,6 +111,7 @@
     "options.units.create": "Neue Einheit",
     "options.units.table.name":"Name",
     "options.units.table.description":"Beschreibung",
+    "options.units.table.delete.confirm": "Soll '{{unit}}' wirklich gelöscht werden?",
     "options.categories": "Kategorien",
     "options.categories.form.name": "Name",
     "options.categories.create": "Neue Kategorie",
@@ -125,6 +126,7 @@
     "options.ingredients.table.name": "Name",
     "options.ingredients.table.usage": "Verwendungen",
     "options.ingredients.table.category": "Kategorie",
+    "options.ingredients.table.delete.confirm": "Soll '{{ingredient}}' wirklich gelöscht werden?",
     "options.ingredients.categories": "Zutaten Kategorien",
     "options.ingredients.categories.create": "Neue Kategorie",
     "options.ingredients.categories.form.name": "Name",
@@ -133,5 +135,6 @@
     "options.ingredients.categories.form.title.edit": "bearbeiten",
     "options.ingredients.categories.table.name": "Name",
     "options.ingredients.categories.table.options": "Optionen",
+    "options.ingredients.categories.table.delete.confirm": "Soll die Kategorie '{{category}}' wirklich gelöscht werden?",
     "options.importexport": "Import & Export"
 }

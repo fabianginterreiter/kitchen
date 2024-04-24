@@ -3,6 +3,7 @@ import { Loading, Error } from '../../../ui/Utils.js';
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
 import Modal from '../../../ui/Modal.js';
+import useDialog from '../../../ui/Dialog.js';
 
 const GET_UNITS = gql`query GetUnits {
     units {id,name,description}
@@ -23,6 +24,7 @@ const DELETE_UNIT = gql`mutation Mutation($unit: UnitInput) {
 
 export default function Units() {
     const { t } = useTranslation();
+    const dialog = useDialog();
 
     const [unit, setUnit] = useState(null);
     const [units, setUnits] = useState([]);
@@ -42,6 +44,7 @@ export default function Units() {
 
     return (<div className="App">
         <h1>{t('options.units')}</h1>
+        {dialog.render}
 
         {unit ? <Modal visible={unit !== null} onClose={() => setUnit(null)} onSave={() => {
             if (unit.id) {
@@ -88,17 +91,20 @@ export default function Units() {
                     <td>{unit.description}</td>
                     <td>
                         <button className="btn btn-primary" onClick={() => setUnit(unit)}>{t('button.edit')}</button>&nbsp;
-                        <button className="btn btn-danger" onClick={() =>
-                            deleteUnit({
-                                variables: {
-                                    unit: { id: unit.id, name: unit.name, description: unit.description }
-                                }, onCompleted: (data) =>
-                                    setUnits(units.filter((u) => u.id !== unit.id)),
-                                onError: (error) => {
-                                    console.log(error)
-                                    alert("In USE!");
-                                }
-                            })}>{t('button.delete')}</button></td>
+                        <button className="btn btn-danger" onClick={() => dialog.confirm(t('options.units.table.delete.confirm', { unit: unit.name })).then((value) => {
+                            if (value) {
+                                deleteUnit({
+                                    variables: {
+                                        unit: { id: unit.id, name: unit.name, description: unit.description }
+                                    }, onCompleted: (data) =>
+                                        setUnits(units.filter((u) => u.id !== unit.id)),
+                                    onError: (error) => {
+                                        console.log(error)
+                                        alert("In USE!");
+                                    }
+                                })
+                            }
+                        })}>{t('button.delete')}</button></td>
                 </tr>)}
             </tbody>
         </table>

@@ -3,6 +3,7 @@ import { useQuery, useMutation, gql } from '@apollo/client';
 import { Loading, Error } from '../../../ui/Utils.js';
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
+import useDialog from '../../../ui/Dialog.js';
 import Modal from '../../../ui/Modal.js';
 import Select from 'react-select';
 
@@ -26,6 +27,8 @@ const DELETE_INGREDIENT = gql`mutation Mutation($ingredient: IngredientInput) {
 export default function Ingredients() {
     const { t } = useTranslation();
 
+    const dialog = useDialog();
+
     const [ingredient, setIngredient] = useState(null);
     const [ingredients, setIngredients] = useState([]);
 
@@ -42,6 +45,8 @@ export default function Ingredients() {
 
     return (<div>
         <h1>{t('options.ingredients')}</h1>
+
+        {dialog.render}
 
         {ingredient ? <Modal visible={ingredient !== null} onClose={() => setIngredient(null)} onSave={() => {
             if (ingredient.id) {
@@ -102,17 +107,21 @@ export default function Ingredients() {
                         </td>
                         <td>
                             <button className="btn btn-primary" onClick={() => setIngredient(ingredient)}>{t('button.edit')}</button>&nbsp;
-                            <button className="btn btn-danger" onClick={() =>
-                                deleteIngredient({
-                                    variables: {
-                                        ingredient: { id: ingredient.id, name: ingredient.name }
-                                    }, onCompleted: (data) =>
-                                        setIngredients(ingredients.filter((u) => u.id !== ingredient.id)),
-                                    onError: (error) => {
-                                        console.log(error)
-                                        alert("In USE!");
-                                    }
-                                })} disabled={ingredient.usages > 0}>{t('button.delete')}</button>
+                            <button className="btn btn-danger" onClick={() => dialog.confirm(t('options.ingredients.table.delete.confirm', { ingredient: ingredient.name })).then((value) => {
+                                if (value) {
+                                    deleteIngredient({
+                                        variables: {
+                                            ingredient: { id: ingredient.id, name: ingredient.name }
+                                        }, onCompleted: (data) =>
+                                            setIngredients(ingredients.filter((u) => u.id !== ingredient.id)),
+                                        onError: (error) => {
+                                            console.log(error)
+                                            alert("In USE!");
+                                        }
+                                    })
+                                }
+                            })
+                            } disabled={ingredient.usages > 0}>{t('button.delete')}</button>
                         </td>
                     </tr>
                 )}
