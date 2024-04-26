@@ -71,8 +71,10 @@ export default function Ingredients() {
 
             setIngredient(null)
         }} title={`${t('options.ingredients.form.title')} ${ingredient.id ? t('options.ingredients.form.title.edit') : t('options.ingredients.form.title.create')}`}>
-            <label htmlFor="formName" className="form-label">{t('options.ingredients.form.name')}</label>
-            <input id="formName" type="text" className="form-control" placeholder="Name" value={ingredient.name} onChange={e => setIngredient({ ...ingredient, name: e.target.value })} />
+            <div>
+                <label htmlFor="formName" className="form-label">{t('options.ingredients.form.name')}</label>
+                <input id="formName" type="text" className="form-control" placeholder="Name" value={ingredient.name} onChange={e => setIngredient({ ...ingredient, name: e.target.value })} />
+            </div>
         </Modal> : <div />}
 
         <button className="btn btn-primary" onClick={() => setIngredient({ name: "" })}>{t('options.ingredients.create')}</button>

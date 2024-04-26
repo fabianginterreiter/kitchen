@@ -22,6 +22,7 @@ export default function Navigation({ visible, onClose }) {
                 <li><NavLink to={`/options/categories`} className={({ isActive }) => ((isActive ? "active" : ""))} end>{t('options.categories')}</NavLink></li>
                 <li><NavLink to={`/options/ingredients`} className={({ isActive }) => ((isActive ? "active" : ""))} end>{t('options.ingredients')}</NavLink></li>
                 <li><NavLink to={`/options/ingredients/categories`} className={({ isActive }) => ((isActive ? "active" : ""))} end>{t('options.ingredients.categories')}</NavLink></li>
+                <li><NavLink to={`/options/tags`} className={({ isActive }) => ((isActive ? "active" : ""))} end>{t('options.tags')}</NavLink></li>
                 <li><NavLink to={`/options/export`} className={({ isActive }) => ((isActive ? "active" : ""))} end>{t('options.importexport')}</NavLink></li>
             </ul>
         </nav>

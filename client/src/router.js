@@ -18,6 +18,7 @@ import TagRecipe from './components/tags/TagRecipe';
 import OptionsExport from './components/options/export/Export';
 import OptionsCategories from './components/options/categories/Categories';
 import OptionsIngredientsCategories from './components/options/ingredients/categories/Categories';
+import OptionsTags from './components/options/tags/Tags';
 import Home from './components/Home';
 import Lists from './components/lists/Lists';
 import List from './components/lists/List';
@@ -38,6 +39,9 @@ const router = createBrowserRouter([{
             path: "units",
             element: <OptionsUnits />
         }, {
+            path: "tags",
+            element: <OptionsTags />
+        },{
             path: "export",
             element: <OptionsExport />
         }, {
