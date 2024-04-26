@@ -14,6 +14,7 @@ const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
         id, step, title, amount, unit {name}, ingredient {name}, description
       }
       tags {id, name}
+      category {id, name}
     }
   }`;
 
@@ -61,6 +62,8 @@ export default function Recipe() {
         <h1>{data.recipe.name}</h1>
 
         <Tags tags={data.recipe.tags} />
+
+        {data.recipe.category && <div>{t('recipe.category')}: {data.recipe.category.name}</div>}
 
         <div className="recipeOptions">
             <Options size="large">

@@ -52,7 +52,7 @@ const typeDefs = `#graphql
     preparations: [Preparation]
     tags: [Tag]
     tagIds: [Int]
-    category: [Category]
+    category: Category
     category_id: ID
     ingredients: [Ingredient]
   }

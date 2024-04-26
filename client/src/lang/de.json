@@ -31,6 +31,7 @@
     "recipes.filter.ingredients": "Zutaten",
     "recipes.table.name": "Name",
     "recipe": "Rezept",
+    "recipe.category": "Kategorie",
     "recipe.options.edit": "Bearbeiten",
     "recipe.options.cooking": "Koch View",
     "recipe.options.delete": "Löschen",
