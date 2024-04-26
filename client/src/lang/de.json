@@ -140,5 +140,6 @@
     "options.tags.modal.name": "Name",
     "options.tags.table.name": "Name",
     "options.tags.table.options": "Optionen",
+    "options.tags.table.delete.confirm": "Soll '{{tag}}' wirklich gelöscht werden?",
     "options.importexport": "Import & Export"
 }

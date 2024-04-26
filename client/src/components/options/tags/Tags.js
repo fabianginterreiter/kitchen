@@ -4,6 +4,7 @@ import { Loading, Error } from '../../../ui/Utils.js';
 import { useState } from "react";
 import Modal from '../../../ui/Modal.js';
 import { useTranslation } from 'react-i18next';
+import useDialog from '../../../ui/Dialog.js';
 
 const GET_TAGS = gql`query GetTags {
     tags { id, name }
@@ -24,6 +25,8 @@ const DELETE_TAG = gql`mutation Mutation($tag: TagInput) {
 export default function Tags() {
     const { t } = useTranslation();
 
+    const dialog = useDialog();
+
     const [tag, setTag] = useState(null);
     const [tags, setTags] = useState([]);
 
@@ -40,6 +43,8 @@ export default function Tags() {
 
     return (<div>
         <h1>{t('options.tags')}</h1>
+
+        {dialog.render}
 
         {tag && <Modal visible={tag !== null} onClose={() => setTag(null)} onSave={() => {
             if (tag.id) {
@@ -82,17 +87,16 @@ export default function Tags() {
                     <td><Link to={`/tags/${tag.id}`}>{tag.name}</Link></td>
                     <td>
                         <button onClick={() => setTag(tag)}>{t('button.edit')}</button>&nbsp;
-                        <button onClick={() =>
-                            deleteTag({
-                                variables: {
-                                    tag: { id: tag.id, name: tag.name }
-                                }, onCompleted: (data) =>
-                                    setTags(tags.filter((u) => u.id !== tag.id)),
-                                onError: (error) => {
-                                    console.log(error)
-                                    alert("In USE!");
-                                }
-                            })} disabled={tag.usages > 0}>{t('button.delete')}</button>
+                        <button onClick={() => dialog.confirm(t('options.tags.table.delete.confirm', { tag: tag.name })).then((value) => {
+                            if (value) {
+                                deleteTag({
+                                    variables: {
+                                        tag: { id: tag.id, name: tag.name }
+                                    }, onCompleted: (data) =>
+                                        setTags(tags.filter((u) => u.id !== tag.id))
+                                })
+                            }
+                        })}>{t('button.delete')}</button>
                     </td>
                 </tr>)}
             </tbody>
