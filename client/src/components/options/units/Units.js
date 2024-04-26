@@ -100,7 +100,7 @@ export default function Units() {
                                         setUnits(units.filter((u) => u.id !== unit.id)),
                                     onError: (error) => {
                                         console.log(error)
-                                        alert("In USE!");
+                                        dialog.alert("In USE!");
                                     }
                                 })
                             }

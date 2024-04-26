@@ -10,6 +10,8 @@
     "Dialog.confirm.title": "Bitte bestätigen",
     "Dialog.confirm.yes": "Ja",
     "Dialog.confirm.no": "Nein",
+    "Dialog.alert.title": "Bitte beachten",
+    "Dialog.alert.ok": "Ok",
     "kitchen": "Kitchen",
     "menu.createRecipe": "Neues Rezept",
     "menu.createList": "Neue Liste",

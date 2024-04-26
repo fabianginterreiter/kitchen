@@ -32,8 +32,28 @@ export default function useDialog() {
         });
     }
 
+    const alert = (message) => {
+        setJsx(<div>
+            <div className="background">
+                <div className="fullscreen" />
+                <div className="Modal">
+                    <header>{t('Dialog.alert.title')}</header>
+                    <div className="content">{message}</div>
+                    <footer>
+                        <button onClick={() => resolve(true)}>{t('Dialog.alert.ok')}</button>
+                    </footer>
+                </div>
+            </div>
+        </div >)
+
+        return new Promise((resolve, reject) => {
+            promiseRef.current = { resolve, reject }
+        });
+    }
+
     return {
         render: jsx,
-        confirm
+        confirm,
+        alert
     }
 }

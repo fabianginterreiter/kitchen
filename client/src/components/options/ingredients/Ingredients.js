@@ -116,7 +116,7 @@ export default function Ingredients() {
                                             setIngredients(ingredients.filter((u) => u.id !== ingredient.id)),
                                         onError: (error) => {
                                             console.log(error)
-                                            alert("In USE!");
+                                            dialog.alert("In USE!");
                                         }
                                     })
                                 }
