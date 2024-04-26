@@ -38,9 +38,28 @@ button:disabled:hover {
     cursor: not-allowed;
 }
 
-.button.button-success,
-button.button-success {
-    background-color: green;
+.button.success,
+button.success {
+    background-color: #4bd685;
+    border: #4bbf7b;
+    color: #f5fff9;
+}
+
+.button.success:hover,
+button.success:hover {
+    background-color: #4bbf7b;
+}
+
+.button.warn,
+button.warn {
+    background-color: #ed561a;
+    border: #d64622;
+    color: #fff5f2;
+}
+
+.button.warn:hover,
+button.warn:hover {
+    background-color: #d64622;
 }
 
 input[type=text],

@@ -90,8 +90,8 @@ export default function Units() {
                     <td>{unit.name}</td>
                     <td>{unit.description}</td>
                     <td>
-                        <button className="btn btn-primary" onClick={() => setUnit(unit)}>{t('button.edit')}</button>&nbsp;
-                        <button className="btn btn-danger" onClick={() => dialog.confirm(t('options.units.table.delete.confirm', { unit: unit.name })).then((value) => {
+                        <button onClick={() => setUnit(unit)}>{t('button.edit')}</button>&nbsp;
+                        <button className="warn" onClick={() => dialog.confirm(t('options.units.table.delete.confirm', { unit: unit.name })).then((value) => {
                             if (value) {
                                 deleteUnit({
                                     variables: {

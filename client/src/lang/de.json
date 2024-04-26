@@ -119,6 +119,7 @@
     "options.ingredients.form.title.create": "erstellen",
     "options.ingredients.form.title.edit": "bearbeiten",
     "options.ingredients.form.name": "Name",
+    "options.ingredients.form.category": "Kategorie",
     "options.ingredients.create": "Neue Zutat",
     "options.ingredients.table.name": "Name",
     "options.ingredients.table.category": "Kategorie",

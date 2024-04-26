@@ -141,8 +141,8 @@ export default function Categories() {
                                 }}>{t('button.down')}</button>
                             </td>
                             <td>
-                                <button className="btn btn-primary" onClick={() => setCategory(category)}>{t('button.edit')}</button>&nbsp;
-                                <button className="btn btn-danger" onClick={() =>
+                                <button onClick={() => setCategory(category)}>{t('button.edit')}</button>&nbsp;
+                                <button className="warn" onClick={() =>
                                     deleteCategory({
                                         variables: {
                                             category: { id: category.id, name: category.name }

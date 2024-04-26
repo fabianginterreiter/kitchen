@@ -73,7 +73,13 @@ export default function Ingredients() {
         }} title={`${t('options.ingredients.form.title')} ${ingredient.id ? t('options.ingredients.form.title.edit') : t('options.ingredients.form.title.create')}`}>
             <div>
                 <label htmlFor="formName" className="form-label">{t('options.ingredients.form.name')}</label>
-                <input id="formName" type="text" className="form-control" placeholder="Name" value={ingredient.name} onChange={e => setIngredient({ ...ingredient, name: e.target.value })} />
+                <input id="formName" type="text" placeholder={t('options.ingredients.form.name')} value={ingredient.name} onChange={e => setIngredient({ ...ingredient, name: e.target.value })} />
+            </div>
+            <div>
+                <label>{t('options.ingredients.form.category')}</label>
+                <Select options={data.categories.map(c => ({ value: c.id, label: c.name }))} isClearable={true}
+                    value={{ label: (ingredient.category_id ? data.categories.find(f => f.id === ingredient.category_id).name : "") }}
+                    onChange={e => setIngredient({ ...ingredient, category_id: (e ? e.value : null) })} />
             </div>
         </Modal> : <div />}
 
@@ -106,8 +112,8 @@ export default function Ingredients() {
 
                         </td>
                         <td>
-                            <button className="btn btn-primary" onClick={() => setIngredient(ingredient)}>{t('button.edit')}</button>&nbsp;
-                            <button className="btn btn-danger" onClick={() => dialog.confirm(t('options.ingredients.table.delete.confirm', { ingredient: ingredient.name })).then((value) => {
+                            <button onClick={() => setIngredient(ingredient)}>{t('button.edit')}</button>&nbsp;
+                            <button className="warn" onClick={() => dialog.confirm(t('options.ingredients.table.delete.confirm', { ingredient: ingredient.name })).then((value) => {
                                 if (value) {
                                     deleteIngredient({
                                         variables: {

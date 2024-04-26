@@ -87,7 +87,7 @@ export default function Tags() {
                     <td><Link to={`/tags/${tag.id}`}>{tag.name}</Link></td>
                     <td>
                         <button onClick={() => setTag(tag)}>{t('button.edit')}</button>&nbsp;
-                        <button onClick={() => dialog.confirm(t('options.tags.table.delete.confirm', { tag: tag.name })).then((value) => {
+                        <button className="warn" onClick={() => dialog.confirm(t('options.tags.table.delete.confirm', { tag: tag.name })).then((value) => {
                             if (value) {
                                 deleteTag({
                                     variables: {

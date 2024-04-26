@@ -21,7 +21,7 @@ export default function useDialog() {
                     <div className="content">{message}</div>
                     <footer>
                         <button onClick={() => resolve(false)}>{t('Dialog.confirm.no')}</button>
-                        <button onClick={() => resolve(true)}>{t('Dialog.confirm.yes')}</button>
+                        <button className="success" onClick={() => resolve(true)}>{t('Dialog.confirm.yes')}</button>
                     </footer>
                 </div>
             </div>
