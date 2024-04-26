@@ -70,9 +70,9 @@ export default function Units() {
             setUnit(null)
         }} title={`${t('options.units.form.title')} ${unit.id ? t('options.units.form.title.edit') : t('options.units.form.title.create')}`}>
             <label htmlFor="formName" className="form-label">{t('options.units.form.name')}</label>
-            <input id="formName" type="text" className="form-control" placeholder="Name" value={unit.name} onChange={e => setUnit({ ...unit, name: e.target.value })} />
+            <input id="formName" type="text" className="form-control" placeholder={t('options.units.form.name')} value={unit.name} onChange={e => setUnit({ ...unit, name: e.target.value })} />
             <label htmlFor="formDescription" className="form-label">{t('options.units.form.description')}</label>
-            <input id="formDescription" type="text" className="form-control" placeholder="Beschreibung" value={unit.description} onChange={e => setUnit({ ...unit, description: e.target.value })} />
+            <input id="formDescription" type="text" className="form-control" placeholder={t('options.units.form.description')} value={unit.description} onChange={e => setUnit({ ...unit, description: e.target.value })} />
         </Modal> : <div />}
 
         <button className="btn btn-primary" onClick={() => setUnit({ name: "", description: "" })}>{t('options.units.create')}</button>

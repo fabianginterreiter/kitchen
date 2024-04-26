@@ -126,7 +126,6 @@
     "options.ingredients.form.name": "Name",
     "options.ingredients.create": "Neue Zutat",
     "options.ingredients.table.name": "Name",
-    "options.ingredients.table.usage": "Verwendungen",
     "options.ingredients.table.category": "Kategorie",
     "options.ingredients.table.delete.confirm": "Soll '{{ingredient}}' wirklich gelöscht werden?",
     "options.ingredients.categories": "Zutaten Kategorien",

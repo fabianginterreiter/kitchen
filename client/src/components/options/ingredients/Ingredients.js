@@ -81,7 +81,6 @@ export default function Ingredients() {
             <thead>
                 <tr>
                     <th>{t('options.ingredients.table.name')}</th>
-                    <th>{t('options.ingredients.table.usage')}</th>
                     <th>{t('options.ingredients.table.category')}</th>
                     <th></th>
                 </tr>
@@ -90,7 +89,6 @@ export default function Ingredients() {
                 {ingredients.map(ingredient =>
                     <tr key={ingredient.id}>
                         <td><Link to={`/ingredients/${ingredient.id}`}>{ingredient.name}</Link></td>
-                        <td>{ingredient.usages}</td>
                         <td>
                             <Select options={data.categories.map(c => ({ value: c.id, label: c.name }))} isClearable={true}
                                 value={{ label: (ingredient.category_id ? data.categories.find(f => f.id === ingredient.category_id).name : "") }}
