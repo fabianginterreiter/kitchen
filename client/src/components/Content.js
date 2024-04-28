@@ -1,7 +1,7 @@
 import './Content.css';
 import { useQuery, gql } from '@apollo/client';
 import { Loading, Error } from '../ui/Utils.js';
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
@@ -14,16 +14,16 @@ function BoldedText({ text, filter }) {
         return text;
     }
 
-    const textArray = text.split(new RegExp(filter, 'i') );
+    const textArray = text.split(new RegExp(filter, 'i'));
     return (
         <>
             {textArray.map((item, index) => (
-                <>
+                <Fragment key={index}>
                     {item}
                     {index !== textArray.length - 1 && (
                         <span className="marked">{filter}</span>
                     )}
-                </>
+                </Fragment>
             ))}
         </>
     );
@@ -43,7 +43,7 @@ export default function Content({ visible, onClose }) {
     if (error) return <Error message={error.message} />;
 
     const onClick = (e) => {
-        if(e.target.nodeName === "A") {
+        if (e.target.nodeName === "A" || e.target.nodeName === "SPAN") {
             if (window.innerWidth / 400 < 2) {
                 onClose();
             }
@@ -58,9 +58,7 @@ export default function Content({ visible, onClose }) {
             <div className="close" onClick={() => onClose()}>✕</div>
         </header>
         <div className="con">
-            <ul onClick={(e) => onClick(e)}>{data.categories.map(category => {
-                if (category.recipes.length === 0) { return <li key={category.id} /> }
-
+            <ul onClick={(e) => onClick(e)}>{data.categories.filter(category => category.recipes.length > 0).map(category => {
                 const open = !isClosed(category);
                 const recipes = filter === "" ? category.recipes : category.recipes.filter(recipe => recipe.name.toLowerCase().includes(filter.toLowerCase()));
 
