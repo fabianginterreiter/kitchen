@@ -16,23 +16,21 @@ export default function Ingredients() {
     if (loading) return <Loading />;
     if (error) return <Error message={error.message} />;
 
-    return (
-        <div>
-            <h1>{t('ingredients')}</h1>
-            
-            <fieldset>
-                <legend>{t('ingredients.filter')}</legend>
-                <input type="search" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder={t('ingredients.filter')} />
-            </fieldset>
+    return (<div>
+        <h1>{t('ingredients')}</h1>
 
-            <ul>
-                {data.categories.map(category => <li key={category.id}>
-                    <div>{(category.id === "0" ? t('ingredients.uncategorized') : category.name)}</div>
-                    <ul> {category.ingredients.filter((i) => i.name.toLowerCase().includes(filter.toLowerCase())).map(ingredient => <li key={ingredient.id}>
-                        <Link to={`/ingredients/${ingredient.id}`}>{ingredient.name}</Link>
-                    </li>)}</ul>
-                </li>)}
-            </ul>
-        </div >
-    );
+        <fieldset>
+            <legend>{t('ingredients.filter')}</legend>
+            <input type="search" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder={t('ingredients.filter')} />
+        </fieldset>
+
+        {data.categories.map(category => <div key={category.id}>
+            <h2>{(category.id === "0" ? t('ingredients.uncategorized') : category.name)}</h2>
+            <table><tbody>
+                {category.ingredients.filter((i) => i.name.toLowerCase().includes(filter.toLowerCase())).map(ingredient => <tr key={ingredient.id}>
+                    <td><Link to={`/ingredients/${ingredient.id}`}>{ingredient.name}</Link></td>
+                </tr>)}
+            </tbody></table>
+        </div>)}
+    </div>);
 };
