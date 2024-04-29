@@ -35,6 +35,7 @@
     "recipe.options.edit": "Bearbeiten",
     "recipe.options.cooking": "Koch View",
     "recipe.options.delete": "Löschen",
+    "recipe.options.delete.confirm": "Soll '{{name}}' wirklich gelöscht werden?",
     "recipe.portions": "Portionen",
     "recipe.preparations": "Zubereitung",
     "recipe.source": "Quelle",

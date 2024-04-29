@@ -7,6 +7,7 @@ import { useState } from "react";
 import './Recipe.css';
 import Text from '../../ui/Text.js';
 import { useTranslation } from 'react-i18next';
+import useDialog from '../../ui/Dialog.js';
 
 const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
     recipe(id: $recipeId) {
@@ -21,6 +22,8 @@ const GET_RECIPE = gql`query GetRecipe($recipeId: ID!) {
 export default function Recipe() {
     const { t } = useTranslation();
     const { recipeId } = useParams();
+
+    const dialog = useDialog();
 
     const [searchParams] = useSearchParams();
 
@@ -61,6 +64,8 @@ export default function Recipe() {
     return (<div id="Recipe">
         <h1>{data.recipe.name}</h1>
 
+        {dialog.render}
+
         <Tags tags={data.recipe.tags} />
 
         {data.recipe.category && <div>{t('recipe.category')}: {data.recipe.category.name}</div>}
@@ -69,7 +74,13 @@ export default function Recipe() {
             <Options size="large">
                 <Option linkTo={`/recipes/${recipeId}/edit`}>{t('recipe.options.edit')}</Option>
                 <Option linkTo={`/recipes/${recipeId}/cooking?portions=${portions}`}>{t('recipe.options.cooking')}</Option>
-                <Option onClick={() => alert("delete!")}>{t('recipe.options.delete')}</Option>
+                <Option onClick={() => dialog.confirm(t('recipe.options.delete.confirm', {
+                    name: data.recipe.name
+                })).then((value) => {
+                    if (value) {
+
+                    }
+                })}>{t('recipe.options.delete')}</Option>
             </Options>
         </div>
 
