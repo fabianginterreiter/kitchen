@@ -12,6 +12,10 @@
   }
 }
 
+a.title {
+  font-family: "Chronicle Display";
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

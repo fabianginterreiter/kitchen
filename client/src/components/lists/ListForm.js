@@ -68,7 +68,7 @@ export default function List({ list, onChange, onClose, onSave, onSaveAndClose }
                 }}>{t('button.save')}</button>
             <button onClick={() => {
                 onSaveAndClose(getListObject())
-            }}>{('button.saveAndClose')}</button>
+            }}>{t('button.saveAndClose')}</button>
         </header>
 
         <fieldset>
